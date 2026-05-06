@@ -12,6 +12,7 @@ import {
   Target,
   ChevronDown,
   ChevronUp,
+  ChevronRight,
   X
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
@@ -22,7 +23,6 @@ import ProjectChatSidebar from '../components/ProjectChatSidebar';
 export default function ProjectDetail() {
   const { id } = useParams();
   const project = id ? getProjectById(id) : undefined;
-  const [openProjectIdx, setOpenProjectIdx] = useState<number | null>(0);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   if (!project) {
@@ -158,76 +158,19 @@ export default function ProjectDetail() {
             </div>
             <div className="space-y-6">
               {project.projects.map((p, idx) => (
-                <div key={idx} className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm transition-all hover:shadow-md">
-                  <button 
-                    onClick={() => setOpenProjectIdx(openProjectIdx === idx ? null : idx)}
+                <div key={idx} className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm transition-all hover:shadow-md hover:scale-[1.01] hover:border-blue-200 group">
+                  <Link 
+                    to={`/explore-projects?title=${encodeURIComponent(p.title)}`}
                     className="flex w-full items-center justify-between p-10 text-left"
                   >
                     <div className="flex items-center gap-6">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white font-black text-xl shadow-lg">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white font-black text-xl shadow-lg transition-transform group-hover:scale-110">
                         {idx + 1}
                       </div>
-                      <span className="text-2xl font-black text-slate-900 leading-tight">{p.title}</span>
+                      <span className="text-2xl font-black text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">{p.title}</span>
                     </div>
-                    {openProjectIdx === idx ? <ChevronUp size={28} className="text-slate-300" /> : <ChevronDown size={28} className="text-slate-300" />}
-                  </button>
-                  
-                  {openProjectIdx === idx && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      className="border-t border-slate-50 p-10 space-y-10"
-                    >
-                      {/* Integrated Background & Skills */}
-                      <div className="grid gap-10 border border-slate-100 bg-slate-50/50 p-8" style={{ borderRadius: '2rem' }}>
-                        <div className="space-y-4">
-                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">Latar Belakang Masalah</p>
-                          <p className="text-lg text-slate-600 leading-relaxed font-medium">
-                            {project.background}
-                          </p>
-                        </div>
-                        <div className="space-y-4">
-                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Skill yang Dipelajari</p>
-                          <div className="flex flex-wrap gap-2">
-                            {project.skillsLearned.map((skill, i) => (
-                              <span key={i} className="rounded-full bg-white border border-slate-100 px-4 py-2 text-sm font-bold text-slate-700">
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Tujuan & Brief Proyek</p>
-                        <p className="text-xl text-slate-600 leading-relaxed font-medium">{p.description}</p>
-                      </div>
-
-                      <div className="space-y-6">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Spesifikasi Teknis</p>
-                        <ul className="space-y-5">
-                          {p.specifications.map((spec, sIdx) => (
-                            <li key={sIdx} className="flex items-start gap-4 text-slate-700 text-lg font-bold">
-                              <div className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500" />
-                              {spec}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {p.image && (
-                        <div className="mt-12 space-y-4">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Visual Ref / Mockup</p>
-                          <img 
-                            src={p.image} 
-                            alt={p.title} 
-                            className="w-full object-cover shadow-2xl border-8 border-slate-50" 
-                            style={{ borderRadius: '2rem' }}
-                          />
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
+                    <ChevronRight size={28} className="text-slate-300 group-hover:text-blue-500 transition-colors" />
+                  </Link>
                 </div>
               ))}
             </div>

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Check,
@@ -259,6 +260,7 @@ const DUMMY_PROJECTS: Project[] = [
 ];
 
 export default function ProjectExplore() {
+  const [searchParams] = useSearchParams();
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [viewMode, setViewMode] = useState<'guided' | 'pure'>('guided');
   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
@@ -273,6 +275,16 @@ export default function ProjectExplore() {
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua');
+
+  useEffect(() => {
+    const projectTitle = searchParams.get('title');
+    if (projectTitle) {
+      const found = DUMMY_PROJECTS.find(p => p.title.toLowerCase() === projectTitle.toLowerCase());
+      if (found) {
+        setActiveProject(found);
+      }
+    }
+  }, [searchParams]);
 
   const categories = ['Semua', ...Array.from(new Set(DUMMY_PROJECTS.map(p => p.category)))];
 

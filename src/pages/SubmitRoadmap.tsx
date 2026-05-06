@@ -6,7 +6,7 @@ import {
   BookOpen, Edit3, FileText, ArrowLeft, Search,
   Briefcase, Save, AlertCircle, X, ChevronDown, ChevronUp,
   ImageIcon, Layout, ListChecks, Upload, Globe, Clock, BarChart, Info, Book, FileCode, DollarSign, Check,
-  CreditCard, ChevronRight, AlertTriangle, Trophy, Loader2
+  CreditCard, ChevronRight, AlertTriangle, Trophy, Loader2, School
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
 
@@ -24,11 +24,14 @@ interface PortfolioProject {
   title: string;
   background: string;
   skillsLearned: string;
+  description?: string;
+  mode: 'murni' | 'panduan';
   specifications: string[];
   imageSource: 'url' | 'local';
   image: string;
   localFile?: File | null;
   previewUrl?: string;
+  interactiveSteps: any[];
 }
 
 interface RoadmapTopic {
@@ -91,7 +94,7 @@ const EXISTING_ROADMAPS = [
             resources: [],
             costNote: '',
             showProject: false,
-            project: { title: '', background: '', skillsLearned: '', specifications: [''], imageSource: 'url', image: '' }
+            project: { title: '', background: '', skillsLearned: '', mode: 'murni', specifications: [''], imageSource: 'url', image: '', interactiveSteps: [] }
           }
         ]
       }
@@ -112,10 +115,19 @@ export default function SubmitRoadmap() {
   const [formData, setFormData] = useState({
     title: '',
     category: 'IT & Software',
+    type: 'skill_based',
     customCategory: '',
     description: '',
     salaryIndo: '',
     salaryUSA: '',
+  });
+
+  const [faqs, setFaqs] = useState<{q: string, a: string}[]>([{q: '', a: ''}]);
+  const [topUniversities, setTopUniversities] = useState<{local: string[], global: string[]}>({ local: [''], global: [''] });
+  const [universityWorld, setUniversityWorld] = useState({
+    overview: '',
+    requiredSkills: [''],
+    whyChoose: [{ title: '', desc: '' }]
   });
 
   const createEmptyTopic = (): RoadmapTopic => ({
@@ -129,7 +141,7 @@ export default function SubmitRoadmap() {
     resources: [{ type: 'youtube', title: '', description: '', link: '', priceType: 'Gratis' }],
     costNote: '',
     showProject: false,
-    project: { title: '', background: '', skillsLearned: '', specifications: [''], imageSource: 'url', image: '' }
+    project: { title: '', background: '', skillsLearned: '', mode: 'murni', specifications: [''], imageSource: 'url', image: '', interactiveSteps: [] }
   });
 
   const [phases, setPhases] = useState<RoadmapPhase[]>([
@@ -140,12 +152,16 @@ export default function SubmitRoadmap() {
     setFormData({
       title: roadmap.title,
       category: roadmap.category,
+      type: roadmap.type || 'skill_based',
       customCategory: '',
       description: roadmap.description,
       salaryIndo: roadmap.salaryIndo,
       salaryUSA: roadmap.salaryUSA,
     });
-    setPhases(roadmap.phases.length > 0 ? roadmap.phases : [{ title: '', description: '', stats: '', isSaved: false, topics: [createEmptyTopic()] }]);
+    setFaqs(roadmap.faqs?.length ? roadmap.faqs : [{q: '', a: ''}]);
+    setTopUniversities(roadmap.topUniversities || { local: [''], global: [''] });
+    setUniversityWorld(roadmap.universityWorld || { overview: '', requiredSkills: [''], whyChoose: [{ title: '', desc: '' }] });
+    setPhases(roadmap.phases?.length > 0 ? roadmap.phases : [{ title: '', description: '', stats: '', isSaved: false, topics: [createEmptyTopic()] }]);
     setSelectedRoadmapId(roadmap.id);
   };
 
@@ -222,6 +238,142 @@ export default function SubmitRoadmap() {
     const next = [...phases];
     next[pIdx].topics[tIdx].project.specifications.push('');
     setPhases(next);
+  };
+
+  const addInteractiveStep = (pIdx: number, tIdx: number) => {
+    const next = [...phases];
+    if (!next[pIdx].topics[tIdx].project.interactiveSteps) {
+      next[pIdx].topics[tIdx].project.interactiveSteps = [];
+    }
+    const newStep = {
+      id: `step-${Date.now()}`,
+      stepNumber: next[pIdx].topics[tIdx].project.interactiveSteps.length + 1,
+      title: '',
+      description: '',
+      mediaUrl: '',
+      question: '',
+      choices: [],
+      requiresProof: false,
+      requiresExplanation: false
+    };
+    next[pIdx].topics[tIdx].project.interactiveSteps.push(newStep);
+    setPhases(next);
+  };
+
+  const updateInteractiveStep = (pIdx: number, tIdx: number, stepIdx: number, field: string, val: any) => {
+    const next = [...phases];
+    next[pIdx].topics[tIdx].project.interactiveSteps[stepIdx] = { ...next[pIdx].topics[tIdx].project.interactiveSteps[stepIdx], [field]: val };
+    setPhases(next);
+  };
+
+  const addStepChoice = (pIdx: number, tIdx: number, stepIdx: number) => {
+    const next = [...phases];
+    const newChoice = {
+      id: `opt-${Date.now()}`,
+      label: '',
+      guidance: '',
+      requiresProof: false,
+      requiresExplanation: false,
+      nextStepId: ''
+    };
+    next[pIdx].topics[tIdx].project.interactiveSteps[stepIdx].choices = [...(next[pIdx].topics[tIdx].project.interactiveSteps[stepIdx].choices || []), newChoice];
+    setPhases(next);
+  };
+
+  const updateStepChoice = (pIdx: number, tIdx: number, stepIdx: number, choiceIdx: number, field: string, val: any) => {
+    const next = [...phases];
+    next[pIdx].topics[tIdx].project.interactiveSteps[stepIdx].choices[choiceIdx] = { ...next[pIdx].topics[tIdx].project.interactiveSteps[stepIdx].choices[choiceIdx], [field]: val };
+    setPhases(next);
+  };
+
+  const renderProjectForm = (pi: number, ti: number, topic: RoadmapTopic) => {
+    if (!topic.showProject) {
+      return (
+        <button type="button" onClick={() => updateTopicData(pi, ti, 'showProject', true)} className="w-full py-4 rounded-xl bg-white border border-dashed border-emerald-300 text-emerald-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-50 transition-all"><Plus size={18} /> Tambah Proyek Portofolio (Opsional)</button>
+      );
+    }
+    
+    return (
+      <div className="p-6 rounded-2xl bg-white border border-emerald-200 shadow-md space-y-6 relative">
+        <button type="button" onClick={() => updateTopicData(pi, ti, 'showProject', false)} className="absolute top-4 right-4 text-slate-300 hover:text-red-500 flex items-center gap-1 text-[10px] font-bold"><X size={14} /> HAPUS PROYEK</button>
+        <div className="flex items-center gap-2 border-b border-slate-50 pb-4"><ListChecks size={20} className="text-emerald-600" /><h5 className="font-bold text-slate-900">Formulir Proyek Portofolio</h5></div>
+        
+        <input placeholder="Judul Proyek" className="h-10 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-sm" value={topic.project.title} onChange={(e) => updateProject(pi, ti, 'title', e.target.value)} />
+        
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-1"><label className="text-[10px] font-bold text-blue-600">Latar Belakang</label><textarea placeholder="..." rows={2} className="w-full p-4 rounded-xl bg-slate-50 border-none font-bold text-sm" value={topic.project.background} onChange={(e) => updateProject(pi, ti, 'background', e.target.value)} /></div>
+          <div className="space-y-1"><label className="text-[10px] font-bold text-emerald-600">Skill</label><textarea placeholder="..." rows={2} className="w-full p-4 rounded-xl bg-slate-50 border-none font-bold text-sm" value={topic.project.skillsLearned} onChange={(e) => updateProject(pi, ti, 'skillsLearned', e.target.value)} /></div>
+        </div>
+
+        {/* MODE TOGGLE */}
+        <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg w-fit mt-4">
+          <button type="button" onClick={() => updateProject(pi, ti, 'mode', 'murni')} className={`px-4 py-2 text-xs font-bold rounded-md ${topic.project.mode === 'murni' || !topic.project.mode ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}>MURNI (1 Tugas)</button>
+          <button type="button" onClick={() => updateProject(pi, ti, 'mode', 'panduan')} className={`px-4 py-2 text-xs font-bold rounded-md ${topic.project.mode === 'panduan' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}>PANDUAN (Step-by-Step)</button>
+        </div>
+
+        {topic.project.mode === 'murni' || !topic.project.mode ? (
+          <div className="space-y-6 pt-4 border-t border-slate-50">
+            {/* Visual Ref for Murni */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between"><label className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-2"><ImageIcon size={14} /> Visual / Workflow (Opsional)</label><div className="flex bg-slate-100 p-1 rounded-lg"><button type="button" onClick={() => updateProject(pi, ti, 'imageSource', 'url')} className={`px-3 py-1.5 text-[9px] font-bold rounded-md ${topic.project.imageSource === 'url' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>LINK URL</button><button type="button" onClick={() => updateProject(pi, ti, 'imageSource', 'local')} className={`px-3 py-1.5 text-[9px] font-bold rounded-md ${topic.project.imageSource === 'local' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>UPLOAD</button></div></div>
+              {topic.project.imageSource === 'url' ? (<input placeholder="https://..." className="h-10 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-xs" value={topic.project.image} onChange={(e) => updateProject(pi, ti, 'image', e.target.value)} />) : (<div className="h-28 w-full rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}><input type="file" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleImageUpload(pi, ti, e.target.files[0])} accept="image/*" />{topic.project.previewUrl || topic.project.image ? <img src={topic.project.previewUrl || topic.project.image} className="h-full w-full object-cover rounded-xl" alt="Preview" /> : <Upload className="text-slate-300" size={24} />}</div>)}
+            </div>
+            {/* Brief Deskripsi for Murni */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-amber-500 uppercase flex items-center gap-2"><Target size={12} /> Instruksi & Brief Tugas Lengkap</label>
+              <textarea placeholder="Tuliskan brief tugas dan spesifikasi teknis layaknya menulis email..." className="w-full p-4 rounded-xl bg-slate-50 border-none font-medium text-sm shadow-sm" rows={6} value={topic.project.description || ''} onChange={(e) => updateProject(pi, ti, 'description', e.target.value)} />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6 pt-4 border-t border-slate-50">
+            <div className="flex items-center justify-between"><label className="text-[10px] font-bold text-blue-600 uppercase flex items-center gap-2">INTERACTIVE STEPS</label><button type="button" onClick={() => addInteractiveStep(pi, ti)} className="text-[10px] font-bold text-blue-600 hover:underline">+ Tambah Step</button></div>
+            <div className="space-y-6">
+              {topic.project.interactiveSteps?.map((step, stepIdx) => (
+                <div key={step.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50 space-y-4 relative">
+                  <button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].project.interactiveSteps = n[pi].topics[ti].project.interactiveSteps.filter((_, i) => i !== stepIdx); setPhases(n); }} className="absolute top-4 right-4 text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
+                  <div className="flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">{stepIdx + 1}</span><h6 className="font-bold text-xs">Konfigurasi Step</h6></div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <input placeholder="Judul Step (misal: Setup Environment)" className="h-9 w-full rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs shadow-sm" value={step.title} onChange={(e) => updateInteractiveStep(pi, ti, stepIdx, 'title', e.target.value)} />
+                    <input placeholder="Media URL (Image/Video Youtube) - Opsional" className="h-9 w-full rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs shadow-sm" value={step.mediaUrl || ''} onChange={(e) => updateInteractiveStep(pi, ti, stepIdx, 'mediaUrl', e.target.value)} />
+                  </div>
+                  <textarea placeholder="Deskripsi/Instruksi mendetail..." rows={2} className="w-full p-3 rounded-lg bg-white border border-slate-100 font-bold text-xs shadow-sm" value={step.description} onChange={(e) => updateInteractiveStep(pi, ti, stepIdx, 'description', e.target.value)} />
+                  
+                  {/* Mode Pertanyaan / Percabangan vs Simple Checklist */}
+                  <div className="space-y-3 pt-3 border-t border-slate-200">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[10px] font-bold text-slate-500">Pertanyaan Percabangan (Kosongkan jika hanya 1 ceklis biasa)</label>
+                      <input placeholder="Misal: Apakah berhasil dijalankan di localhost?" className="h-9 w-full rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={step.question || ''} onChange={(e) => updateInteractiveStep(pi, ti, stepIdx, 'question', e.target.value)} />
+                    </div>
+                    
+                    {!step.question ? (
+                      <div className="flex gap-4 items-center bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
+                        <label className="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer"><input type="checkbox" checked={step.requiresProof || false} onChange={(e) => updateInteractiveStep(pi, ti, stepIdx, 'requiresProof', e.target.checked)} className="rounded border-slate-300 text-blue-600" /> Wajib Screenshot</label>
+                        <label className="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer"><input type="checkbox" checked={step.requiresExplanation || false} onChange={(e) => updateInteractiveStep(pi, ti, stepIdx, 'requiresExplanation', e.target.checked)} className="rounded border-slate-300 text-blue-600" /> Wajib Penjelasan Singkat</label>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between"><label className="text-[10px] font-bold text-emerald-600">PILIHAN JAWABAN (CHOICES)</label><button type="button" onClick={() => addStepChoice(pi, ti, stepIdx)} className="text-[10px] font-bold text-blue-600 hover:underline">+ Tambah Pilihan</button></div>
+                        {step.choices?.map((choice: any, choiceIdx: number) => (
+                          <div key={choice.id} className="p-3 bg-white border border-slate-100 shadow-sm rounded-lg space-y-3 relative">
+                            <button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].project.interactiveSteps[stepIdx].choices = n[pi].topics[ti].project.interactiveSteps[stepIdx].choices.filter((_: any, i: number) => i !== choiceIdx); setPhases(n); }} className="absolute top-3 right-3 text-slate-200 hover:text-red-500"><Trash2 size={14} /></button>
+                            <input placeholder="Label Pilihan (misal: Berhasil)" className="h-8 w-full md:w-1/2 rounded-md bg-slate-50 border-none px-3 font-bold text-xs" value={choice.label} onChange={(e) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'label', e.target.value)} />
+                            <input placeholder="Guidance/Bantuan jika pilih ini (Opsional)" className="h-8 w-full rounded-md bg-slate-50 border-none px-3 text-xs" value={choice.guidance || ''} onChange={(e) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'guidance', e.target.value)} />
+                            <div className="flex gap-4 items-center flex-wrap pt-2 border-t border-slate-50">
+                              <label className="flex items-center gap-2 text-[10px] font-bold text-slate-600 cursor-pointer"><input type="checkbox" checked={choice.requiresProof || false} onChange={(e) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'requiresProof', e.target.checked)} className="rounded border-slate-300 text-blue-600" /> Wajib Screenshot</label>
+                              <label className="flex items-center gap-2 text-[10px] font-bold text-slate-600 cursor-pointer"><input type="checkbox" checked={choice.requiresExplanation || false} onChange={(e) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'requiresExplanation', e.target.checked)} className="rounded border-slate-300 text-blue-600" /> Wajib Penjelasan</label>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const isTopicComplete = (topic: RoadmapTopic) => {
@@ -360,22 +512,7 @@ export default function SubmitRoadmap() {
                               </div>
                               <div className="space-y-3 pt-4 border-t border-slate-100"><label className="text-xs font-bold text-blue-600 flex items-center gap-2"><Info size={14} /> Cost Note / FAQ</label><textarea placeholder="Apakah butuh biaya?..." className="w-full rounded-xl p-4 font-bold text-sm bg-blue-50/50 border border-blue-100" rows={2} value={topic.costNote} onChange={(e) => updateTopicData(pi, ti, 'costNote', e.target.value)} /></div>
                               <div className="space-y-4 pt-6 border-t border-emerald-100">
-                                {!topic.showProject ? (
-                                  <button type="button" onClick={() => updateTopicData(pi, ti, 'showProject', true)} className="w-full py-4 rounded-xl bg-white border border-dashed border-emerald-300 text-emerald-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-50 transition-all"><Plus size={18} /> Tambah Proyek Portofolio (Opsional)</button>
-                                ) : (
-                                  <div className="p-6 rounded-2xl bg-white border border-emerald-200 shadow-md space-y-6 relative">
-                                    <button type="button" onClick={() => updateTopicData(pi, ti, 'showProject', false)} className="absolute top-4 right-4 text-slate-300 hover:text-red-500 flex items-center gap-1 text-[10px] font-bold"><X size={14} /> HAPUS PROYEK</button>
-                                    <div className="flex items-center gap-2 border-b border-slate-50 pb-4"><ListChecks size={20} className="text-emerald-600" /><h5 className="font-bold text-slate-900">Formulir Proyek Portofolio</h5></div>
-                                    <input placeholder="Judul Proyek" className="h-10 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-sm" value={topic.project.title} onChange={(e) => updateProject(pi, ti, 'title', e.target.value)} />
-                                    <div className="space-y-4 pt-2">
-                                      <div className="flex items-center justify-between"><label className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-2"><ImageIcon size={14} /> Visual Reference</label><div className="flex bg-slate-100 p-1 rounded-lg"><button type="button" onClick={() => updateProject(pi, ti, 'imageSource', 'url')} className={`px-3 py-1.5 text-[9px] font-bold rounded-md ${topic.project.imageSource === 'url' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>LINK URL</button><button type="button" onClick={() => updateProject(pi, ti, 'imageSource', 'local')} className={`px-3 py-1.5 text-[9px] font-bold rounded-md ${topic.project.imageSource === 'local' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>UPLOAD</button></div></div>
-                                      {topic.project.imageSource === 'url' ? (<input placeholder="https://..." className="h-10 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-xs" value={topic.project.image} onChange={(e) => updateProject(pi, ti, 'image', e.target.value)} />) : (<div className="h-28 w-full rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}><input type="file" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleImageUpload(pi, ti, e.target.files[0])} accept="image/*" />{topic.project.previewUrl || topic.project.image ? <img src={topic.project.previewUrl || topic.project.image} className="h-full w-full object-cover rounded-xl" alt="Preview" /> : <Upload className="text-slate-300" size={24} />}</div>)}
-                                    </div>
-                                    <div className="grid gap-4 lg:grid-cols-2"><div className="space-y-1"><label className="text-[10px] font-bold text-blue-600">Latar Belakang</label><textarea placeholder="..." rows={2} className="w-full p-4 rounded-xl bg-slate-50 border-none font-bold text-sm" value={topic.project.background} onChange={(e) => updateProject(pi, ti, 'background', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-emerald-600">Skill</label><textarea placeholder="..." rows={2} className="w-full p-4 rounded-xl bg-slate-50 border-none font-bold text-sm" value={topic.project.skillsLearned} onChange={(e) => updateProject(pi, ti, 'skillsLearned', e.target.value)} /></div></div>
-                                    <div className="flex items-center justify-between pt-4 border-t border-slate-50"><label className="text-[10px] font-bold text-amber-500 uppercase flex items-center gap-2"><Target size={12} /> Brief Checklist</label><button type="button" onClick={() => addSpec(pi, ti)} className="text-[10px] font-bold text-blue-600 hover:underline">+ Tambah Poin</button></div>
-                                    <div className="grid gap-2">{topic.project.specifications.map((s, si) => (<div key={si} className="flex gap-2"><input placeholder="Tugas teknis..." className="h-9 flex-1 rounded-lg bg-slate-50 border-none px-3 font-bold text-xs shadow-sm" value={s} onChange={(e) => updateSpec(pi, ti, si, e.target.value)} /><button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].project.specifications = n[pi].topics[ti].project.specifications.filter((_, i) => i !== si); setPhases(n); }} className="text-slate-200"><Trash2 size={16} /></button></div>))}</div>
-                                  </div>
-                                )}
+                                {renderProjectForm(pi, ti, topic)}
                               </div>
                               <div className="flex justify-center pt-6 border-t border-emerald-100"><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', false)} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-10 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"><Check size={18} /> Simpan Progres Materi</button></div>
                           </motion.div>
@@ -429,9 +566,10 @@ export default function SubmitRoadmap() {
         <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
           <div className="flex items-center gap-3 border-b pb-4"><Briefcase className="text-blue-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Informasi Dasar</h2></div>
           <div className="grid gap-6">
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-3">
                <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Judul Roadmap</label><input required placeholder="Misal: Software Engineer" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} /></div>
-               <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Kategori</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}><option value="IT & Software">IT & Software</option><option value="Kedinasan">Kedinasan</option><option value="Lainnya">Lainnya (Kustom)</option></select></div>
+               <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Kategori</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}><option value="IT & Software">IT & Software</option><option value="Kesehatan">Kesehatan</option><option value="Seni & Desain">Seni & Desain</option><option value="Kedinasan">Kedinasan</option><option value="Lainnya">Lainnya (Kustom)</option></select></div>
+               <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Tipe Profesi (Template)</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}><option value="skill_based">Skill & Project Based (Contoh: IT)</option><option value="education_based">Education Path (Contoh: Dokter)</option></select></div>
             </div>
             <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Deskripsi Utama</label><textarea placeholder="Gambarkan jalur karir ini..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} /></div>
             <div className="grid gap-6 md:grid-cols-2">
@@ -440,9 +578,76 @@ export default function SubmitRoadmap() {
             </div>
           </div>
         </section>
+
+        {/* NEW SECTION: Dunia Perkuliahan (Berlaku untuk IT maupun Non-IT) */}
+        <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
+          <div className="flex items-center gap-3 border-b pb-4"><School className="text-blue-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Dunia Perkuliahan & Karir</h2></div>
+          <div className="space-y-6">
+             <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Overview Jurusan</label><textarea placeholder="Gambaran perkuliahan..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={universityWorld.overview} onChange={(e) => setUniversityWorld({...universityWorld, overview: e.target.value})} /></div>
+             <div className="grid gap-6 md:grid-cols-2">
+               <div className="space-y-4">
+                 <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Pengetahuan & Keahlian</label><button type="button" onClick={() => setUniversityWorld({...universityWorld, requiredSkills: [...universityWorld.requiredSkills, '']})} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+                 {universityWorld.requiredSkills.map((skill, i) => (
+                   <div key={i} className="flex gap-2"><input placeholder="Contoh: Observasi" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={skill} onChange={(e) => { const newSkills = [...universityWorld.requiredSkills]; newSkills[i] = e.target.value; setUniversityWorld({...universityWorld, requiredSkills: newSkills}); }} /><button type="button" onClick={() => setUniversityWorld({...universityWorld, requiredSkills: universityWorld.requiredSkills.filter((_, idx) => idx !== i)})} className="text-slate-300 hover:text-red-500"><Trash2 size={18}/></button></div>
+                 ))}
+               </div>
+               <div className="space-y-4">
+                 <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Kenapa Memilih Jurusan Ini?</label><button type="button" onClick={() => setUniversityWorld({...universityWorld, whyChoose: [...universityWorld.whyChoose, {title: '', desc: ''}]})} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+                 {universityWorld.whyChoose.map((reason, i) => (
+                   <div key={i} className="flex flex-col gap-3 p-4 bg-slate-50 rounded-xl relative shadow-sm border border-slate-100">
+                     <button type="button" onClick={() => setUniversityWorld({...universityWorld, whyChoose: universityWorld.whyChoose.filter((_, idx) => idx !== i)})} className="absolute top-3 right-3 text-slate-300 hover:text-red-500"><Trash2 size={16}/></button>
+                     <input placeholder="Judul Alasan" className="h-10 w-11/12 rounded-lg bg-white border border-slate-100 px-3 font-bold text-sm" value={reason.title} onChange={(e) => { const newReasons = [...universityWorld.whyChoose]; newReasons[i].title = e.target.value; setUniversityWorld({...universityWorld, whyChoose: newReasons}); }} />
+                     <textarea placeholder="Penjelasan singkat" className="w-11/12 rounded-lg bg-white border border-slate-100 p-3 text-sm font-medium" rows={2} value={reason.desc} onChange={(e) => { const newReasons = [...universityWorld.whyChoose]; newReasons[i].desc = e.target.value; setUniversityWorld({...universityWorld, whyChoose: newReasons}); }} />
+                   </div>
+                 ))}
+               </div>
+             </div>
+          </div>
+        </section>
+
+        {/* NEW SECTION: Top Universities */}
+        <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
+          <div className="flex items-center gap-3 border-b pb-4"><Globe className="text-emerald-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Top 5 Universitas</h2></div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Dalam Negeri</label><button type="button" onClick={() => setTopUniversities({...topUniversities, local: [...topUniversities.local, '']})} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+              {topUniversities.local.map((univ, i) => (
+                <div key={i} className="flex gap-2"><input placeholder="UI (Jakarta)" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={univ} onChange={(e) => { const newLocal = [...topUniversities.local]; newLocal[i] = e.target.value; setTopUniversities({...topUniversities, local: newLocal}); }} /><button type="button" onClick={() => setTopUniversities({...topUniversities, local: topUniversities.local.filter((_, idx) => idx !== i)})} className="text-slate-300 hover:text-red-500"><Trash2 size={18}/></button></div>
+              ))}
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Luar Negeri</label><button type="button" onClick={() => setTopUniversities({...topUniversities, global: [...topUniversities.global, '']})} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+              {topUniversities.global.map((univ, i) => (
+                <div key={i} className="flex gap-2"><input placeholder="Harvard (USA)" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={univ} onChange={(e) => { const newGlobal = [...topUniversities.global]; newGlobal[i] = e.target.value; setTopUniversities({...topUniversities, global: newGlobal}); }} /><button type="button" onClick={() => setTopUniversities({...topUniversities, global: topUniversities.global.filter((_, idx) => idx !== i)})} className="text-slate-300 hover:text-red-500"><Trash2 size={18}/></button></div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* NEW SECTION: FAQs */}
+        <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
+          <div className="flex items-center justify-between border-b pb-4">
+            <div className="flex items-center gap-3"><Info className="text-amber-500" size={20} /><h2 className="text-xl font-bold text-slate-900">Common Questions (FAQ)</h2></div>
+            <button type="button" onClick={() => setFaqs([...faqs, {q: '', a: ''}])} className="text-sm font-bold text-blue-600 hover:underline">+ Tambah Pertanyaan</button>
+          </div>
+          <div className="grid gap-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="flex gap-4 p-5 bg-slate-50 rounded-2xl relative shadow-sm border border-slate-100">
+                <button type="button" onClick={() => setFaqs(faqs.filter((_, idx) => idx !== i))} className="absolute top-4 right-4 text-slate-300 hover:text-red-500"><Trash2 size={18}/></button>
+                <div className="flex-1 space-y-3 pr-8">
+                  <input placeholder="Pertanyaan..." className="h-11 w-full rounded-xl bg-white border border-slate-100 px-4 font-bold text-sm" value={faq.q} onChange={(e) => { const newFaqs = [...faqs]; newFaqs[i].q = e.target.value; setFaqs(newFaqs); }} />
+                  <textarea placeholder="Jawaban..." className="w-full rounded-xl bg-white border border-slate-100 p-4 text-sm font-medium" rows={2} value={faq.a} onChange={(e) => { const newFaqs = [...faqs]; newFaqs[i].a = e.target.value; setFaqs(newFaqs); }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section className="space-y-8">
           <div className="flex items-center justify-between px-2"><h2 className="text-xl font-bold text-slate-900">Alur Belajar (Fase)</h2><button type="button" onClick={addPhase} className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition-all hover:scale-105">+ Tambah Fase</button></div>
-          <div className="space-y-8">{phases.map((phase, pi) => (<div key={pi} className="relative"><div className="absolute -left-3 -top-3 z-10 h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-base font-bold shadow-xl">{pi + 1}</div>{!phase.isSaved ? (<motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8"><div className="grid gap-6 md:grid-cols-2"><input placeholder="Judul Fase" className="h-12 rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={phase.title} onChange={(e) => updatePhase(pi, 'title', e.target.value)} /><input placeholder="Stats" className="h-12 rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={phase.stats} onChange={(e) => updatePhase(pi, 'stats', e.target.value)} /></div><div className="space-y-6 pt-6 border-t border-slate-50"><div className="flex items-center justify-between"><label className="text-sm font-bold text-indigo-500 uppercase tracking-wider">Materi Pembelajaran</label><button type="button" onClick={() => addTopic(pi)} className="text-xs font-bold text-blue-600 hover:underline">+ TAMBAH MATERI</button></div><div className="space-y-4">{phase.topics.map((topic, ti) => (<div key={ti} className="flex flex-col gap-3"><div className="flex gap-3 items-center"><input placeholder="Judul Materi..." className="h-12 flex-1 rounded-xl bg-slate-100 border-none px-4 font-bold text-base" value={topic.title} onChange={(e) => updateTopicData(pi, ti, 'title', e.target.value)} /><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', !topic.isDetailed)} className={`flex items-center gap-2 px-6 h-12 rounded-xl font-bold text-xs transition-all shadow-sm ${topic.isDetailed ? 'bg-slate-900 text-white' : 'bg-white text-blue-600 border border-slate-100 hover:bg-blue-50'}`}>{topic.isDetailed ? 'Tutup Konten' : 'Lengkapi Konten'}</button><button type="button" onClick={() => { const n = [...phases]; n[pi].topics = n[pi].topics.filter((_, i) => i !== ti); setPhases(n); }} className="text-slate-200 hover:text-red-500"><Trash2 size={18} /></button></div>{topic.isDetailed && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="ml-4 rounded-2xl bg-emerald-50/20 border border-emerald-100 p-8 space-y-8 shadow-inner overflow-hidden"><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Waktu</label><input placeholder="10 Min" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.timeEstimate} onChange={(e) => updateTopicData(pi, ti, 'timeEstimate', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Level</label><select className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.difficulty} onChange={(e) => updateTopicData(pi, ti, 'difficulty', e.target.value)}><option value="Easy Peasy">Easy Peasy</option><option value="Intermediate">Intermediate</option></select></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Key Concept</label><input placeholder="Misal: IAM" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.keyConcepts} onChange={(e) => updateTopicData(pi, ti, 'keyConcepts', e.target.value)} /></div></div><textarea placeholder="Deskripsi materi..." className="w-full rounded-xl bg-white border border-emerald-100 p-4 font-bold text-sm" rows={2} value={topic.description} onChange={(e) => updateTopicData(pi, ti, 'description', e.target.value)} /><textarea placeholder="5 Minute Summary..." className="w-full rounded-xl p-4 font-bold text-base ring-1 ring-emerald-50 bg-white" rows={3} value={topic.summary} onChange={(e) => updateTopicData(pi, ti, 'summary', e.target.value)} /><div className="space-y-4 pt-6 border-t border-emerald-100"><div className="flex items-center justify-between"><label className="text-xs font-bold text-indigo-600 uppercase flex items-center gap-2"><BookOpen size={14} /> Materi Referensi</label><button type="button" onClick={() => addResource(pi, ti)} className="text-[11px] font-bold text-blue-600 hover:underline">+ Tambah Sumber</button></div><div className="grid gap-4">{topic.resources.map((res, ri) => (<div key={ri} className="bg-white p-5 rounded-2xl border border-emerald-50 shadow-sm space-y-4 relative"><button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].resources = n[pi].topics[ti].resources.filter((_, i) => i !== ri); setPhases(n); }} className="absolute top-4 right-4 text-slate-200 hover:text-red-500"><Trash2 size={16} /></button><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Tipe</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.type} onChange={(e) => updateResource(pi, ti, ri, 'type', e.target.value as any)}><option value="web">Web</option><option value="book">Buku</option><option value="documentation">Dokumentasi</option><option value="youtube">YouTube</option><option value="course">Course</option></select></div><div className="space-y-1 md:col-span-1"><label className="text-[10px] font-bold text-slate-400">Judul</label><input placeholder="Judul" className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs" value={res.title} onChange={(e) => updateResource(pi, ti, ri, 'title', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Status</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.priceType} onChange={(e) => updateResource(pi, ti, ri, 'priceType', e.target.value as any)}><option value="Gratis">Gratis</option><option value="Berbayar">Berbayar</option></select></div></div><textarea placeholder="Deskripsi..." rows={2} className="w-full p-3 rounded-lg bg-slate-50 border-none font-bold text-xs" value={res.description} onChange={(e) => updateResource(pi, ti, ri, 'description', e.target.value)} /><input placeholder="https://..." className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs text-blue-600 underline" value={res.link} onChange={(e) => updateResource(pi, ti, ri, 'link', e.target.value)} /></div>))}</div></div><div className="space-y-3 pt-6 border-t border-emerald-100"><label className="text-xs font-bold text-blue-600 flex items-center gap-2"><Info size={14} /> Cost Note / FAQ</label><textarea placeholder="Apakah butuh biaya?..." className="w-full rounded-xl p-4 font-bold text-sm bg-blue-50/50 border border-blue-100" rows={2} value={topic.costNote} onChange={(e) => updateTopicData(pi, ti, 'costNote', e.target.value)} /></div><div className="space-y-4 pt-6 border-t border-emerald-100">{!topic.showProject ? (<button type="button" onClick={() => updateTopicData(pi, ti, 'showProject', true)} className="w-full py-4 rounded-xl bg-white border border-dashed border-emerald-300 text-emerald-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-50 transition-all"><Plus size={18} /> Tambah Proyek Portofolio (Opsional)</button>) : (<div className="p-6 rounded-2xl bg-white border border-emerald-200 shadow-md space-y-6 relative"><button type="button" onClick={() => updateTopicData(pi, ti, 'showProject', false)} className="absolute top-4 right-4 text-slate-300 hover:text-red-500 flex items-center gap-1 text-[10px] font-bold"><X size={14} /> HAPUS PROYEK</button><div className="flex items-center gap-2 border-b border-slate-50 pb-4"><ListChecks size={20} className="text-emerald-600" /><h5 className="font-bold text-slate-900">Formulir Proyek Portofolio</h5></div><input placeholder="Judul Proyek" className="h-10 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-sm" value={topic.project.title} onChange={(e) => updateProject(pi, ti, 'title', e.target.value)} /><div className="space-y-4 pt-2"><div className="flex items-center justify-between"><label className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-2"><ImageIcon size={14} /> Visual Reference</label><div className="flex bg-slate-100 p-1 rounded-lg"><button type="button" onClick={() => updateProject(pi, ti, 'imageSource', 'url')} className={`px-3 py-1.5 text-[9px] font-bold rounded-md ${topic.project.imageSource === 'url' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>LINK URL</button><button type="button" onClick={() => updateProject(pi, ti, 'imageSource', 'local')} className={`px-3 py-1.5 text-[9px] font-bold rounded-md ${topic.project.imageSource === 'local' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400'}`}>UPLOAD</button></div></div>{topic.project.imageSource === 'url' ? (<input placeholder="https://..." className="h-10 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-xs" value={topic.project.image} onChange={(e) => updateProject(pi, ti, 'image', e.target.value)} />) : (<div className="h-28 w-full rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer" onClick={() => fileInputRef.current?.click()}><input type="file" className="hidden" ref={fileInputRef} onChange={(e) => e.target.files?.[0] && handleImageUpload(pi, ti, e.target.files[0])} accept="image/*" />{topic.project.previewUrl || topic.project.image ? <img src={topic.project.previewUrl || topic.project.image} className="h-full w-full object-cover rounded-xl" alt="Preview" /> : <Upload className="text-slate-300" size={24} />}</div>)}</div><div className="grid gap-4 lg:grid-cols-2"><div className="space-y-1"><label className="text-[10px] font-bold text-blue-600">Latar Belakang</label><textarea placeholder="..." rows={2} className="w-full p-4 rounded-xl bg-slate-50 border-none font-bold text-sm" value={topic.project.background} onChange={(e) => updateProject(pi, ti, 'background', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-emerald-600">Skill</label><textarea placeholder="..." rows={2} className="w-full p-4 rounded-xl bg-slate-50 border-none font-bold text-sm" value={topic.project.skillsLearned} onChange={(e) => updateProject(pi, ti, 'skillsLearned', e.target.value)} /></div></div><div className="flex items-center justify-between pt-4 border-t border-slate-50"><label className="text-[10px] font-bold text-amber-500 uppercase flex items-center gap-2"><Target size={12} /> Brief Checklist</label><button type="button" onClick={() => addSpec(pi, ti)} className="text-[10px] font-bold text-blue-600 hover:underline">+ Tambah Poin</button></div><div className="grid gap-2">{topic.project.specifications.map((s, si) => (<div key={si} className="flex gap-2"><input placeholder="Tugas teknis..." className="h-9 flex-1 rounded-lg bg-slate-50 border-none px-3 font-bold text-xs shadow-sm" value={s} onChange={(e) => updateSpec(pi, ti, si, e.target.value)} /><button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].project.specifications = n[pi].topics[ti].project.specifications.filter((_, i) => i !== si); setPhases(n); }} className="text-slate-200"><Trash2 size={16} /></button></div>))}</div></div>)}</div><div className="flex justify-center pt-6 border-t border-emerald-100"><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', false)} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-10 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"><Check size={18} /> Simpan Materi Ini</button></div></motion.div>)}</div>))}</div></div><div className="flex justify-end pt-6 items-center gap-3">{mode === 'edit_roadmap' && <button type="button" onClick={() => setPhases(phases.filter((_, i) => i !== pi))} className="flex items-center gap-2 rounded-xl bg-red-50 px-6 py-3 text-sm font-bold text-red-600 hover:bg-red-100 transition-all"><Trash2 size={18} /> Hapus Fase</button>}<button type="button" onClick={() => toggleSavePhase(pi)} className="flex items-center gap-2 rounded-xl bg-slate-900 px-8 py-3 text-sm font-bold text-white transition-all"><Save size={18} /> Simpan Struktur Fase</button></div></motion.div>) : (<div className="rounded-3xl bg-slate-50 border border-slate-200 p-8 flex items-center justify-between shadow-sm hover:bg-white transition-all group"><div><h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{phase.title}</h3><p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-tighter">{phase.stats}</p></div><button type="button" onClick={() => toggleSavePhase(pi)} className="h-12 w-12 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 shadow-sm transition-all"><Edit3 size={18} /></button></div>)}</div>))}</div></section>
+          <div className="space-y-8">{phases.map((phase, pi) => (<div key={pi} className="relative"><div className="absolute -left-3 -top-3 z-10 h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-base font-bold shadow-xl">{pi + 1}</div>{!phase.isSaved ? (<motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8"><div className="grid gap-6 md:grid-cols-2"><input placeholder="Judul Fase" className="h-12 rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={phase.title} onChange={(e) => updatePhase(pi, 'title', e.target.value)} /><input placeholder="Stats" className="h-12 rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={phase.stats} onChange={(e) => updatePhase(pi, 'stats', e.target.value)} /></div><div className="space-y-6 pt-6 border-t border-slate-50"><div className="flex items-center justify-between"><label className="text-sm font-bold text-indigo-500 uppercase tracking-wider">Materi Pembelajaran</label><button type="button" onClick={() => addTopic(pi)} className="text-xs font-bold text-blue-600 hover:underline">+ TAMBAH MATERI</button></div><div className="space-y-4">{phase.topics.map((topic, ti) => (<div key={ti} className="flex flex-col gap-3"><div className="flex gap-3 items-center"><input placeholder="Judul Materi..." className="h-12 flex-1 rounded-xl bg-slate-100 border-none px-4 font-bold text-base" value={topic.title} onChange={(e) => updateTopicData(pi, ti, 'title', e.target.value)} /><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', !topic.isDetailed)} className={`flex items-center gap-2 px-6 h-12 rounded-xl font-bold text-xs transition-all shadow-sm ${topic.isDetailed ? 'bg-slate-900 text-white' : 'bg-white text-blue-600 border border-slate-100 hover:bg-blue-50'}`}>{topic.isDetailed ? 'Tutup Konten' : 'Lengkapi Konten'}</button><button type="button" onClick={() => { const n = [...phases]; n[pi].topics = n[pi].topics.filter((_, i) => i !== ti); setPhases(n); }} className="text-slate-200 hover:text-red-500"><Trash2 size={18} /></button></div>{topic.isDetailed && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="ml-4 rounded-2xl bg-emerald-50/20 border border-emerald-100 p-8 space-y-8 shadow-inner overflow-hidden"><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Waktu</label><input placeholder="10 Min" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.timeEstimate} onChange={(e) => updateTopicData(pi, ti, 'timeEstimate', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Level</label><select className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.difficulty} onChange={(e) => updateTopicData(pi, ti, 'difficulty', e.target.value)}><option value="Easy Peasy">Easy Peasy</option><option value="Intermediate">Intermediate</option></select></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Key Concept</label><input placeholder="Misal: IAM" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.keyConcepts} onChange={(e) => updateTopicData(pi, ti, 'keyConcepts', e.target.value)} /></div></div><textarea placeholder="Deskripsi materi..." className="w-full rounded-xl bg-white border border-emerald-100 p-4 font-bold text-sm" rows={2} value={topic.description} onChange={(e) => updateTopicData(pi, ti, 'description', e.target.value)} /><textarea placeholder="5 Minute Summary..." className="w-full rounded-xl p-4 font-bold text-base ring-1 ring-emerald-50 bg-white" rows={3} value={topic.summary} onChange={(e) => updateTopicData(pi, ti, 'summary', e.target.value)} /><div className="space-y-4 pt-6 border-t border-emerald-100"><div className="flex items-center justify-between"><label className="text-xs font-bold text-indigo-600 uppercase flex items-center gap-2"><BookOpen size={14} /> Materi Referensi</label><button type="button" onClick={() => addResource(pi, ti)} className="text-[11px] font-bold text-blue-600 hover:underline">+ Tambah Sumber</button></div><div className="grid gap-4">{topic.resources.map((res, ri) => (<div key={ri} className="bg-white p-5 rounded-2xl border border-emerald-50 shadow-sm space-y-4 relative"><button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].resources = n[pi].topics[ti].resources.filter((_, i) => i !== ri); setPhases(n); }} className="absolute top-4 right-4 text-slate-200 hover:text-red-500"><Trash2 size={16} /></button><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Tipe</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.type} onChange={(e) => updateResource(pi, ti, ri, 'type', e.target.value as any)}><option value="web">Web</option><option value="book">Buku</option><option value="documentation">Dokumentasi</option><option value="youtube">YouTube</option><option value="course">Course</option></select></div><div className="space-y-1 md:col-span-1"><label className="text-[10px] font-bold text-slate-400">Judul</label><input placeholder="Judul" className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs" value={res.title} onChange={(e) => updateResource(pi, ti, ri, 'title', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Status</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.priceType} onChange={(e) => updateResource(pi, ti, ri, 'priceType', e.target.value as any)}><option value="Gratis">Gratis</option><option value="Berbayar">Berbayar</option></select></div></div><textarea placeholder="Deskripsi..." rows={2} className="w-full p-3 rounded-lg bg-slate-50 border-none font-bold text-xs" value={res.description} onChange={(e) => updateResource(pi, ti, ri, 'description', e.target.value)} /><input placeholder="https://..." className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs text-blue-600 underline" value={res.link} onChange={(e) => updateResource(pi, ti, ri, 'link', e.target.value)} /></div>))}</div></div><div className="space-y-3 pt-6 border-t border-emerald-100"><label className="text-xs font-bold text-blue-600 flex items-center gap-2"><Info size={14} /> Cost Note / FAQ</label><textarea placeholder="Apakah butuh biaya?..." className="w-full rounded-xl p-4 font-bold text-sm bg-blue-50/50 border border-blue-100" rows={2} value={topic.costNote} onChange={(e) => updateTopicData(pi, ti, 'costNote', e.target.value)} /></div><div className="space-y-4 pt-6 border-t border-emerald-100">
+                                {renderProjectForm(pi, ti, topic)}
+                              </div><div className="flex justify-center pt-6 border-t border-emerald-100"><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', false)} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-10 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"><Check size={18} /> Simpan Materi Ini</button></div></motion.div>)}</div>))}</div></div><div className="flex justify-end pt-6 items-center gap-3">{mode === 'edit_roadmap' && <button type="button" onClick={() => setPhases(phases.filter((_, i) => i !== pi))} className="flex items-center gap-2 rounded-xl bg-red-50 px-6 py-3 text-sm font-bold text-red-600 hover:bg-red-100 transition-all"><Trash2 size={18} /> Hapus Fase</button>}<button type="button" onClick={() => toggleSavePhase(pi)} className="flex items-center gap-2 rounded-xl bg-slate-900 px-8 py-3 text-sm font-bold text-white transition-all"><Save size={18} /> Simpan Struktur Fase</button></div></motion.div>) : (<div className="rounded-3xl bg-slate-50 border border-slate-200 p-8 flex items-center justify-between shadow-sm hover:bg-white transition-all group"><div><h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{phase.title}</h3><p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-tighter">{phase.stats}</p></div><button type="button" onClick={() => toggleSavePhase(pi)} className="h-12 w-12 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 shadow-sm transition-all"><Edit3 size={18} /></button></div>)}</div>))}</div></section>
         <div className="flex flex-col items-center pt-8">
           <button 
             type="submit" 

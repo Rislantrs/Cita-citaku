@@ -6,6 +6,8 @@ export interface CareerRoadmapStep {
   title: string;
   desc: string;
   projects: string[]; // Daftar materi/proyek spesifik
+  longDesc?: string;   // Penjelasan mendalam ala artikel
+  books?: { title: string; link: string }[]; // Referensi buku
 }
 
 export interface CareerMarketInfo {
@@ -17,6 +19,12 @@ export interface CareerMarketInfo {
 export interface CareerFAQ {
   q: string;
   a: string;
+}
+
+export interface CareerUniversityWorld {
+  overview: string;
+  requiredSkills: string[];
+  whyChoose: { title: string; desc: string }[];
 }
 
 export interface CareerCatalogItem {
@@ -33,6 +41,12 @@ export interface CareerCatalogItem {
   featured?: boolean;
   marketInfo: CareerMarketInfo;
   faqs: CareerFAQ[];
+  type: 'skill_based' | 'education_based';
+  topUniversities: {
+    local: string[];
+    global: string[];
+  };
+  universityWorld?: CareerUniversityWorld;
 }
 
 const DEFAULT_ROADMAP: CareerRoadmapStep[] = [
@@ -58,12 +72,28 @@ export const careerCatalog: CareerCatalogItem[] = [
     title: 'Software Engineer', 
     categoryId: 'tech', 
     description: 'Membangun aplikasi web, mobile, dan sistem pintar yang skalabel.', 
+    type: 'skill_based',
     iconKey: 'code', 
     recommendationMajors: ['Teknik Informatika', 'Rekayasa Perangkat Lunak'], 
     certifications: ['AWS Cloud Practitioner', 'Google Associate Cloud Engineer'], 
     riasecCategories: ['I', 'R', 'C'], 
     mbtiTags: ['INTJ', 'ISTJ', 'ENTP'], 
     featured: true, 
+    universityWorld: {
+      overview: 'Jurusan Teknik Informatika atau Ilmu Komputer adalah gerbang utama menuju dunia rekayasa perangkat lunak. Di bangku kuliah, kamu tidak hanya belajar bahasa pemrograman, tetapi juga cara merancang algoritma yang efisien, memahami struktur data, arsitektur sistem, hingga keamanan siber. Fokus utamanya adalah melatih logika berpikir untuk menyelesaikan masalah kompleks.',
+      requiredSkills: [
+        'Kemampuan berpikir logis dan algoritmik',
+        'Analisis pemecahan masalah (Problem Solving)',
+        'Pemahaman matematika diskrit dan kalkulus',
+        'Kemampuan belajar mandiri yang tinggi',
+        'Ketelitian dalam mencari bug (Debugging)'
+      ],
+      whyChoose: [
+        { title: 'Prospek Karir Luas', desc: 'Hampir semua industri saat ini membutuhkan digitalisasi, membuat talenta IT sangat dicari dengan gaji kompetitif.' },
+        { title: 'Inovasi Tanpa Batas', desc: 'Kamu punya kebebasan penuh untuk menciptakan solusi baru, dari aplikasi mobile hingga teknologi AI canggih.' },
+        { title: 'Kerja Fleksibel', desc: 'Banyak perusahaan teknologi menawarkan fleksibilitas kerja, seperti remote working dari mana saja.' }
+      ]
+    },
     roadmap: [
       { 
         phase: 'Fase 1', 
@@ -136,13 +166,18 @@ export const careerCatalog: CareerCatalogItem[] = [
       { q: 'Apakah harus jago matematika?', a: 'Tidak harus jenius, tapi logika dasar dan pemahaman algoritma sangat penting.' },
       { q: 'Bahasa pemrograman apa yang harus dipelajari pertama?', a: 'JavaScript atau Python adalah pilihan terbaik untuk pemula saat ini.' },
       { q: 'Berapa lama untuk jadi Junior SE?', a: 'Dengan belajar intensif, biasanya butuh waktu 6-12 bulan untuk siap kerja.' }
-    ]
+    ],
+    topUniversities: {
+      local: ['ITB (Bandung)', 'UI (Depok)', 'ITS (Surabaya)', 'UGM (Yogyakarta)', 'Binus University'],
+      global: ['MIT (USA)', 'Stanford University (USA)', 'Carnegie Mellon (USA)', 'Oxford (UK)', 'ETH Zurich (CH)']
+    }
   },
   { 
     slug: 'ai-engineer', 
     title: 'AI Engineer', 
     categoryId: 'tech', 
     description: 'Menerapkan model AI ke produk nyata dan alur otomatisasi cerdas.', 
+    type: 'skill_based',
     iconKey: 'brain', 
     recommendationMajors: ['Data Science', 'Ilmu Komputer', 'Matematika'], 
     certifications: ['TensorFlow Developer', 'Google ML Crash Course'], 
@@ -191,13 +226,18 @@ export const careerCatalog: CareerCatalogItem[] = [
     faqs: [
       { q: 'Apa bedanya dengan Data Scientist?', a: 'AI Engineer lebih fokus pada implementasi dan deployment model ke sistem produksi, sedangkan Data Scientist lebih fokus pada analisis data.' },
       { q: 'Apakah butuh hardware mahal?', a: 'Untuk belajar dasar tidak, tapi untuk training model besar biasanya butuh GPU atau layanan cloud.' }
-    ]
+    ],
+    topUniversities: {
+      local: ['ITB (Bandung)', 'UI (Depok)', 'ITS (Surabaya)', 'Binus University', 'Telkom University'],
+      global: ['Stanford (USA)', 'UC Berkeley (USA)', 'Tsinghua (China)', 'Toronto (Canada)', 'Oxford (UK)']
+    }
   },
   { 
     slug: 'uiux-designer', 
     title: 'UI/UX Designer', 
     categoryId: 'art', 
     description: 'Merancang antarmuka pengguna yang indah dan fungsional.', 
+    type: 'skill_based',
     iconKey: 'pen', 
     recommendationMajors: ['Desain Komunikasi Visual', 'Sistem Informasi'], 
     certifications: ['Figma Advanced', 'UX Research Basics'], 
@@ -209,6 +249,10 @@ export const careerCatalog: CareerCatalogItem[] = [
       salaryUSA: '$75,000 - $145,000',
       responsibilities: ['User Research', 'Wireframing', 'Visual Design', 'Prototyping']
     },
+    topUniversities: {
+      local: ['ITB (SR)', 'IKJ (Jakarta)', 'ISI (Yogyakarta)', 'Telkom University', 'Binus (DKV)'],
+      global: ['RISD (USA)', 'Royal College of Art (UK)', 'Parsons (USA)', 'Pratt Institute (USA)', 'Politecnico di Milano (Italy)']
+    },
     faqs: []
   },
   { 
@@ -216,6 +260,7 @@ export const careerCatalog: CareerCatalogItem[] = [
     title: 'Psikolog / Konselor', 
     categoryId: 'health', 
     description: 'Membantu orang memahami emosi, perilaku, dan kesehatan mental.', 
+    type: 'education_based',
     iconKey: 'users', 
     recommendationMajors: ['Psikologi', 'Bimbingan Konseling'], 
     certifications: ['Konseling Dasar', 'Asesmen Psikologis'], 
@@ -227,6 +272,10 @@ export const careerCatalog: CareerCatalogItem[] = [
       salaryUSA: '$70,000 - $130,000',
       responsibilities: ['Clinical Assessment', 'Counseling', 'Therapy Planning']
     },
+    topUniversities: {
+      local: ['UI (Jakarta)', 'UGM (Yogyakarta)', 'Airlangga (Surabaya)', 'Padjadjaran (Bandung)', 'Universitas Sanata Dharma'],
+      global: ['Stanford (USA)', 'Harvard (USA)', 'Oxford (UK)', 'UCL (UK)', 'Yale (USA)']
+    },
     faqs: []
   },
   { 
@@ -234,6 +283,7 @@ export const careerCatalog: CareerCatalogItem[] = [
     title: 'Product Manager', 
     categoryId: 'business', 
     description: 'Memimpin visi produk dan strategi pengembangan.', 
+    type: 'skill_based',
     iconKey: 'briefcase', 
     recommendationMajors: ['Manajemen', 'Bisnis Digital'], 
     certifications: ['Product Management Basics', 'Agile Scrum'], 
@@ -246,6 +296,10 @@ export const careerCatalog: CareerCatalogItem[] = [
       salaryUSA: '$100,000 - $190,000',
       responsibilities: ['Roadmap Planning', 'User Feedback Analysis', 'Team Coordination']
     },
+    topUniversities: {
+      local: ['Prasetya Mulya', 'UI (FE)', 'ITB (SBM)', 'UGM (FEB)', 'Binus Business School'],
+      global: ['Harvard (USA)', 'INSEAD (France)', 'Wharton (USA)', 'London Business School (UK)', 'Stanford (USA)']
+    },
     faqs: []
   },
   { 
@@ -253,6 +307,7 @@ export const careerCatalog: CareerCatalogItem[] = [
     title: 'Guru Inovatif', 
     categoryId: 'education', 
     description: 'Merancang pembelajaran yang relevan dan menarik.', 
+    type: 'education_based',
     iconKey: 'graduation', 
     recommendationMajors: ['Pendidikan', 'Teknologi Pendidikan'], 
     certifications: ['Microteaching', 'Digital Learning'], 
@@ -264,6 +319,10 @@ export const careerCatalog: CareerCatalogItem[] = [
       salaryUSA: '$50,000 - $90,000',
       responsibilities: ['Curriculum Design', 'Instructional Leadership', 'Educational Technology Integration']
     },
+    topUniversities: {
+      local: ['UPI (Bandung)', 'UNY (Yogyakarta)', 'UM (Malang)', 'UNNES (Semarang)', 'UNJ (Jakarta)'],
+      global: ['Stanford (USA)', 'Harvard (USA)', 'Oxford (UK)', 'HKU (Hong Kong)', 'UCL (UK)']
+    },
     faqs: []
   },
   { 
@@ -271,6 +330,7 @@ export const careerCatalog: CareerCatalogItem[] = [
     title: 'Aparatur Layanan Publik', 
     categoryId: 'service', 
     description: 'Memberikan layanan administratif dan kebijakan untuk masyarakat.', 
+    type: 'education_based',
     iconKey: 'building', 
     recommendationMajors: ['Administrasi Publik', 'Hukum'], 
     certifications: ['Administrasi Digital', 'Pelayanan Publik'], 
@@ -282,6 +342,112 @@ export const careerCatalog: CareerCatalogItem[] = [
       salaryIndo: 'Rp 5.000.000 - Rp 25.000.000',
       salaryUSA: '$55,000 - $110,000',
       responsibilities: ['Public Service Delivery', 'Policy Implementation', 'Administrative Support']
+    },
+    topUniversities: {
+      local: ['IPDN (Sumedang)', 'UI (Jakarta)', 'UGM (Yogyakarta)', 'STIA LAN', 'Universitas Brawijaya'],
+      global: ['Harvard Kennedy School (USA)', 'Oxford Blavatnik School (UK)', 'LSE (UK)', 'Lee Kuan Yew School (Singapore)', 'Sciences Po (France)']
+    },
+    faqs: []
+  },
+  {
+    slug: 'general-practitioner',
+    title: 'Dokter Umum',
+    categoryId: 'health',
+    description: 'Mendiagnosis dan mengobati penyakit serta menjaga kesehatan umum pasien.',
+    type: 'education_based',
+    iconKey: 'heart',
+    recommendationMajors: ['Kedokteran Umum'],
+    certifications: ['STR (Surat Tanda Registrasi)', 'ACL S (Advanced Cardiac Life Support)'],
+    riasecCategories: ['I', 'S', 'A'],
+    mbtiTags: ['ISFJ', 'ESTJ', 'INFJ'],
+    featured: true,
+    universityWorld: {
+      overview: 'Pendidikan Dokter merupakan salah satu jurusan paling prestisius. Saat berkuliah, kamu akan mempelajari anatomi tubuh manusia secara mendetail, biologi seluler, farmakologi, hingga cara mendiagnosis dan menangani penyakit. Kamu akan melalui masa pra-klinik (teori) dan klinik (praktik/koas) yang membutuhkan ketahanan mental dan dedikasi yang sangat tinggi.',
+      requiredSkills: [
+        'Kemampuan observasi dan ketelitian tingkat tinggi',
+        'Empati dan keterampilan komunikasi dengan pasien',
+        'Berpikir kritis dan terstruktur dalam diagnosis',
+        'Daya hafal yang sangat kuat dan penalaran logis',
+        'Manajemen stres dan ketahanan fisik'
+      ],
+      whyChoose: [
+        { title: 'Prospek Karir Terjamin', desc: 'Lulusan Pendidikan Dokter hampir selalu dapat pekerjaan karena kebutuhan tenaga medis di Indonesia masih sangat tinggi, baik di kota maupun daerah terpencil.' },
+        { title: 'Jalur Pengabdian Mulia', desc: 'Profesi ini memberikan kesempatan untuk menyelamatkan nyawa dan menyembuhkan penyakit, memberikan kepuasan batin yang mendalam.' },
+        { title: 'Peluang Akademis/Penelitian', desc: 'Bagi kamu yang suka meneliti, bisa menjadi dosen atau peneliti biomedis untuk mencari obat-obatan atau terapi baru.' }
+      ]
+    },
+    roadmap: [
+      {
+        phase: 'Tahun 1-4',
+        meta: 'S.Ked',
+        title: 'Masa Pra-Klinik',
+        desc: 'Kuliah teori dengan sistem blok. Mempelajari anatomi, fisiologi, biokimia, dan dasar medis lainnya.',
+        projects: ['Anatomi Dasar', 'Histologi', 'Ujian OSCA']
+      },
+      {
+        phase: 'Tahun 5-6',
+        meta: 'Koas',
+        title: 'Masa Klinik (Internship RS)',
+        desc: 'Praktik langsung di rumah sakit. Rotasi di berbagai stase seperti Penyakit Dalam, Bedah, dan Anak.',
+        projects: ['Rotasi Stase Bedah', 'Rotasi Stase Anak', 'Ujian UKMPPD']
+      },
+      {
+        phase: 'Tahun 7',
+        meta: 'Internship',
+        title: 'Program Internsip',
+        desc: 'Pengabdian dan pemandirian dokter di fasilitas kesehatan (Puskesmas/RS) selama 1 tahun.',
+        projects: ['Pelayanan Puskesmas', 'IGD Experience']
+      }
+    ],
+    marketInfo: {
+      salaryIndo: 'Rp 10.000.000 - Rp 40.000.000',
+      salaryUSA: '$180,000 - $250,000',
+      responsibilities: ['Konsultasi Medis', 'Diagnosis Penyakit', 'Tindakan Medis Dasar', 'Edukasi Kesehatan']
+    },
+    topUniversities: {
+      local: ['UI (Jakarta)', 'UGM (Yogyakarta)', 'Airlangga (Surabaya)', 'Padjadjaran (Bandung)', 'Hasanuddin (Makassar)'],
+      global: ['Harvard Medical School (USA)', 'Oxford Medical (UK)', 'Johns Hopkins (USA)', 'Stanford Medicine (USA)', 'University of Toronto (Canada)']
+    },
+    faqs: [
+      { q: 'Berapa lama total sekolah dokter?', a: 'Rata-rata butuh 6-7 tahun sampai benar-benar bisa praktik mandiri sebagai dokter umum.' },
+      { q: 'Apakah biayanya mahal?', a: 'Bisa bervariasi, namun saat ini banyak skema beasiswa dan bantuan biaya pendidikan untuk kedokteran.' }
+    ]
+  },
+  {
+    slug: 'digital-artist',
+    title: 'Digital Artist / Pelukis',
+    categoryId: 'art',
+    description: 'Menciptakan karya visual digital untuk berbagai industri kreatif.',
+    type: 'skill_based',
+    iconKey: 'palette',
+    recommendationMajors: ['Seni Rupa', 'Desain Komunikasi Visual'],
+    certifications: ['Adobe Certified Professional', 'Portfolio Review'],
+    riasecCategories: ['A', 'R', 'I'],
+    mbtiTags: ['INFP', 'ISFP', 'ENFP'],
+    roadmap: [
+      {
+        phase: 'Langkah 1',
+        meta: 'Skill Dasar',
+        title: 'Fundamental Seni',
+        desc: 'Menguasai anatomi, perspektif, dan komposisi warna.',
+        projects: ['Sketching Harian', 'Color Theory Practice', 'Anatomy Study']
+      },
+      {
+        phase: 'Langkah 2',
+        meta: 'Portofolio',
+        title: 'Eksplorasi Gaya Visual',
+        desc: 'Menemukan karakter visual yang unik dan membangun portofolio awal.',
+        projects: ['Digital Painting Basics', 'Style Development', 'Portfolio Website']
+      }
+    ],
+    marketInfo: {
+      salaryIndo: 'Rp 5.000.000 - Rp 20.000.000',
+      salaryUSA: '$45,000 - $90,000',
+      responsibilities: ['Konsep Visual', 'Ilustrasi', 'Digital Painting', 'Client Collaboration']
+    },
+    topUniversities: {
+      local: ['ISI Yogyakarta', 'ISI Denpasar', 'IKJ Jakarta', 'ITB (Seni Rupa)', 'ISI Padangpanjang'],
+      global: ['RISD (USA)', 'Arts University Bournemouth (UK)', 'CalArts (USA)', 'Emily Carr (Canada)', 'RCA (UK)']
     },
     faqs: []
   },
