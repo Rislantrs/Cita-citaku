@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+	color-scheme: light;
+	--bg-primary: #f8fbff;
+	--bg-secondary: #ffffff;
+	--text-primary: #0f172a;
+	--text-secondary: #64748b;
+	--border-color: #f1f5f9;
+	--card-bg: #ffffff;
+	--input-bg: #ffffff;
+	--accent-blue: #2563eb;
+	--gradient-1: rgba(219, 234, 254, 0.7);
+	--gradient-2: rgba(191, 219, 254, 0.5);
+	--gradient-3: rgba(239, 246, 255, 0.9);
+	--gradient-4: rgba(239, 246, 255, 0.8);
+}
+
+[data-theme='dark'] {
+	color-scheme: dark;
+	--bg-primary: #020617;
+	--bg-secondary: #0f172a;
+	--text-primary: #f8fafc;
+	--text-secondary: #94a3b8;
+	--border-color: #1e293b;
+	--card-bg: #0f172a;
+	--input-bg: #1e293b;
+	--accent-blue: #3b82f6;
+	--gradient-1: rgba(30, 41, 59, 0.4);
+	--gradient-2: rgba(30, 58, 138, 0.2);
+	--gradient-3: rgba(15, 23, 42, 0.9);
+	--gradient-4: rgba(2, 6, 23, 0.8);
+}
+
+html {
+	scroll-behavior: smooth;
+	font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+	margin: 0;
+	min-width: 320px;
+	min-height: 100vh;
+	color: var(--text-primary);
+	background: 
+		radial-gradient(at 0% 0%, var(--gradient-1) 0px, transparent 45%),
+		radial-gradient(at 100% 0%, var(--gradient-2) 0px, transparent 45%),
+		radial-gradient(at 100% 100%, var(--gradient-3) 0px, transparent 45%),
+		radial-gradient(at 0% 100%, var(--gradient-4) 0px, transparent 45%),
+		var(--bg-primary);
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+::selection {
+	background: rgba(37, 99, 235, 0.2);
+	color: var(--text-primary);
+}
+
+/* Global Theme Helpers */
+.theme-card {
+	background-color: var(--card-bg) !important;
+	border: 1px solid var(--border-color) !important;
+	color: var(--text-primary) !important;
+}
+
+.theme-input {
+	background-color: var(--input-bg) !important;
+	border: 1px solid var(--border-color) !important;
+	color: var(--text-primary) !important;
+}
+
+.theme-text-muted {
+	color: var(--text-secondary) !important;
+}

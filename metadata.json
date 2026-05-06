@@ -1,0 +1,6 @@
+{
+  "name": "Cita-citaku",
+  "description": "Platform edukasi dan karir interaktif yang membantu pengguna menemukan jati diri melalui tes RIASEC dan merencanakan roadmap karir masa depan dengan bantuan AI.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": []
+}

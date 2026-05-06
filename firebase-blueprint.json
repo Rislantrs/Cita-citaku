@@ -1,0 +1,147 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the Cita-citaku platform.",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "User's full name"
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "admin"],
+          "description": "User role"
+        },
+        "testResults": {
+          "type": "object",
+          "description": "Results of RIASEC/MBTI test",
+          "properties": {
+            "riasec": { "type": "string" },
+            "mbti": { "type": "string" },
+            "completedAt": { "type": "string", "format": "date-time" }
+          }
+        },
+        "progressTracker": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of completed roadmap item IDs"
+        },
+        "badges": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of earned badges"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Account creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["fullName", "email", "role", "createdAt", "updatedAt"]
+    },
+    "Career": {
+      "title": "Career",
+      "description": "A career path definition.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Job title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Job description"
+        },
+        "recommendedMajors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Recommended university majors"
+        },
+        "roadmap": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            },
+            "required": ["id", "title", "description"]
+          },
+          "description": "Steps in the career roadmap"
+        },
+        "certifications": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Recommended certifications"
+        },
+        "riasecCategory": {
+          "type": "string",
+          "description": "Primary RIASEC category (e.g. Realistic, Investigative)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["title", "description", "createdAt", "updatedAt"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "A user-submitted career path for community crowdsourcing",
+      "type": "object",
+      "properties": {
+        "careerData": {
+          "$ref": "#/entities/Career"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"],
+          "description": "Approval status"
+        },
+        "submittedById": {
+          "type": "string",
+          "description": "Firebase UID of the submitter"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["careerData", "status", "submittedById", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "careers/{careerId}": {
+      "schema": { "$ref": "#/entities/Career" },
+      "description": "Stores global career paths and roadmaps."
+    },
+    "submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/Submission" },
+      "description": "Stores user contributions for career paths."
+    }
+  }
+}

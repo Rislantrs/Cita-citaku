@@ -1,0 +1,246 @@
+import React, { useState } from 'react';
+import { useParams, Link, Navigate } from 'react-router-dom';
+import { 
+  ArrowLeft, 
+  Clock, 
+  Gauge, 
+  Calendar, 
+  Lightbulb, 
+  Zap, 
+  MessageSquare, 
+  Rocket,
+  Target,
+  ChevronDown,
+  ChevronUp,
+  X
+} from 'lucide-react';
+import * as motion from 'motion/react-client';
+import { getProjectById } from '../lib/projectData';
+import SEO from '../components/SEO';
+import ProjectChatSidebar from '../components/ProjectChatSidebar';
+
+export default function ProjectDetail() {
+  const { id } = useParams();
+  const project = id ? getProjectById(id) : undefined;
+  const [openProjectIdx, setOpenProjectIdx] = useState<number | null>(0);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  if (!project) {
+    return <Navigate to="/roadmap" replace />;
+  }
+
+  return (
+    <div className="fixed inset-0 flex overflow-hidden bg-white" style={{ zIndex: 999 }}>
+      <SEO 
+        title={`${project.title} - Panduan Proyek`}
+        description={project.summary}
+      />
+
+      {/* Main Content Area - Clean white background for readability */}
+      <main 
+        className="relative flex h-full flex-1 flex-col overflow-y-auto bg-white transition-all duration-500 ease-in-out"
+        style={isChatOpen ? { marginRight: '450px' } : undefined}
+      >
+        {/* Local Header - Respects the split layout */}
+        <header className="sticky top-0 z-50 flex items-center justify-between border-b bg-white/80 px-8 py-4 backdrop-blur-md">
+          <div className="flex items-center gap-6">
+            <Link to="/roadmap" className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+              <ArrowLeft size={20} className="text-slate-900" />
+            </Link>
+            <div className="h-6 bg-slate-200" style={{ width: '1px' }} />
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Project Lab</span>
+              <h2 className="truncate text-sm font-black text-slate-900 sm:max-w-md" style={{ maxWidth: '200px' }}>{project.title}</h2>
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => setIsChatOpen(!isChatOpen)}
+            className={`hidden lg:flex items-center gap-2 rounded-full px-5 py-2 text-xs font-black transition-all ${isChatOpen ? 'bg-slate-900 text-white' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'}`}
+          >
+            <MessageSquare size={16} />
+            {isChatOpen ? 'Tutup Chat' : 'Tanya AI'}
+          </button>
+        </header>
+
+        <div className="mx-auto w-full max-w-4xl px-6 py-16 pb-40">
+          {/* Hero Section */}
+          <div className="mb-16 space-y-6">
+            <div className="inline-flex items-center rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-600">
+              • {project.difficulty}
+            </div>
+            <h1 className="text-5xl font-black tracking-tight text-slate-900 sm:text-6xl">{project.title}</h1>
+            <p className="text-xl leading-relaxed text-slate-500">{project.description}</p>
+          </div>
+
+          {/* Key Stats */}
+          <div className="mb-20 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {[
+              { icon: <Clock size={18} />, label: 'Waktu', value: project.estimatedTime },
+              { icon: <Gauge size={18} />, label: 'Level', value: project.difficulty },
+              { icon: <Lightbulb size={18} />, label: 'Key Concept', value: project.keyConcepts[0] || 'Cloud' },
+            ].map((stat, i) => (
+              <div key={i} className="rounded-3xl border border-slate-100 bg-slate-50/50 p-6">
+                <div className="mb-3 text-blue-600">{stat.icon}</div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <p className="text-base font-black text-slate-900 truncate">{stat.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* 5 Minute Summary - Premium Intro Card */}
+          <section className="mb-20">
+            <div className="rounded-[2.5rem] bg-slate-900 p-10 text-white shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-10">
+                <Zap size={100} fill="currentColor" />
+              </div>
+              <div className="relative z-10 space-y-6">
+                <div className="flex items-center gap-3 text-orange-400">
+                  <Zap fill="currentColor" size={24} />
+                  <h2 className="text-xl font-black uppercase tracking-tighter">5 Minute Summary</h2>
+                </div>
+                <p className="text-2xl font-medium leading-relaxed text-blue-50">
+                  {project.summary}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Resources Section - Moved Up */}
+          <section className="mb-20">
+            <div className="flex items-center gap-4 mb-8">
+              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Materi Referensi</h2>
+              <div className="flex-1 bg-slate-100" style={{ height: '1px' }} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {project.resources.map((resource, idx) => (
+                <a 
+                  key={idx}
+                  href={resource.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/30 p-6 transition-all hover:bg-white hover:border-blue-200 hover:shadow-xl group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                      <Rocket size={24} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-base font-bold text-slate-900">{resource.title}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{resource.type} • {resource.priceInfo}</span>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+
+          {/* Optional Cost Note */}
+          {project.costNote && (
+            <section className="mb-10 rounded-2xl bg-[#FDF8F3] border border-[#F3E8D9] p-8 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="text-xl">💡</div>
+                <div className="space-y-2">
+                  <h4 className="font-black text-[#4A3728] text-lg">{project.costNote.question}</h4>
+                  <p className="text-[#6B5A4B] leading-relaxed font-medium">
+                    {project.costNote.answer}
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Brief Proyek - Moved to Bottom */}
+          <section className="mb-20 space-y-8">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Proyek Portofolio</h2>
+              <div className="flex-1 bg-slate-100" style={{ height: '1px' }} />
+            </div>
+            <div className="space-y-6">
+              {project.projects.map((p, idx) => (
+                <div key={idx} className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm transition-all hover:shadow-md">
+                  <button 
+                    onClick={() => setOpenProjectIdx(openProjectIdx === idx ? null : idx)}
+                    className="flex w-full items-center justify-between p-10 text-left"
+                  >
+                    <div className="flex items-center gap-6">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white font-black text-xl shadow-lg">
+                        {idx + 1}
+                      </div>
+                      <span className="text-2xl font-black text-slate-900 leading-tight">{p.title}</span>
+                    </div>
+                    {openProjectIdx === idx ? <ChevronUp size={28} className="text-slate-300" /> : <ChevronDown size={28} className="text-slate-300" />}
+                  </button>
+                  
+                  {openProjectIdx === idx && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      className="border-t border-slate-50 p-10 space-y-10"
+                    >
+                      {/* Integrated Background & Skills */}
+                      <div className="grid gap-10 border border-slate-100 bg-slate-50/50 p-8" style={{ borderRadius: '2rem' }}>
+                        <div className="space-y-4">
+                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">Latar Belakang Masalah</p>
+                          <p className="text-lg text-slate-600 leading-relaxed font-medium">
+                            {project.background}
+                          </p>
+                        </div>
+                        <div className="space-y-4">
+                          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Skill yang Dipelajari</p>
+                          <div className="flex flex-wrap gap-2">
+                            {project.skillsLearned.map((skill, i) => (
+                              <span key={i} className="rounded-full bg-white border border-slate-100 px-4 py-2 text-sm font-bold text-slate-700">
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Tujuan & Brief Proyek</p>
+                        <p className="text-xl text-slate-600 leading-relaxed font-medium">{p.description}</p>
+                      </div>
+
+                      <div className="space-y-6">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Spesifikasi Teknis</p>
+                        <ul className="space-y-5">
+                          {p.specifications.map((spec, sIdx) => (
+                            <li key={sIdx} className="flex items-start gap-4 text-slate-700 text-lg font-bold">
+                              <div className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500" />
+                              {spec}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {p.image && (
+                        <div className="mt-12 space-y-4">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Visual Ref / Mockup</p>
+                          <img 
+                            src={p.image} 
+                            alt={p.title} 
+                            className="w-full object-cover shadow-2xl border-8 border-slate-50" 
+                            style={{ borderRadius: '2rem' }}
+                          />
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {/* Project Chat Sidebar - Stays fixed on right */}
+      <ProjectChatSidebar 
+        isOpen={isChatOpen} 
+        onClose={() => setIsChatOpen(false)} 
+        projectTitle={project.title} 
+      />
+    </div>
+  );
+}
