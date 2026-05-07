@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import * as motion from 'motion/react-client';
 import { useAuth } from '../lib/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
@@ -38,9 +38,16 @@ const RIASEC_INFO: Record<string, { label: string; desc: string }> = {
 export default function TestRIASEC() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const isResultView = searchParams.get('view') === 'result';
+
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [scores, setScores] = useState<Record<string, number>>({ R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 });
-  const [finished, setFinished] = useState(false);
+  const [scores, setScores] = useState<Record<string, number>>(
+    isResultView 
+      ? { R: 2, I: 8, A: 6, S: 4, E: 5, C: 3 }
+      : { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
+  );
+  const [finished, setFinished] = useState(isResultView);
 
   const progress = Math.round((currentIndex / QUESTIONS.length) * 100);
 

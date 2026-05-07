@@ -46,9 +46,14 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   }, []);
 
   const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      // Mock Login for UI testing
+      setUser({
+        uid: 'mock-uid-123',
+        displayName: 'Sahabat Cita Tester',
+        email: 'tester@citacitaku.com',
+        photoURL: 'https://ui-avatars.com/api/?name=Sahabat+Cita&background=0D8ABC&color=fff'
+      } as User);
     } catch (error) {
       console.error("Login failed", error);
     }
@@ -56,7 +61,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      // Mock Logout
+      setUser(null);
     } catch (error) {
       console.error("Logout failed", error);
     }
