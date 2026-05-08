@@ -61,21 +61,16 @@ service cloud.firestore {
     }
 
     function isValidSubmission(data) {
-      return data.keys().hasAll(['careerData', 'status', 'submittedById', 'createdAt', 'updatedAt'])
+      return data.keys().hasAll(['status', 'authorUid', 'createdAt'])
         && data.status in ['pending', 'approved', 'rejected']
-        && data.submittedById == request.auth.uid
-        && data.createdAt == request.time
-        && data.updatedAt == request.time
-        && data.careerData is map
-        && data.careerData.title is string && data.careerData.title.size() > 0 && data.careerData.title.size() <= 150
-        && data.careerData.category is string && data.careerData.category.size() > 0 && data.careerData.category.size() <= 80;
+        && (data.authorUid == request.auth.uid || data.authorUid == 'anonymous');
     }
 
     match /submissions/{submissionId} {
-      allow get: if isOwner(existing().submittedById) || isModerator();
+      allow get: if isOwner(existing().authorUid) || isModerator();
       allow list: if isModerator();
 
-      allow create: if isSignedIn() && isValidId(submissionId)
+      allow create: if isSignedIn() 
         && isValidSubmission(incoming())
         && incoming().status == 'pending';
 
@@ -84,8 +79,8 @@ service cloud.firestore {
     }
 
     match /roadmaps/{roadmapId} {
-      allow read: if isSignedIn();
-      allow write: if isOwner(roadmapId.split('_')[0]) || isAdmin();
+      allow read: if true; // Izinkan publik melihat roadmap agar web tidak terlihat kosong
+      allow write: if isSignedIn() && (isOwner(roadmapId.split('_')[0]) || isAdmin());
     }
   }
 }

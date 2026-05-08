@@ -119,7 +119,7 @@ function validateChatMessages(messages: unknown): { role: string; parts: { text:
 
 async function startServer() {
   const app = express();
-  const requestedPort = Number(process.env.PORT || 0);
+  const requestedPort = Number(process.env.PORT || 3001);
 
   // Connect to MongoDB
   const mongoConnected = await connectMongo();

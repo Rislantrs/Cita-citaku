@@ -4,6 +4,8 @@ import { Mic, Send, Bot, MessageSquare, History, PlusCircle, Trash2 } from 'luci
 import * as motion from 'motion/react-client';
 import { toast } from 'sonner';
 import { auth } from '../lib/firebase';
+import { useAuth } from '../lib/AuthContext';
+import { Link } from 'react-router-dom';
 
 type ChatMessage = { role: 'user' | 'model'; content: string };
 
@@ -25,6 +27,7 @@ function generateSessionId() {
 }
 
 export default function AICounselor() {
+  const { user } = useAuth();
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -35,6 +38,24 @@ export default function AICounselor() {
   const [sessions, setSessions] = useState<ChatSessionInfo[]>([]);
   const recognitionRef = useRef<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // LOGIN WALL
+  if (!user) {
+    return (
+      <div className="flex h-[80vh] flex-col items-center justify-center text-center px-4">
+        <div className="mb-8 h-20 w-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center">
+          <Bot size={40} />
+        </div>
+        <h1 className="text-3xl font-black mb-4 text-slate-900 tracking-tight uppercase">AI Counselor Eksklusif</h1>
+        <p className="text-slate-500 font-bold mb-8 max-w-sm mx-auto">
+          Kamu harus masuk akun terlebih dahulu untuk berkonsultasi dengan asisten karir cerdas kami.
+        </p>
+        <Link to="/login" className="inline-flex items-center gap-3 rounded-full bg-blue-600 px-10 py-4 text-sm font-black text-white shadow-xl shadow-blue-600/20 transition-all hover:scale-105 active:scale-95">
+          Login Sekarang
+        </Link>
+      </div>
+    );
+  }
 
   // Auto-scroll saat ada pesan baru atau streaming
   useEffect(() => {

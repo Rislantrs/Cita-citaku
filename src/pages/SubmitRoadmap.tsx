@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   Plus, Trash2, Link as LinkIcon, Send,
   CheckCircle2, Zap,
@@ -6,7 +8,7 @@ import {
   BookOpen, Edit3, FileText, ArrowLeft, Search,
   Briefcase, Save, AlertCircle, X, ChevronDown, ChevronUp,
   ImageIcon, Layout, ListChecks, Upload, Globe, Clock, BarChart, Info, Book, FileCode, DollarSign, Check,
-  CreditCard, ChevronRight, AlertTriangle, Trophy, Loader2, School
+  CreditCard, ChevronRight, AlertTriangle, Trophy, Loader2, School, Sparkles
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { ArticleBuilder, ContentBlock } from '../components/ArticleBuilder';
@@ -449,9 +451,11 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
         setMode('none');
         setSelectedRoadmapId(null);
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting contribution", error);
-      setError("Gagal mengirim kontribusi. Silakan coba lagi.");
+      const msg = error?.message || "Gagal mengirim kontribusi.";
+      setError(`Terjadi kesalahan: ${msg}. Pastikan kamu sudah login dan internet stabil.`);
+      toast.error(`Gagal mengirim: ${msg}`);
       setIsSubmitting(false);
     }
   };
@@ -465,6 +469,24 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
         </motion.div>
         <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Berhasil Terkirim!</motion.h2>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-slate-500 font-bold max-w-sm">Kontribusi Anda sedang dalam tahap peninjauan admin. Terima kasih telah membantu komunitas!</motion.p>
+      </div>
+    );
+  }
+
+  // 1. LOGIN CHECK
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-20 text-center">
+        <div className="mb-8 h-20 w-20 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center mx-auto">
+          <Sparkles size={40} />
+        </div>
+        <h1 className="text-3xl font-black mb-4 text-slate-900 tracking-tight uppercase">Akses Terbatas</h1>
+        <p className="text-slate-500 font-bold mb-8 max-w-md mx-auto">
+          Kamu harus login terlebih dahulu untuk bisa berkontribusi di komunitas Cita-citaku.
+        </p>
+        <Link to="/login" className="inline-flex items-center gap-3 rounded-full bg-blue-600 px-10 py-4 text-sm font-black text-white shadow-xl shadow-blue-600/20 transition-all hover:scale-105 active:scale-95">
+          Masuk Sekarang
+        </Link>
       </div>
     );
   }
