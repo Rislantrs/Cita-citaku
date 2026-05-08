@@ -3,9 +3,9 @@ import cors from 'cors';
 import mongoSanitize from 'express-mongo-sanitize';
 import path from 'path';
 import { GoogleGenAI } from '@google/genai';
-import { connectMongo, ensureCareerSeeded, UserUsageModel, isMongoReady } from './backend/mongo';
+import { connectMongo, ensureCareerSeeded, UserUsageModel, ChatSessionModel, isMongoReady } from './backend/mongo';
 import { registerApiRoutes } from './backend/routes';
-import { callAI, type AITaskType } from './backend/ai_service';
+import { callAI, streamAI, type AITaskType } from './backend/ai_service';
 
 const CAREER_COUNSELOR_SYSTEM_PROMPT = `
 Kamu adalah AI Counselor untuk platform Cita-citaku.
@@ -143,7 +143,7 @@ async function startServer() {
   app.post('/api/chat', async (req, res) => {
     try {
       const { messages, task = 'counselor', userId, context } = req.body;
-      
+
       if (!messages || !Array.isArray(messages)) {
         res.status(400).json({ error: 'Messages array is required' });
         return;
@@ -161,9 +161,9 @@ async function startServer() {
 
           const DAILY_LIMIT = 50;
           if (usage && (usage as any).count > DAILY_LIMIT) {
-            res.status(429).json({ 
-              error: 'Kuota harian kamu habis!', 
-              text: 'Maaf, kamu sudah mencapai batas 50 chat hari ini. Silakan kembali lagi besok ya! Ini untuk menjaga agar layanan tetap gratis untuk semua orang.' 
+            res.status(429).json({
+              error: 'Kuota harian kamu habis!',
+              text: 'Maaf, kamu sudah mencapai batas 50 chat hari ini. Silakan kembali lagi besok ya! Ini untuk menjaga agar layanan tetap gratis untuk semua orang.'
             });
             return;
           }
@@ -175,12 +175,12 @@ async function startServer() {
       // Ambil pesan terakhir sebagai prompt
       const lastMsg = messages[messages.length - 1];
       let userPrompt = lastMsg.content || lastMsg.parts?.[0]?.text;
-      
+
       // Sisipkan context jika ada
       if (context) {
         userPrompt = `CONTEXT PROYEK: ${context}\n\nPERTANYAAN USER: ${userPrompt}`;
       }
-      
+
       const history = messages.slice(0, -1).map(m => ({
         role: m.role === 'model' || m.role === 'assistant' ? 'assistant' : 'user',
         content: m.content || m.parts?.[0]?.text
@@ -188,15 +188,158 @@ async function startServer() {
 
       const result = await callAI(task as AITaskType, userPrompt, history);
 
-      res.json({ 
+      res.json({
         text: result.text,
-        model: result.modelUsed 
+        model: result.modelUsed
       });
     } catch (error: any) {
       console.error('AI chat error:', error);
       res.status(500).json({ error: error.message || 'Failed to generate AI response' });
     }
   });
+
+  // ─── SSE STREAMING ENDPOINT ──────────────────────────────────────────────
+  app.post('/api/chat/stream', async (req, res) => {
+    const { messages, task = 'counselor', userId, context, sessionId } = req.body;
+
+    if (!messages || !Array.isArray(messages)) {
+      res.status(400).json({ error: 'Messages array is required' });
+      return;
+    }
+
+    // Quota check
+    if (userId && isMongoReady()) {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const usage = await (UserUsageModel as any).findOneAndUpdate(
+          { userId, date: today },
+          { $inc: { count: 1 } },
+          { upsert: true, new: true }
+        );
+        if (usage && (usage as any).count > 50) {
+          res.status(429).json({
+            error: 'Kuota harian kamu habis!',
+            text: 'Maaf, kamu sudah mencapai batas 50 chat hari ini. Silakan kembali lagi besok ya!'
+          });
+          return;
+        }
+      } catch (e) {
+        console.warn('[Quota] MongoDB error, skipping:', e);
+      }
+    }
+
+    // Setup SSE headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    const lastMsg = messages[messages.length - 1];
+    let userPrompt = lastMsg.content || lastMsg.parts?.[0]?.text;
+    if (context) {
+      userPrompt = `CONTEXT PROYEK: ${context}\n\nPERTANYAAN USER: ${userPrompt}`;
+    }
+
+    const history = messages.slice(0, -1).map((m: any) => ({
+      role: m.role === 'model' || m.role === 'assistant' ? 'assistant' : 'user',
+      content: m.content || m.parts?.[0]?.text
+    }));
+
+    try {
+      await streamAI(
+        task as AITaskType,
+        userPrompt,
+        history,
+        // onChunk: kirim setiap potongan teks ke client
+        (chunk) => {
+          res.write(`data: ${JSON.stringify({ type: 'chunk', content: chunk })}\n\n`);
+        },
+        // onDone: kirim sinyal selesai + simpan ke MongoDB
+        async (fullText, model) => {
+          res.write(`data: ${JSON.stringify({ type: 'done', model })}\n\n`);
+          res.end();
+
+          // Simpan ke MongoDB jika ada userId dan sessionId
+          if (userId && sessionId && isMongoReady()) {
+            try {
+              await (ChatSessionModel as any).findOneAndUpdate(
+                { sessionId },
+                {
+                  userId,
+                  task,
+                  $push: {
+                    messages: {
+                      $each: [
+                        { role: 'user', content: lastMsg.content || lastMsg.parts?.[0]?.text },
+                        { role: 'assistant', content: fullText }
+                      ]
+                    }
+                  }
+                },
+                { upsert: true, new: true }
+              );
+            } catch (e) {
+              console.warn('[ChatSession] Save error:', e);
+            }
+          }
+        },
+        // onError
+        (err) => {
+          res.write(`data: ${JSON.stringify({ type: 'error', message: err.message })}\n\n`);
+          res.end();
+        }
+      );
+    } catch (err: any) {
+      res.write(`data: ${JSON.stringify({ type: 'error', message: err.message })}\n\n`);
+      res.end();
+    }
+  });
+
+  // ─── CHAT HISTORY ENDPOINTS ──────────────────────────────────────────────
+  // Ambil daftar sesi chat user
+  app.get('/api/chat/sessions', async (req, res) => {
+    const userId = req.query.userId as string;
+    if (!userId || !isMongoReady()) {
+      res.json({ sessions: [] });
+      return;
+    }
+    try {
+      const sessions = await (ChatSessionModel as any)
+        .find({ userId })
+        .sort({ updatedAt: -1 })
+        .limit(20)
+        .select('sessionId title task updatedAt messages');
+
+      const result = sessions.map((s: any) => ({
+        sessionId: s.sessionId,
+        title: s.title || s.messages?.[0]?.content?.slice(0, 40) || 'Percakapan Baru',
+        task: s.task,
+        updatedAt: s.updatedAt,
+        messageCount: s.messages?.length || 0
+      }));
+
+      res.json({ sessions: result });
+    } catch (e) {
+      res.json({ sessions: [] });
+    }
+  });
+
+  // Ambil isi satu sesi chat
+  app.get('/api/chat/sessions/:sessionId', async (req, res) => {
+    const { sessionId } = req.params;
+    if (!isMongoReady()) {
+      res.json({ messages: [] });
+      return;
+    }
+    try {
+      const session = await (ChatSessionModel as any).findOne({ sessionId });
+      res.json({ messages: session?.messages || [] });
+    } catch (e) {
+      res.json({ messages: [] });
+    }
+  });
+
+  console.log('[api] SSE streaming and history routes registered');
 
   if (process.env.NODE_ENV === 'production') {
     const distPath = path.join(process.cwd(), 'dist');

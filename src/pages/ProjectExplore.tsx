@@ -278,6 +278,7 @@ export default function ProjectExplore() {
   const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
   const [aiInput, setAiInput] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiStreamingText, setAiStreamingText] = useState('');
   const [projects, setProjects] = useState<Project[]>(DUMMY_PROJECTS);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
   const [projectError, setProjectError] = useState<string | null>(null);
@@ -356,40 +357,76 @@ export default function ProjectExplore() {
     setAiMessages(newMessages);
     setAiInput('');
     setIsAiLoading(true);
+    setAiStreamingText('');
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          task: 'counselor', // Gunakan task counselor untuk project help
+          task: 'assistant',
           userId: auth.currentUser?.uid,
           messages: newMessages.map((m) => ({
-            role: m.role === 'assistant' ? 'model' : 'user',
+            role: m.role === 'assistant' ? 'assistant' : 'user',
             content: m.content,
           })),
           context: `User sedang mengerjakan project: ${activeProject.title}. Brief: ${activeProject.introduction}`,
         }),
       });
 
-      const data = await response.json();
-
       if (response.status === 429) {
+        const data = await response.json();
         toast.error(data.error || 'Kuota harian habis');
-        setAiMessages([...newMessages, { role: 'assistant', content: data.text || 'Maaf, kuota harian kamu sudah habis.' }]);
+        setAiMessages([...newMessages, { role: 'assistant', content: data.text || 'Kuota harian habis.' }]);
         return;
       }
 
-      if (!response.ok) throw new Error(data.error || 'Gagal mengirim pesan');
+      if (!response.body) throw new Error('No response body');
 
-      setAiMessages([...newMessages, { role: 'assistant', content: data.text }]);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data: ')) continue;
+          try {
+            const event = JSON.parse(trimmed.slice(6));
+            if (event.type === 'chunk') {
+              fullText += event.content;
+              setAiStreamingText(fullText);
+            }
+            if (event.type === 'done') {
+              setAiMessages(prev => [...prev, { role: 'assistant', content: fullText }]);
+              setAiStreamingText('');
+            }
+            if (event.type === 'error') throw new Error(event.message);
+          } catch { /* skip */ }
+        }
+      }
+
+      if (fullText && aiStreamingText) {
+        setAiMessages(prev => [...prev, { role: 'assistant', content: fullText }]);
+        setAiStreamingText('');
+      }
     } catch (err) {
       toast.error('Gagal terhubung dengan AI. Silakan coba lagi.');
       setAiMessages([...newMessages, { role: 'assistant', content: 'Maaf, saya sedang mengalami kendala koneksi.' }]);
+      setAiStreamingText('');
     } finally {
       setIsAiLoading(false);
     }
   };
+
 
   const handleStepChoice = (stepId: string, choiceId: string, nextStepId?: string | null) => {
     setStepChoices((prev) => ({ ...prev, [stepId]: choiceId }));
@@ -870,12 +907,20 @@ export default function ProjectExplore() {
                 <div className="space-y-6">
                   {aiMessages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm font-medium ${msg.role === 'user' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800'}`}>
+                      <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm font-medium whitespace-pre-wrap ${msg.role === 'user' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800'}`}>
                         {msg.content}
                       </div>
                     </div>
                   ))}
-                  {isAiLoading && (
+                  {/* Streaming text — muncul kata demi kata */}
+                  {aiStreamingText && (
+                    <div className="flex justify-start">
+                      <div className="max-w-[85%] rounded-2xl px-4 py-3 text-sm font-medium bg-slate-100 text-slate-800 whitespace-pre-wrap">
+                        {aiStreamingText}<span className="inline-block w-1.5 h-4 bg-blue-500 animate-pulse ml-0.5 rounded-sm" />
+                      </div>
+                    </div>
+                  )}
+                  {isAiLoading && !aiStreamingText && (
                     <div className="flex justify-start">
                       <div className="flex items-center gap-1.5 px-4 py-2 bg-slate-50 rounded-2xl">
                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" />

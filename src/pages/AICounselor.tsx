@@ -1,14 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Mic, MicOff, Send, Bot, MessageSquare, History, PlusCircle, Trash2 } from 'lucide-react';
+import { Mic, Send, Bot, MessageSquare, History, PlusCircle, Trash2 } from 'lucide-react';
 import * as motion from 'motion/react-client';
-
 import { toast } from 'sonner';
 import { auth } from '../lib/firebase';
-import { usePersistedState } from '../lib/usePersistedState';
-import SEO from '../components/SEO';
 
 type ChatMessage = { role: 'user' | 'model'; content: string };
+
+interface ChatSessionInfo {
+  sessionId: string;
+  title: string;
+  updatedAt: string;
+  messageCount: number;
+}
 
 const SUGGESTED_TOPICS = [
   { label: "Analisis RIASEC saya", prompt: "Tolong jelaskan lebih dalam tentang hasil tes RIASEC saya." },
@@ -16,20 +20,65 @@ const SUGGESTED_TOPICS = [
   { label: "Tren Karir 2026", prompt: "Apa tren karir yang paling menjanjikan di tahun 2026?" },
 ];
 
+function generateSessionId() {
+  return `sess_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export default function AICounselor() {
   const { t } = useTranslation();
-  const [messages, setMessages, clearMessages] = usePersistedState<ChatMessage[]>('counselor:messages', []);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState('');
+  const [sessionId, setSessionId] = useState(() => generateSessionId());
+  const [sessions, setSessions] = useState<ChatSessionInfo[]>([]);
   const recognitionRef = useRef<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll saat ada pesan baru atau streaming
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isLoading]);
+  }, [messages, isLoading, streamingText]);
+
+  // Load session list saat pertama kali
+  useEffect(() => {
+    loadSessions();
+  }, []);
+
+  const loadSessions = useCallback(async () => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    try {
+      const res = await fetch(`/api/chat/sessions?userId=${uid}`);
+      const data = await res.json();
+      if (data.sessions) setSessions(data.sessions);
+    } catch { /* ignore */ }
+  }, []);
+
+  const loadSession = useCallback(async (sid: string) => {
+    try {
+      const res = await fetch(`/api/chat/sessions/${sid}`);
+      const data = await res.json();
+      if (data.messages) {
+        setMessages(data.messages.map((m: any) => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          content: m.content
+        })));
+        setSessionId(sid);
+      }
+    } catch {
+      toast.error('Gagal memuat riwayat chat.');
+    }
+  }, []);
+
+  const startNewChat = () => {
+    setMessages([]);
+    setStreamingText('');
+    setSessionId(generateSessionId());
+  };
 
   const startRecording = () => {
     try {
@@ -66,39 +115,89 @@ export default function AICounselor() {
     const textToSend = overrideInput || input;
     if (!textToSend.trim() || isLoading) return;
 
-    const newMessages = [...messages, { role: 'user' as const, content: textToSend }];
+    const newMessages: ChatMessage[] = [...messages, { role: 'user', content: textToSend }];
     setMessages(newMessages);
     setInput('');
     setIsLoading(true);
+    setStreamingText('');
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           task: 'counselor',
           userId: auth.currentUser?.uid,
+          sessionId,
           messages: newMessages.map(m => ({
-            role: m.role,
+            role: m.role === 'model' ? 'assistant' : m.role,
             content: m.content
           }))
         })
       });
 
-      const data = await response.json();
-
+      // Cek kalau quota habis (respons JSON, bukan SSE)
       if (response.status === 429) {
+        const data = await response.json();
         toast.error(data.error || 'Kuota harian habis');
-        setMessages([...newMessages, { role: 'model', content: data.text || 'Maaf, kuota harian kamu sudah habis.' }]);
+        setMessages([...newMessages, { role: 'model', content: data.text || 'Kuota harian habis.' }]);
         return;
       }
 
-      if (!response.ok) throw new Error(data.error || 'Gagal mengirim pesan');
+      if (!response.body) throw new Error('No response body');
 
-      setMessages([...newMessages, { role: 'model', content: data.text }]);
+      // Baca SSE stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data: ')) continue;
+
+          try {
+            const event = JSON.parse(trimmed.slice(6));
+
+            if (event.type === 'chunk') {
+              fullText += event.content;
+              setStreamingText(fullText);
+            }
+
+            if (event.type === 'done') {
+              setMessages(prev => [...prev, { role: 'model', content: fullText }]);
+              setStreamingText('');
+              // Refresh session list
+              loadSessions();
+            }
+
+            if (event.type === 'error') {
+              throw new Error(event.message);
+            }
+          } catch (parseErr) {
+            // skip malformed lines
+          }
+        }
+      }
+
+      // Jika stream selesai tapi fullText belum di-commit
+      if (fullText && streamingText) {
+        setMessages(prev => [...prev, { role: 'model', content: fullText }]);
+        setStreamingText('');
+      }
+
     } catch (err) {
       toast.error('Gagal mengirim pesan. Silakan coba lagi.');
       setMessages([...newMessages, { role: 'model', content: 'Maaf, saya sedang mengalami kendala teknis. Coba lagi nanti ya!' }]);
+      setStreamingText('');
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +208,7 @@ export default function AICounselor() {
       action: {
         label: "Hapus",
         onClick: () => {
-          clearMessages();
+          startNewChat();
           toast.success("Percakapan dihapus");
         },
       },
@@ -122,15 +221,10 @@ export default function AICounselor() {
 
   return (
     <div className="flex h-[calc(100vh-120px)] max-w-[1600px] mx-auto px-6 pb-6 gap-6">
-      <SEO
-        title="Konselor AI"
-        description="Diskusi karir 1-on-1 bersama konselor AI Cita-citaku — bahas hasil tes, rekomendasi jurusan, dan langkah konkret menuju cita-citamu."
-        keywords="konselor karir, ai chat karir, konsultasi cita-cita, panduan jurusan"
-      />
-      {/* Sidebar - Integrated & Minimalist */}
+      {/* Sidebar - Session History */}
       <aside className="hidden lg:flex flex-col w-[280px] shrink-0 gap-6">
-        <button
-          onClick={clearMessages}
+        <button 
+          onClick={startNewChat}
           className="flex items-center justify-center gap-3 rounded-3xl bg-slate-900 py-5 text-[15px] font-bold text-white transition-all hover:bg-blue-800 hover:-translate-y-1 shadow-xl shadow-slate-900/10"
         >
           <PlusCircle size={20} />
@@ -142,12 +236,22 @@ export default function AICounselor() {
              <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400">Riwayat Sesi</p>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-1">
-            {['Analisis Karir IT', 'Diskusi Psikologi', 'Persiapan Interview'].map((session) => (
-              <button key={session} className="flex w-full items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold text-slate-600 transition-all hover:bg-white hover:text-blue-700 hover:shadow-sm">
-                <MessageSquare size={18} className="opacity-40" />
-                <span className="truncate">{session}</span>
-              </button>
-            ))}
+            {sessions.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-8">Belum ada riwayat chat</p>
+            ) : (
+              sessions.map((session) => (
+                <button 
+                  key={session.sessionId} 
+                  onClick={() => loadSession(session.sessionId)}
+                  className={`flex w-full items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold text-slate-600 transition-all hover:bg-white hover:text-blue-700 hover:shadow-sm ${
+                    session.sessionId === sessionId ? 'bg-white text-blue-700 shadow-sm' : ''
+                  }`}
+                >
+                  <MessageSquare size={18} className="opacity-40 shrink-0" />
+                  <span className="truncate">{session.title}</span>
+                </button>
+              ))
+            )}
           </div>
           <div className="p-6 bg-white/50 border-t border-slate-200/50">
              <div className="flex items-center gap-3 text-[11px] font-bold text-slate-400">
@@ -158,13 +262,16 @@ export default function AICounselor() {
         </div>
       </aside>
 
-      {/* Main Chat Area - Clean & Full Height */}
+      {/* Main Chat Area */}
       <main className="flex-1 flex flex-col rounded-[3rem] bg-white border border-slate-100 shadow-sm overflow-hidden">
         {/* Header */}
         <header className="flex items-center justify-between px-10 py-6 border-b border-slate-50 bg-white/80 backdrop-blur-md relative z-10">
           <div className="flex items-center gap-4">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
             <h1 className="text-base font-black tracking-tight text-slate-900">Konselor AI</h1>
+            {streamingText && (
+              <span className="text-[10px] font-bold text-blue-500 animate-pulse">● Sedang mengetik...</span>
+            )}
           </div>
           <button 
             onClick={clearChat}
@@ -179,7 +286,7 @@ export default function AICounselor() {
           ref={scrollRef}
           className="flex-1 overflow-y-auto p-10 space-y-10 scroll-smooth no-scrollbar"
         >
-          {messages.length === 0 && (
+          {messages.length === 0 && !streamingText && (
             <div className="flex h-full flex-col items-center justify-center text-center max-w-xl mx-auto">
               <div className="w-20 h-20 rounded-[2.5rem] bg-blue-50 flex items-center justify-center text-blue-600 mb-8">
                 <Bot size={40} />
@@ -226,8 +333,26 @@ export default function AICounselor() {
               </div>
             </motion.div>
           ))}
+
+          {/* Streaming text — muncul kata demi kata */}
+          {streamingText && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-start"
+            >
+              <div className="flex max-w-[80%] items-start gap-5">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-black shrink-0 bg-blue-600 text-white shadow-lg shadow-blue-600/20">
+                  AI
+                </div>
+                <div className="px-6 py-5 rounded-[2rem] text-base leading-relaxed bg-slate-50 text-slate-800 font-medium">
+                  <p className="whitespace-pre-wrap">{streamingText}<span className="inline-block w-2 h-5 bg-blue-500 animate-pulse ml-0.5 rounded-sm" /></p>
+                </div>
+              </div>
+            </motion.div>
+          )}
           
-          {isLoading && (
+          {isLoading && !streamingText && (
             <div className="flex justify-start">
               <div className="ml-14 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-bounce" />

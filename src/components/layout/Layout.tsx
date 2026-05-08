@@ -1,8 +1,8 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../lib/AuthContext';
-import { LogOut, Menu, Sun, Moon, X } from 'lucide-react';
+import { LogOut, Menu, Sun, Moon, X, Home, BookOpen, Map, MessageSquare, Users } from 'lucide-react';
 import BrandMark from '../BrandMark';
 import Footer from '../Footer';
 
@@ -44,6 +44,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { to: '/community', label: 'Komunitas' },
   ];
 
+  // Mobile bottom tab bar links (5 most important)
+  const mobileNavLinks = [
+    { to: '/', label: 'Beranda', icon: Home },
+    { to: '/roadmap', label: 'Profesi', icon: Map },
+    { to: '/explore-projects', label: 'Proyek', icon: BookOpen },
+    { to: '/counselor', label: 'AI Chat', icon: MessageSquare },
+    { to: '/community', label: 'Komunitas', icon: Users },
+  ];
+
+  const isDark = theme === 'dark';
+
+  // Dynamic header background for both light and dark mode
+  const headerBg = scrolled 
+    ? (isDark ? 'rgba(2, 6, 23, 0.86)' : 'rgba(244, 247, 251, 0.86)')
+    : 'transparent';
+  const headerBorder = scrolled
+    ? (isDark ? '1px solid rgba(148, 163, 184, 0.1)' : '1px solid rgba(148, 163, 184, 0.18)')
+    : '1px solid transparent';
+
   return (
     <div className="page-shell min-h-screen flex flex-col transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       
@@ -51,10 +70,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <header 
         className={`sticky top-0 z-50 transition-all duration-500 ${
           scrolled 
-            ? 'backdrop-blur-xl shadow-[0_12px_40px_-28px_rgba(15,23,42,0.35)]' 
-            : 'backdrop-blur-none'
+            ? 'shadow-[0_12px_40px_-28px_rgba(15,23,42,0.35)]' 
+            : ''
         }`}
-        style={{ backgroundColor: scrolled ? 'rgba(244,247,251,0.86)' : 'transparent', borderBottom: scrolled ? '1px solid rgba(148,163,184,0.18)' : '1px solid transparent' }}
+        style={{ 
+          backgroundColor: headerBg, 
+          borderBottom: headerBorder,
+          WebkitBackdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'none',
+          backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'none',
+        }}
       >
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-18">
@@ -74,8 +98,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     to={link.to}
                     className={`px-4 py-2 text-[13px] font-semibold transition-all rounded-full ${
                       isActive 
-                        ? 'text-blue-700 bg-blue-50/80 shadow-sm' 
-                        : 'text-slate-600 hover:text-slate-950 hover:bg-white/70'
+                        ? (isDark ? 'text-blue-400 bg-blue-950/60' : 'text-blue-700 bg-blue-50/80 shadow-sm')
+                        : (isDark ? 'text-slate-400 hover:text-white hover:bg-white/10' : 'text-slate-600 hover:text-slate-950 hover:bg-white/70')
                     }`}
                   >
                     {link.label}
@@ -88,19 +112,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="hidden lg:flex items-center gap-3">
               <button 
                 onClick={toggleTheme}
-                className="p-2.5 rounded-full transition-all hover:scale-110 text-slate-500 hover:text-slate-950 bg-white/70 border border-slate-200/70"
+                className={`p-2.5 rounded-full transition-all hover:scale-110 ${
+                  isDark 
+                    ? 'text-yellow-400 hover:text-yellow-300 bg-white/10 border border-white/10' 
+                    : 'text-slate-500 hover:text-slate-950 bg-white/70 border border-slate-200/70'
+                }`}
                 aria-label="Toggle theme"
               >
-                {theme === 'light' ? <Moon size={18} /> : <Sun size={18} className="text-yellow-400" />}
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </button>
 
               {!loading && (
                 user ? (
                   <div className="flex items-center gap-4">
-                    <Link to="/dashboard" className="text-[13px] font-semibold text-slate-600 hover:text-slate-950 transition-colors">Dasbor</Link>
+                    <Link to="/dashboard" className={`text-[13px] font-semibold transition-colors ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-950'}`}>Dasbor</Link>
                     <button 
                       onClick={logout} 
-                      className="click-feedback flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold text-slate-600 bg-white/70 border border-slate-200/70 transition-all hover:text-slate-950 hover:bg-white"
+                      className={`click-feedback flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold transition-all ${
+                        isDark 
+                          ? 'text-slate-400 bg-white/10 border border-white/10 hover:text-white hover:bg-white/15' 
+                          : 'text-slate-600 bg-white/70 border border-slate-200/70 hover:text-slate-950 hover:bg-white'
+                      }`}
                     >
                       <LogOut size={14} />
                       <span>Keluar</span>
@@ -123,14 +155,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               )}
             </div>
 
-            {/* Mobile */}
+            {/* Mobile — only hamburger + theme toggle (tab bar handles navigation) */}
             <div className="lg:hidden flex items-center gap-3">
-              <button onClick={toggleTheme} className="p-2 rounded-full bg-white/70 border border-slate-200/70 text-slate-600 transition-colors hover:text-slate-950">
-                {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+              <button 
+                onClick={toggleTheme} 
+                className={`p-2 rounded-full transition-colors ${
+                  isDark 
+                    ? 'bg-white/10 border border-white/10 text-yellow-400' 
+                    : 'bg-white/70 border border-slate-200/70 text-slate-600 hover:text-slate-950'
+                }`}
+              >
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </button>
               <button 
                 onClick={() => setMenuOpen(!menuOpen)} 
-                className="p-2 rounded-full bg-white/70 border border-slate-200/70 text-slate-600 transition-colors hover:text-slate-950" 
+                className={`p-2 rounded-full transition-colors ${
+                  isDark 
+                    ? 'bg-white/10 border border-white/10 text-slate-300' 
+                    : 'bg-white/70 border border-slate-200/70 text-slate-600 hover:text-slate-950'
+                }`}
                 aria-label="Toggle Menu"
               >
                 {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -139,7 +182,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Mobile menu — clean slide */}
+        {/* Mobile menu — clean slide (for login/logout + extra links) */}
         <div 
           className={`lg:hidden overflow-hidden transition-all duration-400 ease-in-out ${
             menuOpen ? 'max-h-125 opacity-100' : 'max-h-0 opacity-0'
@@ -154,7 +197,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   key={link.to}
                   to={link.to} 
                   className={`block font-semibold px-3 py-3 rounded-xl text-[15px] transition-colors ${
-                    isActive ? 'text-blue-700 bg-blue-50/80' : 'text-slate-600 hover:text-slate-950 hover:bg-white/70'
+                    isActive 
+                      ? (isDark ? 'text-blue-400 bg-blue-950/40' : 'text-blue-700 bg-blue-50/80')
+                      : (isDark ? 'text-slate-400 hover:text-white hover:bg-white/5' : 'text-slate-600 hover:text-slate-950 hover:bg-white/70')
                   }`}
                 >
                   {link.label}
@@ -165,7 +210,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {!loading && (
               user ? (
                 <>
-                  <Link to="/dashboard" className="block font-semibold px-3 py-3 text-[15px] opacity-60 hover:opacity-100">Dasbor</Link>
+                  <Link to="/dashboard" className="block font-semibold px-3 py-3 text-[15px] opacity-60 hover:opacity-100" style={{ color: 'var(--text-primary)' }}>Dasbor</Link>
                   <button onClick={logout} className="block text-left w-full text-rose-500 font-semibold px-3 py-3 text-[15px]">Keluar</button>
                 </>
               ) : (
@@ -188,12 +233,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* ─── MAIN CONTENT ─── */}
-      <main className="flex-1">
+      <main className="flex-1 page-enter pb-20 lg:pb-0">
         {children}
       </main>
 
       {!shouldHideFooter && <Footer />}
+
+      {/* ─── MOBILE BOTTOM TAB BAR ─── */}
+      <nav className="mobile-bottom-nav lg:hidden" aria-label="Mobile navigation">
+        <div className="flex items-center justify-around px-2 py-2">
+          {mobileNavLinks.map(link => {
+            const isActive = pathname === link.to || (link.to !== '/' && pathname.startsWith(link.to));
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl transition-all min-w-[56px] ${
+                  isActive 
+                    ? (isDark ? 'text-blue-400' : 'text-blue-600')
+                    : (isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-700')
+                }`}
+              >
+                <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
+                <span className={`text-[10px] font-bold leading-none ${isActive ? '' : 'opacity-70'}`}>
+                  {link.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
-

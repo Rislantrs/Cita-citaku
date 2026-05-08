@@ -145,12 +145,27 @@ const userUsageSchema = new mongoose.Schema({
 
 userUsageSchema.index({ userId: 1, date: 1 }, { unique: true });
 
+const chatMessageSchema = new mongoose.Schema({
+  role: { type: String, enum: ['user', 'assistant'], required: true },
+  content: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now }
+}, { _id: false });
+
+const chatSessionSchema = new mongoose.Schema({
+  sessionId: { type: String, required: true, unique: true, index: true },
+  userId: { type: String, required: true, index: true },
+  task: { type: String, default: 'counselor' },
+  title: { type: String, default: 'Percakapan Baru' },
+  messages: { type: [chatMessageSchema], default: [] },
+}, { timestamps: true });
+
 export const UserModel = mongoose.models.User || mongoose.model('User', userSchema);
 export const CareerModel = mongoose.models.Career || mongoose.model('Career', careerSchema);
 export const ProjectModel = mongoose.models.Project || mongoose.model('Project', projectSchema);
 export const SubmissionModel = mongoose.models.Submission || mongoose.model('Submission', submissionSchema);
 export const QuizResultModel = mongoose.models.QuizResult || mongoose.model('QuizResult', quizResultSchema);
 export const UserUsageModel = mongoose.models.UserUsage || mongoose.model('UserUsage', userUsageSchema);
+export const ChatSessionModel = mongoose.models.ChatSession || mongoose.model('ChatSession', chatSessionSchema);
 
 let connected = false;
 

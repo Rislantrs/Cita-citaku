@@ -82,5 +82,10 @@ service cloud.firestore {
       allow update: if isModerator();
       allow delete: if isAdmin();
     }
+
+    match /roadmaps/{roadmapId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(roadmapId.split('_')[0]) || isAdmin();
+    }
   }
 }
