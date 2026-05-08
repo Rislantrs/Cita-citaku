@@ -314,10 +314,10 @@ export default function ProjectExplore() {
     const steps = activeProject.interactiveSteps;
 
     return (
-      <div className="fixed inset-0 z-[60] flex overflow-hidden bg-[#fcfbfa] text-gray-800">
+      <div className="page-shell fixed inset-0 z-60 flex overflow-hidden bg-(--bg-primary) text-slate-800">
         {/* Main Content Area */}
-        <div className={`relative flex h-full flex-1 flex-col overflow-y-auto transition-all duration-500 ease-in-out ${isAiOpen ? 'mr-[480px]' : ''}`}>
-          <header className="sticky top-0 z-50 border-b border-gray-200 bg-[#fcfbfa]/95 backdrop-blur">
+        <div className={`relative flex h-full flex-1 flex-col overflow-y-auto transition-all duration-500 ease-in-out ${isAiOpen ? 'mr-120' : ''}`}>
+          <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/85 backdrop-blur">
             <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
               <div className="flex items-center gap-3">
                 <button
@@ -327,11 +327,11 @@ export default function ProjectExplore() {
                   <ChevronLeft size={20} />
                 </button>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-blue-800">Project Workspace</p>
+                  <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">Project Workspace</p>
                   <h2 className="max-w-50 truncate text-sm font-black text-gray-900 sm:max-w-sm">{activeProject.title}</h2>
                 </div>
               </div>
-
+                    <h2 className="max-w-50 truncate text-sm font-black text-slate-950 sm:max-w-sm">{activeProject.title}</h2>
               <div className="hidden items-center gap-3 sm:flex">
                 <button className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-gray-400 hover:text-gray-900">
                   <Share2 size={15} /> Pamerkan
@@ -362,12 +362,12 @@ export default function ProjectExplore() {
 
             <section className="grid gap-6 border-b border-gray-200 py-10 lg:grid-cols-5">
               <article className="rounded-3xl border border-gray-200 bg-white/70 p-6 lg:col-span-3">
-                <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-gray-500">Latar Belakang Masalah</p>
+                <p className="mb-3 text-xs font-black uppercase tracking-widest text-slate-500">Latar Belakang Masalah</p>
                 <p className="text-base italic leading-8 text-gray-700 sm:text-lg">{activeProject.background}</p>
               </article>
 
               <article className="rounded-3xl border border-gray-200 bg-white/70 p-6 lg:col-span-2">
-                <p className="mb-4 text-xs font-black uppercase tracking-[0.18em] text-gray-500">Skill yang akan dipelajari</p>
+                <p className="mb-4 text-xs font-black uppercase tracking-widest text-slate-500">Skill yang akan dipelajari</p>
                 <div className="flex flex-wrap gap-2.5">
                   {activeProject.skills.map((skill, idx) => (
                     <span
@@ -384,7 +384,7 @@ export default function ProjectExplore() {
 
             <section className="space-y-6 border-b border-gray-200 py-10">
               <div className="space-y-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-gray-500">Interactive Brief & Task</p>
+                <p className="text-xs font-black uppercase tracking-widest text-slate-500">Interactive Brief & Task</p>
                 <div className="inline-flex rounded-full border border-gray-200 bg-white/70 p-1 text-sm">
                   <button
                     type="button"
@@ -466,14 +466,14 @@ export default function ProjectExplore() {
                           {!isFirst && <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 md:block" />}
                           <div className="grid gap-5 md:grid-cols-[40px_minmax(0,1fr)] md:gap-8">
                             <div className="relative z-10 flex md:justify-center">
-                              <div className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-black transition ${isStepCompleted ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-gray-300 bg-[#fcfbfa] text-gray-900'}`}>
+                              <div className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-black transition ${isStepCompleted ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 bg-(--bg-primary) text-slate-900'}`}>
                                 {isStepCompleted ? <Check size={16} /> : step.stepNumber}
                               </div>
                             </div>
 
                             <div className="space-y-6">
                               <div className="space-y-3">
-                                <div className="inline-flex items-center rounded-full border border-gray-200 bg-white/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                                <div className="inline-flex items-center rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
                                   Step {step.stepNumber} of {steps.length}
                                 </div>
                                 <h3 className="max-w-3xl text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">{step.title}</h3>
@@ -596,7 +596,7 @@ export default function ProjectExplore() {
 
                                   {step.choices && step.choices.length > 0 && (
                                     <div className="space-y-3">
-                                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Pilihan kondisi</p>
+                                      <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Pilihan kondisi</p>
                                       <div className="flex flex-wrap gap-3">
                                         {step.choices.map((choice) => {
                                           const isSelected = selectedChoiceId === choice.id;
@@ -632,7 +632,7 @@ export default function ProjectExplore() {
 
                                   {selectedChoice?.guidance && (
                                     <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm leading-7 text-gray-700">
-                                      <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">If you picked this path</p>
+                                      <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">If you picked this path</p>
                                       <p className="whitespace-pre-wrap">{selectedChoice.guidance}</p>
                                     </div>
                                   )}
@@ -668,7 +668,7 @@ export default function ProjectExplore() {
 
             <section className="py-10 border-b border-gray-200">
               <div className="max-w-xl">
-                <p className="mb-4 text-xs font-black uppercase tracking-[0.18em] text-gray-500">Bukti Hasil Karya</p>
+                <p className="mb-4 text-xs font-black uppercase tracking-widest text-slate-500">Bukti Hasil Karya</p>
                 <div className="space-y-4">
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold text-gray-700">Tempel link Google Drive di sini...</span>
@@ -719,7 +719,7 @@ export default function ProjectExplore() {
 
         {/* AI Assistant Side Panel */}
         <aside
-          className={`fixed right-0 top-0 z-[60] h-screen border-l border-gray-200 bg-white transition-all duration-500 ease-in-out ${isAiOpen ? 'w-[480px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`}
+          className={`fixed right-0 top-0 z-60 h-screen border-l border-slate-200 bg-white transition-all duration-500 ease-in-out ${isAiOpen ? 'w-120 opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`}
         >
           <div className="flex h-full flex-col">
             {/* Sidebar Header */}
@@ -755,7 +755,7 @@ export default function ProjectExplore() {
             {/* Sidebar Content */}
             <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
               <div className="flex flex-col items-center pt-8 text-center">
-                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[30px] bg-blue-50 text-blue-600">
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 text-blue-700">
                   <Sparkles size={32} />
                 </div>
                 <h3 className="mb-2 text-xl font-black tracking-tight text-gray-900">
@@ -797,7 +797,7 @@ export default function ProjectExplore() {
 
         {/* Re-add floating toggle button if needed, but here it's integrated in header */}
         {!isAiOpen && (
-          <div className="fixed bottom-8 right-8 z-[60]">
+          <div className="fixed bottom-8 right-8 z-60">
             <button
               onClick={() => setIsAiOpen(true)}
               className="group relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-900 text-white shadow-2xl transition-all hover:scale-110 hover:bg-black active:scale-95"
@@ -816,10 +816,10 @@ export default function ProjectExplore() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fcfbfa] pb-32 pt-32">
+    <div className="page-shell min-h-screen pb-32 pt-28">
       <div className="mx-auto max-w-7xl px-6">
         <header className="mb-16">
-          <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-blue-700 mb-6">
+          <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-700 mb-6">
             Misi Masa Depan
           </div>
           <h1 className="mb-6 text-6xl font-black tracking-tight text-gray-900 sm:text-7xl">
@@ -839,7 +839,7 @@ export default function ProjectExplore() {
               placeholder="Cari tantangan, teknologi, atau topik..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-[32px] border border-gray-100 bg-white py-6 pl-16 pr-8 text-lg font-medium shadow-sm outline-none transition focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
+              className="w-full rounded-4xl border border-slate-200 bg-white py-6 pl-16 pr-8 text-lg font-medium shadow-sm outline-none transition focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
             />
           </div>
 
@@ -869,15 +869,15 @@ export default function ProjectExplore() {
               viewport={{ once: true }}
               whileHover={{ y: -12 }}
               onClick={() => setActiveProject(project)}
-              className="group cursor-pointer overflow-hidden rounded-[48px] border border-gray-100 bg-white p-4 shadow-sm transition-all hover:shadow-2xl hover:shadow-blue-100/50"
+              className="group cursor-pointer overflow-hidden rounded-[3rem] border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-2xl hover:shadow-blue-100/50"
             >
-              <div className="relative mb-8 aspect-[4/3] overflow-hidden rounded-[40px]">
+              <div className="relative mb-8 aspect-4/3 overflow-hidden rounded-[2.5rem]">
                 <img 
                   src="file:///C:/Users/Rislan/.gemini/antigravity/brain/6b2fba9b-7dae-4660-bdc2-a0c0f9762fa6/banking_chatbot_project_cover_1778076117795.png" 
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
                   alt={project.title} 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
                 <div className="absolute left-6 top-6">
                   <span className="rounded-full bg-white/90 backdrop-blur px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-900">
                     {project.category}

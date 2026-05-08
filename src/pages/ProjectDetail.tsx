@@ -30,7 +30,7 @@ export default function ProjectDetail() {
   }
 
   return (
-    <div className="fixed inset-0 flex overflow-hidden bg-white" style={{ zIndex: 999 }}>
+    <div className="page-shell fixed inset-0 flex overflow-hidden bg-(--bg-primary)" style={{ zIndex: 999 }}>
       <SEO 
         title={`${project.title} - Panduan Proyek`}
         description={project.summary}
@@ -38,25 +38,25 @@ export default function ProjectDetail() {
 
       {/* Main Content Area - Clean white background for readability */}
       <main 
-        className="relative flex h-full flex-1 flex-col overflow-y-auto bg-white transition-all duration-500 ease-in-out"
+        className="relative flex h-full flex-1 flex-col overflow-y-auto bg-(--bg-primary) transition-all duration-500 ease-in-out"
         style={isChatOpen ? { marginRight: '450px' } : undefined}
       >
         {/* Local Header - Respects the split layout */}
-        <header className="sticky top-0 z-50 flex items-center justify-between border-b bg-white/80 px-8 py-4 backdrop-blur-md">
+        <header className="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 bg-white/80 px-8 py-4 backdrop-blur-md">
           <div className="flex items-center gap-6">
-            <Link to="/roadmap" className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+            <Link to="/roadmap" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 border border-slate-200 hover:bg-white transition-colors">
               <ArrowLeft size={20} className="text-slate-900" />
             </Link>
             <div className="h-6 bg-slate-200" style={{ width: '1px' }} />
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Project Lab</span>
-              <h2 className="truncate text-sm font-black text-slate-900 sm:max-w-md" style={{ maxWidth: '200px' }}>{project.title}</h2>
+              <span className="text-[10px] font-black uppercase tracking-widest text-blue-700">Project Lab</span>
+              <h2 className="truncate text-sm font-black text-slate-950 sm:max-w-md" style={{ maxWidth: '200px' }}>{project.title}</h2>
             </div>
           </div>
           
           <button 
             onClick={() => setIsChatOpen(!isChatOpen)}
-            className={`hidden lg:flex items-center gap-2 rounded-full px-5 py-2 text-xs font-black transition-all ${isChatOpen ? 'bg-slate-900 text-white' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'}`}
+            className={`hidden lg:flex items-center gap-2 rounded-full px-5 py-2 text-xs font-black transition-all ${isChatOpen ? 'bg-slate-900 text-white' : 'bg-blue-700 text-white shadow-lg shadow-blue-700/20'}`}
           >
             <MessageSquare size={16} />
             {isChatOpen ? 'Tutup Chat' : 'Tanya AI'}
@@ -66,11 +66,11 @@ export default function ProjectDetail() {
         <div className="mx-auto w-full max-w-4xl px-6 py-16 pb-40">
           {/* Hero Section */}
           <div className="mb-16 space-y-6">
-            <div className="inline-flex items-center rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-600">
+            <div className="inline-flex items-center rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-700">
               • {project.difficulty}
             </div>
-            <h1 className="text-5xl font-black tracking-tight text-slate-900 sm:text-6xl">{project.title}</h1>
-            <p className="text-xl leading-relaxed text-slate-500">{project.description}</p>
+            <h1 className="text-5xl font-black tracking-tighter text-slate-950 sm:text-6xl">{project.title}</h1>
+            <p className="text-xl leading-relaxed text-slate-600">{project.description}</p>
           </div>
 
           {/* Key Stats */}
@@ -80,17 +80,17 @@ export default function ProjectDetail() {
               { icon: <Gauge size={18} />, label: 'Level', value: project.difficulty },
               { icon: <Lightbulb size={18} />, label: 'Key Concept', value: project.keyConcepts[0] || 'Cloud' },
             ].map((stat, i) => (
-              <div key={i} className="rounded-3xl border border-slate-100 bg-slate-50/50 p-6">
-                <div className="mb-3 text-blue-600">{stat.icon}</div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
-                <p className="text-base font-black text-slate-900 truncate">{stat.value}</p>
+              <div key={i} className="surface-card rounded-3xl p-6">
+                <div className="mb-3 text-blue-700">{stat.icon}</div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stat.label}</p>
+                <p className="text-base font-black text-slate-950 truncate">{stat.value}</p>
               </div>
             ))}
           </div>
 
           {/* 5 Minute Summary - Premium Intro Card */}
           <section className="mb-20">
-            <div className="rounded-[2.5rem] bg-slate-900 p-10 text-white shadow-2xl relative overflow-hidden">
+            <div className="rounded-4xl bg-slate-950 p-10 text-white shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-10">
                 <Zap size={100} fill="currentColor" />
               </div>
@@ -109,8 +109,8 @@ export default function ProjectDetail() {
           {/* Resources Section - Moved Up */}
           <section className="mb-20">
             <div className="flex items-center gap-4 mb-8">
-              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Materi Referensi</h2>
-              <div className="flex-1 bg-slate-100" style={{ height: '1px' }} />
+              <h2 className="text-2xl font-black text-slate-950 uppercase tracking-tight">Materi Referensi</h2>
+              <div className="flex-1 bg-slate-200" style={{ height: '1px' }} />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {project.resources.map((resource, idx) => (
@@ -119,15 +119,15 @@ export default function ProjectDetail() {
                   href={resource.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/30 p-6 transition-all hover:bg-white hover:border-blue-200 hover:shadow-xl group"
+                  className="flex items-center justify-between rounded-3xl border border-slate-200 bg-white/80 p-6 transition-all hover:bg-white hover:border-blue-200 hover:shadow-xl group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm group-hover:bg-blue-700 group-hover:text-white transition-colors">
                       <Rocket size={24} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-base font-bold text-slate-900">{resource.title}</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{resource.type} • {resource.priceInfo}</span>
+                      <span className="text-base font-bold text-slate-950">{resource.title}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{resource.type} • {resource.priceInfo}</span>
                     </div>
                   </div>
                 </a>
@@ -137,7 +137,7 @@ export default function ProjectDetail() {
 
           {/* Optional Cost Note */}
           {project.costNote && (
-            <section className="mb-10 rounded-2xl bg-[#FDF8F3] border border-[#F3E8D9] p-8 shadow-sm">
+            <section className="mb-10 rounded-3xl bg-[#FDF8F3] border border-[#F3E8D9] p-8 shadow-sm">
               <div className="flex items-start gap-4">
                 <div className="text-xl">💡</div>
                 <div className="space-y-2">
@@ -153,23 +153,23 @@ export default function ProjectDetail() {
           {/* Brief Proyek - Moved to Bottom */}
           <section className="mb-20 space-y-8">
             <div className="flex items-center gap-4">
-              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Proyek Portofolio</h2>
-              <div className="flex-1 bg-slate-100" style={{ height: '1px' }} />
+              <h2 className="text-2xl font-black text-slate-950 uppercase tracking-tight">Proyek Portofolio</h2>
+              <div className="flex-1 bg-slate-200" style={{ height: '1px' }} />
             </div>
             <div className="space-y-6">
               {project.projects.map((p, idx) => (
-                <div key={idx} className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm transition-all hover:shadow-md hover:scale-[1.01] hover:border-blue-200 group">
+                <div key={idx} className="overflow-hidden rounded-4xl border border-slate-200 bg-white/80 shadow-sm transition-all hover:shadow-md hover:scale-[1.01] hover:border-blue-200 group">
                   <Link 
                     to={`/explore-projects?title=${encodeURIComponent(p.title)}`}
                     className="flex w-full items-center justify-between p-10 text-left"
                   >
                     <div className="flex items-center gap-6">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white font-black text-xl shadow-lg transition-transform group-hover:scale-110">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-700 text-white font-black text-xl shadow-lg transition-transform group-hover:scale-110">
                         {idx + 1}
                       </div>
-                      <span className="text-2xl font-black text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">{p.title}</span>
+                      <span className="text-2xl font-black text-slate-950 leading-tight group-hover:text-blue-700 transition-colors">{p.title}</span>
                     </div>
-                    <ChevronRight size={28} className="text-slate-300 group-hover:text-blue-500 transition-colors" />
+                    <ChevronRight size={28} className="text-slate-300 group-hover:text-blue-700 transition-colors" />
                   </Link>
                 </div>
               ))}

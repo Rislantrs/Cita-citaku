@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Mic, MicOff, Send, Bot, User as UserIcon, MessageSquare, History, ArrowRight, PlusCircle, Trash2 } from 'lucide-react';
+import { Mic, MicOff, Send, Bot, MessageSquare, History, PlusCircle, Trash2 } from 'lucide-react';
 import * as motion from 'motion/react-client';
+
+import { toast } from 'sonner';
 
 const SUGGESTED_TOPICS = [
   { label: "Analisis RIASEC saya", prompt: "Tolong jelaskan lebih dalam tentang hasil tes RIASEC saya." },
@@ -27,7 +29,10 @@ export default function AICounselor() {
   const startRecording = () => {
     try {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (!SpeechRecognition) return;
+      if (!SpeechRecognition) {
+        toast.error("Browser kamu tidak mendukung pengenalan suara.");
+        return;
+      }
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.lang = 'id-ID';
@@ -39,7 +44,10 @@ export default function AICounselor() {
       recognition.onend = () => setIsRecording(false);
       recognitionRef.current = recognition;
       recognition.start();
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err); 
+      setIsRecording(false);
+    }
   };
 
   const stopRecording = () => {
@@ -51,8 +59,8 @@ export default function AICounselor() {
 
   const sendMessage = async (overrideInput?: string) => {
     const textToSend = overrideInput || input;
-    if (!textToSend.trim()) return;
-    
+    if (!textToSend.trim() || isLoading) return;
+
     const newMessages = [...messages, { role: 'user' as const, content: textToSend }];
     setMessages(newMessages);
     setInput('');
@@ -72,77 +80,99 @@ export default function AICounselor() {
       const data = await response.json();
       setMessages([...newMessages, { role: 'model', content: data.text }]);
     } catch (err) {
+      toast.error('Gagal mengirim pesan. Silakan coba lagi.');
       setMessages([...newMessages, { role: 'model', content: 'Maaf, saya sedang mengalami kendala teknis. Coba lagi nanti ya!' }]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const clearChat = () => {
+    toast.warning("Hapus seluruh percakapan?", {
+      action: {
+        label: "Hapus",
+        onClick: () => {
+          setMessages([]);
+          toast.success("Percakapan dihapus");
+        },
+      },
+      cancel: {
+        label: "Batal",
+        onClick: () => {},
+      }
+    });
+  };
+
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-[260px_1fr] h-[calc(100vh-140px)]">
-      {/* Sidebar - Pure Session History */}
-      <aside className="hidden flex-col gap-6 lg:flex">
-        <button className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 py-4 font-black text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
-          <PlusCircle size={18} />
-          Chat Baru
+    <div className="flex h-[calc(100vh-120px)] max-w-[1600px] mx-auto px-6 pb-6 gap-6">
+      {/* Sidebar - Integrated & Minimalist */}
+      <aside className="hidden lg:flex flex-col w-[280px] shrink-0 gap-6">
+        <button 
+          onClick={() => setMessages([])}
+          className="flex items-center justify-center gap-3 rounded-3xl bg-slate-900 py-5 text-[15px] font-bold text-white transition-all hover:bg-blue-800 hover:-translate-y-1 shadow-xl shadow-slate-900/10"
+        >
+          <PlusCircle size={20} />
+          Percakapan Baru
         </button>
 
-        <div className="flex-1 space-y-2 overflow-y-auto">
-          <div className="px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">
-            Riwayat Sesi
+        <div className="flex-1 flex flex-col rounded-[2.5rem] bg-slate-50 border border-slate-100 overflow-hidden">
+          <div className="p-6 border-b border-slate-200/50">
+             <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400">Riwayat Sesi</p>
           </div>
-          <div className="space-y-1">
+          <div className="flex-1 overflow-y-auto p-4 space-y-1">
             {['Analisis Karir IT', 'Diskusi Psikologi', 'Persiapan Interview'].map((session) => (
-              <button key={session} className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold opacity-60 transition hover:bg-white/5 hover:text-blue-600">
-                <MessageSquare size={16} className="shrink-0" />
+              <button key={session} className="flex w-full items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold text-slate-600 transition-all hover:bg-white hover:text-blue-700 hover:shadow-sm">
+                <MessageSquare size={18} className="opacity-40" />
                 <span className="truncate">{session}</span>
               </button>
             ))}
           </div>
-        </div>
-
-        <div className="rounded-2xl p-4 theme-card" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-          <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Status Penyimpanan</p>
-          <div className="mt-3 flex items-center gap-2 text-xs font-bold opacity-70">
-            <History size={14} />
-            Auto-save Aktif
+          <div className="p-6 bg-white/50 border-t border-slate-200/50">
+             <div className="flex items-center gap-3 text-[11px] font-bold text-slate-400">
+                <History size={14} />
+                Auto-save Aktif
+             </div>
           </div>
         </div>
       </aside>
 
-      {/* Main Chat Area */}
-      <main className="flex flex-col overflow-hidden rounded-[2rem] theme-card shadow-sm">
-        {/* Minimal Header */}
-        <header className="flex items-center justify-between border-b theme-border px-8 py-5">
-          <div className="flex items-center gap-3">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <h1 className="text-sm font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>Konselor AI</h1>
+      {/* Main Chat Area - Clean & Full Height */}
+      <main className="flex-1 flex flex-col rounded-[3rem] bg-white border border-slate-100 shadow-sm overflow-hidden">
+        {/* Header */}
+        <header className="flex items-center justify-between px-10 py-6 border-b border-slate-50 bg-white/80 backdrop-blur-md relative z-10">
+          <div className="flex items-center gap-4">
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+            <h1 className="text-base font-black tracking-tight text-slate-900">Konselor AI</h1>
           </div>
-          <button className="opacity-30 hover:opacity-100 hover:text-red-500 transition">
-            <Trash2 size={18} />
+          <button 
+            onClick={clearChat}
+            className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
+          >
+            <Trash2 size={20} />
           </button>
         </header>
 
         {/* Messages List */}
         <div 
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-8 space-y-10"
+          className="flex-1 overflow-y-auto p-10 space-y-10 scroll-smooth no-scrollbar"
         >
           {messages.length === 0 && (
-            <div className="flex h-full flex-col items-center justify-center text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-3xl text-blue-600 mb-6" style={{ backgroundColor: 'rgba(var(--accent-blue), 0.1)' }}>
+            <div className="flex h-full flex-col items-center justify-center text-center max-w-xl mx-auto">
+              <div className="w-20 h-20 rounded-[2.5rem] bg-blue-50 flex items-center justify-center text-blue-600 mb-8">
                 <Bot size={40} />
               </div>
-              <h2 className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>Apa yang bisa saya bantu?</h2>
-              <p className="mt-2 opacity-60 max-w-sm" style={{ color: 'var(--text-secondary)' }}>Tanyakan apa saja tentang karir, jurusan, atau hasil tes jati dirimu.</p>
+              <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Apa yang bisa saya bantu?</h2>
+              <p className="text-lg text-slate-500 font-medium leading-relaxed">
+                Tanyakan apa saja tentang karir, jurusan, atau hasil tes jati dirimu. Saya di sini untuk membantumu menemukan jalan.
+              </p>
               
-              {/* Minimalist Starter Chips */}
-              <div className="mt-10 flex flex-wrap justify-center gap-3">
+              <div className="mt-12 flex flex-wrap justify-center gap-3">
                 {SUGGESTED_TOPICS.map((topic) => (
                   <button
                     key={topic.label}
                     onClick={() => sendMessage(topic.prompt)}
-                    className="theme-card rounded-full px-5 py-2.5 text-sm font-bold opacity-70 shadow-sm transition hover:border-blue-200 hover:text-blue-600 hover:shadow-md"
+                    className="bg-white border border-slate-200 rounded-full px-6 py-3 text-sm font-bold text-slate-600 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md"
                   >
                     {topic.label}
                   </button>
@@ -158,14 +188,16 @@ export default function AICounselor() {
               key={idx} 
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`flex max-w-[85%] items-start gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[10px] font-black ${msg.role === 'user' ? 'bg-slate-700/20 text-slate-400' : 'bg-blue-600 text-white'}`}>
+              <div className={`flex max-w-[80%] items-start gap-5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-black shrink-0 ${
+                  msg.role === 'user' ? 'bg-slate-100 text-slate-500' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                }`}>
                   {msg.role === 'user' ? 'ME' : 'AI'}
                 </div>
-                <div className={`rounded-2xl px-5 py-4 text-base leading-relaxed ${
+                <div className={`px-6 py-5 rounded-[2rem] text-base leading-relaxed ${
                   msg.role === 'user' 
-                    ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/10' 
-                    : 'theme-card'
+                    ? 'bg-slate-900 text-white font-medium shadow-xl shadow-slate-900/10' 
+                    : 'bg-slate-50 text-slate-800 font-medium'
                 }`}>
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                 </div>
@@ -175,28 +207,28 @@ export default function AICounselor() {
           
           {isLoading && (
             <div className="flex justify-start">
-              <div className="flex items-center gap-3 px-12">
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-300" />
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-400 [animation-delay:0.2s]" />
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-blue-600 [animation-delay:0.4s]" />
+              <div className="ml-14 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-bounce" />
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce [animation-delay:0.2s]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce [animation-delay:0.4s]" />
               </div>
             </div>
           )}
         </div>
 
         {/* Input Area */}
-        <footer className="p-8 border-t theme-border">
-          <div className="mx-auto max-w-4xl relative">
-            <div className="flex items-center gap-3 rounded-2xl p-2 transition-all theme-input focus-within:ring-2 focus-within:ring-blue-600/10" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+        <footer className="p-10 bg-white">
+          <div className="max-w-4xl mx-auto relative">
+            <div className="flex items-center gap-3 rounded-[2rem] bg-slate-50 border border-slate-100 p-2 focus-within:border-blue-200 focus-within:bg-white transition-all">
               <button 
                 onClick={isRecording ? stopRecording : startRecording}
-                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all ${
+                className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${
                   isRecording 
-                    ? 'bg-red-500 text-white animate-pulse' 
-                    : 'opacity-40 hover:opacity-100 hover:text-blue-600'
+                    ? 'bg-rose-500 text-white animate-pulse shadow-lg shadow-rose-500/25' 
+                    : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'
                 }`}
               >
-                <Mic size={20} />
+                <Mic size={22} />
               </button>
               
               <input 
@@ -204,30 +236,18 @@ export default function AICounselor() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Tulis pertanyaanmu di sini..."
-                className="flex-1 bg-transparent border-none px-2 py-3 focus:ring-0 font-medium"
-                style={{ color: 'var(--text-primary)' }}
+                placeholder="Tanyakan sesuatu..."
+                className="flex-1 bg-transparent border-none px-4 py-3 focus:ring-0 font-bold text-slate-800 placeholder:text-slate-400"
               />
               
               <button 
                 onClick={() => sendMessage()}
                 disabled={!input.trim() || isLoading}
-                className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white disabled:opacity-30 transition hover:bg-blue-700"
+                className="w-12 h-12 flex items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 disabled:opacity-20 transition-all hover:bg-slate-900 active:scale-95"
               >
-                <Send size={18} />
+                <Send size={20} />
               </button>
             </div>
-            
-            {/* Minimalist Tip */}
-            {messages.length > 0 && (
-              <div className="mt-4 flex justify-center gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                {SUGGESTED_TOPICS.map(t => (
-                  <button key={t.label} onClick={() => sendMessage(t.prompt)} className="whitespace-nowrap text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 hover:text-blue-600 transition">
-                    + {t.label}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </footer>
       </main>

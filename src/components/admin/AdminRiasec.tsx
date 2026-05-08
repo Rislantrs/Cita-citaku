@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Sparkles, Upload, Plus, FileText, Trash2, Save, BrainCircuit, CheckCircle2 } from 'lucide-react';
 import * as motion from 'motion/react-client';
+import { toast } from 'sonner';
 
 export function AdminRiasec() {
   const [questions, setQuestions] = useState([
@@ -15,7 +16,7 @@ export function AdminRiasec() {
 
   const handleAiGenerate = async () => {
     if (!uploadedFile) {
-      alert("Silakan unggah dokumen (PDF/TXT) terlebih dahulu untuk dianalisis oleh AI.");
+      toast.warning("Silakan unggah dokumen (PDF/TXT) terlebih dahulu untuk dianalisis oleh AI.");
       return;
     }
     
@@ -34,7 +35,7 @@ export function AdminRiasec() {
     setQuestions(prev => [...prev, ...generatedQuestions]);
     setUploadedFile(null);
     setIsGenerating(false);
-    alert(`AI berhasil mengekstrak ${generatedQuestions.length} soal RIASEC dari dokumen Anda!`);
+    toast.success(`AI berhasil mengekstrak ${generatedQuestions.length} soal RIASEC dari dokumen Anda!`);
   };
 
 

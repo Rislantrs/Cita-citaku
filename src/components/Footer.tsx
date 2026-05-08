@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="max-w-5xl mx-auto">
         <div className="fluid-separator mb-12" />
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <p className="text-[11px] font-semibold tracking-[0.15em] uppercase opacity-30">
+          <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-slate-500">
             &copy; {currentYear} {t('app_name')}. Built with Passion in Indonesia.
           </p>
 
@@ -18,7 +18,7 @@ export default function Footer() {
               <a 
                 key={name} 
                 href="#" 
-                className="link-underline text-[11px] font-semibold tracking-[0.1em] uppercase opacity-30 hover:opacity-70 transition-opacity"
+                className="text-[11px] font-semibold tracking-widest uppercase text-slate-500 transition-colors hover:text-slate-950"
               >
                 {name}
               </a>

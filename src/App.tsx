@@ -19,11 +19,13 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ProjectExplore from "./pages/ProjectExplore";
 import NotFound from "./pages/NotFound";
 import ProjectDetail from "./pages/ProjectDetail";
+import { Toaster } from "sonner";
 import "./lib/i18n"; // Import i18n
 
 export default function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-center" expand={false} richColors closeButton />
       <Router>
         <Layout>
           <Routes>

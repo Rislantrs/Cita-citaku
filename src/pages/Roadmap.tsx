@@ -65,7 +65,7 @@ export default function Roadmap() {
     : [];
 
   return (
-    <div className="flex flex-col">
+    <div className="page-shell flex flex-col">
       <SEO 
         title="Katalog Roadmap Karir"
         description="Eksplorasi ratusan jalur karir masa depan lengkap dengan roadmap belajar, skill, dan standar industri global."
@@ -74,7 +74,7 @@ export default function Roadmap() {
       />
 
       {/* ─── Hero ─── */}
-      <section className="relative pt-20 pb-32 px-6 overflow-hidden">
+      <section className="relative pt-20 pb-24 px-6 overflow-hidden">
         <div className="photo-overlay absolute inset-0">
           <img 
             src="/images/hero-collab.png" 
@@ -84,11 +84,11 @@ export default function Roadmap() {
           />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
+        <div className="relative z-10 max-w-6xl mx-auto text-center">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[12px] font-semibold tracking-[0.25em] uppercase text-blue-600 mb-6"
+            className="section-kicker mb-6"
           >
             Katalog Karir Masa Depan
           </motion.p>
@@ -97,19 +97,17 @@ export default function Roadmap() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl sm:text-7xl font-black tracking-tight leading-[1.05]"
-            style={{ color: 'var(--text-primary)' }}
+            className="mx-auto max-w-5xl text-5xl sm:text-7xl font-black tracking-tighter leading-[1.02] text-slate-950"
           >
-            Eksplorasi{' '}
-            <span className="text-blue-600">Roadmap Karir.</span>
+            Eksplorasi roadmap karir yang
+            <span className="block bg-linear-to-r from-blue-700 via-indigo-700 to-slate-900 bg-clip-text text-transparent">lebih konkret.</span>
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-6 text-lg max-w-xl mx-auto opacity-50"
-            style={{ color: 'var(--text-secondary)' }}
+            className="section-copy mt-6 text-lg max-w-xl mx-auto"
           >
             Temukan langkah konkret menuju profesi impianmu. 
             Dari nol hingga standar industri global.
@@ -120,10 +118,10 @@ export default function Roadmap() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="relative mt-10 max-w-lg mx-auto"
+            className="relative mt-10 max-w-xl mx-auto"
           >
             <div className="group relative flex items-center">
-              <Search className="absolute left-5 opacity-30 transition-opacity group-focus-within:opacity-70 group-focus-within:text-blue-600" size={20} />
+              <Search className="absolute left-5 text-slate-400 transition-colors group-focus-within:text-blue-700" size={20} />
               <input
                 type="text"
                 placeholder="Cari profesi (misal: Software Engineer)..."
@@ -131,7 +129,7 @@ export default function Roadmap() {
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-14 w-full rounded-full pl-14 pr-6 text-[15px] font-medium transition-all focus:ring-4 focus:ring-blue-600/5 focus:outline-none"
+                className="h-14 w-full rounded-full pl-14 pr-6 text-[15px] font-medium transition-all focus:ring-4 focus:ring-blue-600/10 focus:outline-none"
                 style={{ 
                   backgroundColor: 'var(--card-bg)', 
                   border: '1px solid var(--border-color)',
@@ -143,7 +141,7 @@ export default function Roadmap() {
                 <motion.div 
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-16 z-50 w-full overflow-hidden rounded-2xl shadow-xl"
+                  className="absolute top-16 z-50 w-full overflow-hidden rounded-3xl shadow-2xl"
                   style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}
                 >
                   {suggestions.map((s) => (
@@ -153,10 +151,10 @@ export default function Roadmap() {
                         setSearchQuery(s.title);
                         setShowSuggestions(false);
                       }}
-                      className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition hover:bg-blue-50/50"
+                      className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition hover:bg-blue-50/70"
                     >
                       <Search size={14} className="opacity-30" />
-                      <span className="text-[14px] font-medium" style={{ color: 'var(--text-primary)' }}>{s.title}</span>
+                      <span className="text-[14px] font-semibold" style={{ color: 'var(--text-primary)' }}>{s.title}</span>
                     </button>
                   ))}
                 </motion.div>
@@ -168,15 +166,14 @@ export default function Roadmap() {
 
       {/* ─── Category Filter ─── */}
       <div className="px-6 -mt-8 relative z-20">
-        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-2">
+        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-2">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`click-feedback rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-[0.1em] uppercase transition-all ${
+            className={`click-feedback rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-widest uppercase transition-all ${
               activeCategory === 'all' 
               ? 'bg-slate-950 text-white shadow-lg' 
-              : 'opacity-40 hover:opacity-80'
+              : 'text-slate-600 bg-white/80 border border-slate-200/70 hover:text-slate-950'
             }`}
-            style={activeCategory !== 'all' ? { backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' } : {}}
           >
             Semua
           </button>
@@ -184,12 +181,11 @@ export default function Roadmap() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`click-feedback rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-[0.1em] uppercase transition-all ${
+              className={`click-feedback rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-widest uppercase transition-all ${
                 activeCategory === cat.id 
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/15' 
-                : 'opacity-40 hover:opacity-80'
+                ? 'bg-blue-700 text-white shadow-lg shadow-blue-700/15' 
+                : 'text-slate-600 bg-white/80 border border-slate-200/70 hover:text-slate-950'
               }`}
-              style={activeCategory !== cat.id ? { backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' } : {}}
             >
               {cat.label}
             </button>
@@ -217,28 +213,28 @@ export default function Roadmap() {
               >
                 <Link 
                   to={`/roadmap/${career.slug}`}
-                  className="hover-lift hover-glow click-feedback group block h-full rounded-3xl p-8 transition-all"
+                  className="hover-lift hover-glow click-feedback group block h-full rounded-4xl p-8 transition-all surface-card-strong"
                   style={{ 
-                    backgroundColor: 'var(--card-bg)', 
-                    border: '1px solid var(--border-color)' 
+                    backgroundColor: 'rgba(255,255,255,0.78)', 
+                    border: '1px solid rgba(148,163,184,0.22)' 
                   }}
                 >
                   <div className="flex items-center justify-between mb-6">
-                    <span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-blue-600 opacity-60">
+                    <span className="text-[10px] font-black tracking-widest uppercase text-blue-700">
                       {career.categoryId}
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold leading-snug mb-3" style={{ color: 'var(--text-primary)' }}>
+                  <h3 className="text-xl font-black leading-snug mb-3" style={{ color: 'var(--text-primary)' }}>
                     {career.title}
                   </h3>
-                  <p className="text-[13px] leading-relaxed opacity-40 line-clamp-2 mb-6" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-[13px] leading-relaxed line-clamp-2 mb-6" style={{ color: 'var(--text-secondary)' }}>
                     {career.description}
                   </p>
                   
                   <div className="flex items-center justify-between pt-5" style={{ borderTop: '1px solid var(--border-color)' }}>
-                    <span className="text-[12px] font-medium opacity-30">{career.roadmap.length} Tahap Belajar</span>
-                    <span className="text-[12px] font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <span className="text-[12px] font-semibold text-slate-500">{career.roadmap.length} Tahap Belajar</span>
+                    <span className="text-[12px] font-semibold text-blue-700 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                       Lihat <ArrowRight size={12} />
                     </span>
                   </div>
@@ -250,8 +246,8 @@ export default function Roadmap() {
         
         {filteredCareers.length === 0 && !isLoading && (
           <div className="flex flex-col items-center justify-center py-32 text-center">
-            <h3 className="text-2xl font-bold opacity-30" style={{ color: 'var(--text-primary)' }}>Pencarian Tidak Ditemukan</h3>
-            <p className="mt-3 text-[15px] opacity-30" style={{ color: 'var(--text-secondary)' }}>Coba gunakan kata kunci yang lebih umum.</p>
+            <h3 className="text-2xl font-black text-slate-950" style={{ color: 'var(--text-primary)' }}>Pencarian Tidak Ditemukan</h3>
+            <p className="mt-3 text-[15px] text-slate-600" style={{ color: 'var(--text-secondary)' }}>Coba gunakan kata kunci yang lebih umum.</p>
           </div>
         )}
       </section>

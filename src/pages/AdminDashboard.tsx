@@ -4,6 +4,7 @@ import {
   Users, FileText, TrendingUp, ChevronRight, MoreVertical,
   LayoutDashboard, Map, BrainCircuit, UserPlus, LogOut, FileBadge, Plus
 } from 'lucide-react';
+import { toast } from 'sonner';
 import * as motion from 'motion/react-client';
 import { AdminRiasec } from '../components/admin/AdminRiasec';
 import SubmitRoadmap from './SubmitRoadmap';
@@ -74,7 +75,7 @@ export default function AdminDashboard() {
             moderatedAt: serverTimestamp()
           });
         }
-        alert('Kontribusi ditolak');
+      toast.info('Kontribusi ditolak');
       } else {
         // APPROVE / PUBLISH
         const roadmapData = {
@@ -100,7 +101,7 @@ export default function AdminDashboard() {
         const roadmapRef = doc(db, 'roadmaps', slug);
         await setDoc(roadmapRef, roadmapData, { merge: true });
         
-        alert('Roadmap Berhasil Di-publish!');
+        toast.success('Roadmap Berhasil Di-publish!');
       }
 
       setReviewingSubmission(null);
@@ -109,7 +110,7 @@ export default function AdminDashboard() {
       fetchSubmissions();
     } catch (error) {
       console.error('Moderation failed:', error);
-      alert('Gagal memproses aksi. Silakan cek konsol.');
+      toast.error('Gagal memproses aksi. Silakan cek konsol.');
     }
   };
 

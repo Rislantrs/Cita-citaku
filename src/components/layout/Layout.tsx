@@ -45,19 +45,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+    <div className="page-shell min-h-screen flex flex-col transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       
       {/* ─── HEADER ─── */}
       <header 
         className={`sticky top-0 z-50 transition-all duration-500 ${
           scrolled 
-            ? 'backdrop-blur-xl shadow-[0_1px_0_0_var(--border-color)]' 
+            ? 'backdrop-blur-xl shadow-[0_12px_40px_-28px_rgba(15,23,42,0.35)]' 
             : 'backdrop-blur-none'
         }`}
-        style={{ backgroundColor: scrolled ? 'rgba(248,251,255,0.85)' : 'transparent' }}
+        style={{ backgroundColor: scrolled ? 'rgba(244,247,251,0.86)' : 'transparent', borderBottom: scrolled ? '1px solid rgba(148,163,184,0.18)' : '1px solid transparent' }}
       >
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
-          <div className="flex justify-between items-center h-[72px]">
+          <div className="flex justify-between items-center h-18">
             
             {/* Brand */}
             <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
@@ -72,10 +72,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Link
                     key={link.to}
                     to={link.to}
-                    className={`link-underline px-4 py-2 text-[13px] font-semibold transition-all ${
+                    className={`px-4 py-2 text-[13px] font-semibold transition-all rounded-full ${
                       isActive 
-                        ? 'opacity-100 text-blue-600' 
-                        : 'opacity-50 hover:opacity-90'
+                        ? 'text-blue-700 bg-blue-50/80 shadow-sm' 
+                        : 'text-slate-600 hover:text-slate-950 hover:bg-white/70'
                     }`}
                   >
                     {link.label}
@@ -88,7 +88,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="hidden lg:flex items-center gap-3">
               <button 
                 onClick={toggleTheme}
-                className="p-2.5 rounded-full transition-all hover:scale-110 opacity-40 hover:opacity-100"
+                className="p-2.5 rounded-full transition-all hover:scale-110 text-slate-500 hover:text-slate-950 bg-white/70 border border-slate-200/70"
                 aria-label="Toggle theme"
               >
                 {theme === 'light' ? <Moon size={18} /> : <Sun size={18} className="text-yellow-400" />}
@@ -97,10 +97,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {!loading && (
                 user ? (
                   <div className="flex items-center gap-4">
-                    <Link to="/dashboard" className="link-underline text-[13px] font-semibold opacity-60 hover:opacity-100 transition-opacity">Dasbor</Link>
+                    <Link to="/dashboard" className="text-[13px] font-semibold text-slate-600 hover:text-slate-950 transition-colors">Dasbor</Link>
                     <button 
                       onClick={logout} 
-                      className="click-feedback flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold opacity-60 hover:opacity-100 transition-all"
+                      className="click-feedback flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold text-slate-600 bg-white/70 border border-slate-200/70 transition-all hover:text-slate-950 hover:bg-white"
                     >
                       <LogOut size={14} />
                       <span>Keluar</span>
@@ -109,7 +109,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 ) : (
                   <button 
                     onClick={loginWithGoogle} 
-                    className="click-feedback flex items-center gap-2.5 bg-white text-slate-700 border border-slate-200 px-5 py-2.5 rounded-full text-[13px] font-semibold transition-all hover:shadow-md hover:-translate-y-0.5"
+                    className="click-feedback flex items-center gap-2.5 bg-slate-950 text-white border border-slate-950 px-5 py-2.5 rounded-full text-[13px] font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -125,12 +125,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             {/* Mobile */}
             <div className="lg:hidden flex items-center gap-3">
-              <button onClick={toggleTheme} className="p-2 opacity-50 hover:opacity-100 transition-opacity">
+              <button onClick={toggleTheme} className="p-2 rounded-full bg-white/70 border border-slate-200/70 text-slate-600 transition-colors hover:text-slate-950">
                 {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
               </button>
               <button 
                 onClick={() => setMenuOpen(!menuOpen)} 
-                className="p-2 opacity-50 hover:opacity-100 transition-opacity" 
+                className="p-2 rounded-full bg-white/70 border border-slate-200/70 text-slate-600 transition-colors hover:text-slate-950" 
                 aria-label="Toggle Menu"
               >
                 {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -142,7 +142,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Mobile menu — clean slide */}
         <div 
           className={`lg:hidden overflow-hidden transition-all duration-400 ease-in-out ${
-            menuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+            menuOpen ? 'max-h-125 opacity-100' : 'max-h-0 opacity-0'
           }`}
           style={{ backgroundColor: 'var(--bg-primary)' }}
         >
@@ -154,7 +154,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   key={link.to}
                   to={link.to} 
                   className={`block font-semibold px-3 py-3 rounded-xl text-[15px] transition-colors ${
-                    isActive ? 'text-blue-600 bg-blue-50/50' : 'opacity-60 hover:opacity-100'
+                    isActive ? 'text-blue-700 bg-blue-50/80' : 'text-slate-600 hover:text-slate-950 hover:bg-white/70'
                   }`}
                 >
                   {link.label}
@@ -171,7 +171,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ) : (
                 <button 
                   onClick={loginWithGoogle} 
-                  className="click-feedback flex items-center gap-2 w-full font-semibold px-3 py-3 text-[15px] text-slate-700 bg-slate-50 border border-slate-200 rounded-xl mt-2"
+                  className="click-feedback flex items-center gap-2 w-full font-semibold px-3 py-3 text-[15px] text-white bg-slate-950 border border-slate-950 rounded-xl mt-2"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

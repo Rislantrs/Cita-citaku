@@ -95,18 +95,18 @@ export default function RoadmapDetail() {
 
         <div className="max-w-4xl space-y-6">
           <div className="flex items-center gap-3">
-            <span className="rounded-full bg-blue-50 px-4 py-1 text-[10px] font-black uppercase tracking-widest text-blue-600 ring-1 ring-blue-100">
+            <span className="rounded-full bg-blue-50 px-4 py-1 text-[10px] font-black uppercase tracking-widest text-blue-700 ring-1 ring-blue-100">
               {career.categoryId}
             </span>
             <span className="h-1 w-1 rounded-full bg-gray-300"></span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
               {career.type === 'skill_based' ? 'Skill Path' : 'Education Path'}
             </span>
           </div>
-          <h1 className="text-5xl font-black tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
+          <h1 className="text-5xl font-black tracking-tighter text-slate-950 sm:text-6xl lg:text-7xl">
             {career.title}
           </h1>
-          <p className="text-xl leading-relaxed text-gray-500 max-w-2xl">
+          <p className="text-xl leading-relaxed text-slate-600 max-w-2xl">
             {career.description}
           </p>
         </div>
@@ -116,28 +116,28 @@ export default function RoadmapDetail() {
         {/* Main Content: Vertical Timeline */}
         <main className="space-y-24">
           {career.universityWorld && (
-            <section className="rounded-3xl border border-gray-100 bg-white p-8 sm:p-10 shadow-sm">
+            <section className="surface-card-strong rounded-4xl border border-slate-200 p-8 sm:p-10 shadow-sm">
               <div className="mb-8 flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                   <School size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-gray-900">Dunia Perkuliahan & Karir</h2>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Overview Jurusan</p>
+                  <h2 className="text-xl font-black text-slate-950">Dunia Perkuliahan & Karir</h2>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Overview Jurusan</p>
                 </div>
               </div>
 
               <div className="space-y-10">
-                <p className="text-base leading-relaxed text-gray-600">
+                  <p className="text-base leading-relaxed text-slate-600">
                   {career.universityWorld.overview}
                 </p>
 
                 <div className="grid gap-10 lg:grid-cols-2">
                   <div className="space-y-5">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3">Pengetahuan & Keahlian</h3>
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 border-b border-slate-200 pb-3">Pengetahuan & Keahlian</h3>
                     <ul className="space-y-3">
                       {career.universityWorld.requiredSkills.map((skill, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm font-medium text-gray-700">
+                        <li key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700">
                           <CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" />
                           <span className="leading-relaxed">{skill}</span>
                         </li>
@@ -146,16 +146,16 @@ export default function RoadmapDetail() {
                   </div>
 
                   <div className="space-y-5">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3">Kenapa Memilih Jurusan Ini?</h3>
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 border-b border-slate-200 pb-3">Kenapa Memilih Jurusan Ini?</h3>
                     <div className="space-y-4">
                       {career.universityWorld.whyChoose.map((reason, i) => (
                         <div key={i} className="flex gap-4">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50 text-xs font-black text-gray-400">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-500">
                             {i + 1}
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-gray-900 mb-1">{reason.title}</h4>
-                            <p className="text-sm leading-relaxed text-gray-500">{reason.desc}</p>
+                            <h4 className="text-sm font-bold text-slate-950 mb-1">{reason.title}</h4>
+                            <p className="text-sm leading-relaxed text-slate-600">{reason.desc}</p>
                           </div>
                         </div>
                       ))}
@@ -168,14 +168,14 @@ export default function RoadmapDetail() {
 
           <section className="relative">
             <div className="mb-12">
-              <h2 className="text-2xl font-black text-gray-900">
+              <h2 className="text-2xl font-black text-slate-950">
                 {career.type === 'skill_based' ? 'Langkah Strategis' : 'Fase Pendidikan & Milestone'}
               </h2>
               <div className="mt-2 h-1 w-20 rounded-full bg-blue-600"></div>
             </div>
 
             {/* Vertical Timeline Line */}
-            <div className="absolute left-[31px] top-[100px] bottom-0 w-px bg-gray-100 hidden sm:block"></div>
+            <div className="absolute left-7.75 top-25 bottom-0 w-px bg-slate-200 hidden sm:block"></div>
 
             <div className="space-y-16">
               {career.roadmap.map((step, stepIndex) => {
@@ -183,9 +183,9 @@ export default function RoadmapDetail() {
                 const isActive = activeStepKey === stepKey;
 
                 return (
-                  <div key={stepKey} className="relative flex flex-col sm:flex-row gap-8">
+                    <div key={stepKey} className="relative flex flex-col sm:flex-row gap-8">
                     {/* Step Indicator */}
-                    <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white border border-gray-100 text-xl font-black text-gray-300 shadow-sm transition-all group-hover:border-blue-600">
+                    <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/80 border border-slate-200 text-xl font-black text-slate-300 shadow-sm transition-all group-hover:border-blue-700">
                       {stepIndex + 1}
                       {isActive && <div className="absolute -inset-1 rounded-2xl border-2 border-blue-600 animate-pulse"></div>}
                     </div>
@@ -193,18 +193,18 @@ export default function RoadmapDetail() {
                     <div className="flex-1 space-y-6">
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{step.phase}</span>
-                          <span className="text-[10px] font-bold text-gray-400 tracking-widest">• {step.meta}</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-blue-700">{step.phase}</span>
+                          <span className="text-[10px] font-bold text-slate-500 tracking-widest">• {step.meta}</span>
                         </div>
-                        <h3 className="text-2xl font-black text-gray-900">{step.title}</h3>
-                        <p className="text-lg leading-relaxed text-gray-500">{step.desc}</p>
+                        <h3 className="text-2xl font-black text-slate-950">{step.title}</h3>
+                        <p className="text-lg leading-relaxed text-slate-600">{step.desc}</p>
                       </div>
 
                       {/* Content Section */}
                       <div className="grid gap-6">
                         {/* Projects Grid - BACK TO CLICKABLE */}
                         <div className="space-y-4">
-                          <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400">
+                          <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500">
                             <Bookmark size={14} /> {career.type === 'skill_based' ? 'Modul Pelajaran & Proyek' : 'Topik Studi Utama'}
                           </h4>
                           <div className="grid gap-3 sm:grid-cols-2">
@@ -215,20 +215,20 @@ export default function RoadmapDetail() {
                                   key={proj}
                                   to={projectSlug ? `/project/${projectSlug}` : '#'}
                                   className={`group flex items-center justify-between gap-4 rounded-2xl p-5 border transition-all ${projectSlug
-                                    ? 'bg-white border-gray-200 hover:border-blue-500 hover:shadow-md'
-                                    : 'bg-gray-50/50 border-transparent cursor-default'
+                                    ? 'bg-white/80 border-slate-200 hover:border-blue-700 hover:shadow-md'
+                                    : 'bg-slate-50/50 border-transparent cursor-default'
                                     }`}
                                 >
                                   <div className="flex items-center gap-3">
-                                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${projectSlug ? 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${projectSlug ? 'bg-blue-50 text-blue-700 group-hover:bg-blue-700 group-hover:text-white' : 'bg-slate-100 text-slate-400'}`}>
                                       <BookOpen size={18} />
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-sm font-bold text-gray-700">{proj}</span>
-                                      {projectSlug && <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 opacity-0 group-hover:opacity-100">Buka Misi</span>}
+                                      <span className="text-sm font-bold text-slate-700">{proj}</span>
+                                      {projectSlug && <span className="text-[10px] font-black uppercase tracking-widest text-blue-700 opacity-0 group-hover:opacity-100">Buka Misi</span>}
                                     </div>
                                   </div>
-                                  {projectSlug && <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />}
+                                  {projectSlug && <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-700 group-hover:translate-x-1 transition-all" />}
                                 </Link>
                               );
                             })}
@@ -245,13 +245,13 @@ export default function RoadmapDetail() {
           {/* FAQs Editorial - Simplified Accordion */}
           <section className="space-y-12">
             <div className="flex items-center gap-4">
-              <div className="h-px flex-1 bg-gray-100"></div>
-              <h2 className="text-xl font-black text-gray-400 uppercase tracking-[0.2em]">Common Questions</h2>
-              <div className="h-px flex-1 bg-gray-100"></div>
+              <div className="h-px flex-1 bg-slate-200"></div>
+              <h2 className="text-xl font-black text-slate-500 uppercase tracking-[0.2em]">Common Questions</h2>
+              <div className="h-px flex-1 bg-slate-200"></div>
             </div>
             <div className="mx-auto max-w-3xl space-y-3">
               {career.faqs.map((faq, i) => (
-                <div key={i} className="overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:border-blue-100 shadow-sm">
+                <div key={i} className="overflow-hidden rounded-3xl border border-slate-200 bg-white/80 transition-all hover:border-blue-100 shadow-sm">
                   <button
                     onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
                     className="flex w-full items-center justify-between p-6 text-left"
@@ -261,7 +261,7 @@ export default function RoadmapDetail() {
                     </h4>
                     <ChevronDown
                       size={18}
-                      className={`text-gray-400 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-600' : ''}`}
+                      className={`text-slate-400 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-700' : ''}`}
                     />
                   </button>
                   {openFaqIndex === i && (
@@ -270,7 +270,7 @@ export default function RoadmapDetail() {
                       animate={{ height: 'auto', opacity: 1 }}
                       className="px-6 pb-6"
                     >
-                      <p className="text-sm leading-relaxed text-gray-500 border-t border-gray-50 pt-4">
+                      <p className="text-sm leading-relaxed text-slate-600 border-t border-slate-100 pt-4">
                         {faq.a}
                       </p>
                     </motion.div>
@@ -284,37 +284,37 @@ export default function RoadmapDetail() {
         {/* Sidebar: Universities & Market Data */}
         <aside className="space-y-10">
           {/* Top Universities Section */}
-          <section className="space-y-8 rounded-[2.5rem] bg-gray-900 p-10 text-white shadow-2xl">
+          <section className="space-y-8 rounded-4xl bg-slate-950 p-10 text-white shadow-2xl">
             <header className="space-y-2">
               <School className="text-blue-400 mb-4" size={32} />
               <h3 className="text-xl font-black">Top 5 Universitas</h3>
-              <p className="text-xs text-gray-400 font-medium">Rekomendasi institusi pendidikan terbaik.</p>
+              <p className="text-xs text-slate-400 font-medium">Rekomendasi institusi pendidikan terbaik.</p>
             </header>
 
             <div className="space-y-8">
               {/* Local */}
               <div className="space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">Dalam Negeri (Indonesia)</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-blue-300">Dalam Negeri (Indonesia)</p>
                 <div className="space-y-3">
                   {career.topUniversities.local.map((uni, i) => (
                     <div key={i} className="flex items-center gap-3">
-                      <span className="text-xs font-black text-gray-600">{i + 1}</span>
-                      <span className="text-sm font-bold text-gray-100">{uni}</span>
+                      <span className="text-xs font-black text-slate-500">{i + 1}</span>
+                      <span className="text-sm font-bold text-white/90">{uni}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="h-px bg-white/10"></div>
+                <div className="h-px bg-white/10"></div>
 
               {/* Global */}
               <div className="space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">Luar Negeri (Global)</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-blue-300">Luar Negeri (Global)</p>
                 <div className="space-y-3">
                   {career.topUniversities.global.map((uni, i) => (
                     <div key={i} className="flex items-center gap-3">
-                      <span className="text-xs font-black text-gray-600">{i + 1}</span>
-                      <span className="text-sm font-bold text-gray-100">{uni}</span>
+                      <span className="text-xs font-black text-slate-500">{i + 1}</span>
+                      <span className="text-sm font-bold text-white/90">{uni}</span>
                     </div>
                   ))}
                 </div>
@@ -323,31 +323,31 @@ export default function RoadmapDetail() {
           </section>
 
           {/* Salary Data Section */}
-          <section className="space-y-6 rounded-[2.5rem] bg-white p-10 border border-gray-100 shadow-sm">
+          <section className="space-y-6 rounded-4xl bg-white/80 p-10 border border-slate-200 shadow-sm">
             <div className="space-y-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Estimasi Gaji</p>
-              <h3 className="text-xl font-black text-gray-900">Pasar Kerja</h3>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Estimasi Gaji</p>
+              <h3 className="text-xl font-black text-slate-950">Pasar Kerja</h3>
             </div>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-500">Indonesia</span>
-                <span className="text-sm font-black text-blue-600">{career.marketInfo.salaryIndo}</span>
+                <span className="text-xs font-bold text-slate-500">Indonesia</span>
+                <span className="text-sm font-black text-blue-700">{career.marketInfo.salaryIndo}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-500">Global (USA)</span>
-                <span className="text-sm font-black text-gray-900">{career.marketInfo.salaryUSA}</span>
+                <span className="text-xs font-bold text-slate-500">Global (USA)</span>
+                <span className="text-sm font-black text-slate-950">{career.marketInfo.salaryUSA}</span>
               </div>
             </div>
           </section>
 
           {/* AI Advisor Call to Action */}
-          <div className="p-10 rounded-[2.5rem] bg-blue-600 text-white relative overflow-hidden group">
+          <div className="p-10 rounded-4xl bg-slate-950 text-white relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10 transition-transform group-hover:scale-150"></div>
             <Sparkles className="mb-6" size={24} />
             <h4 className="text-xl font-black">Mau Jalur Personal?</h4>
-            <p className="mt-4 text-sm font-medium leading-relaxed text-blue-100 opacity-80">Konsultasikan minatmu dengan AI Advisor kami untuk jalur yang lebih personal.</p>
-            <Link to="/counselor" className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-4 text-sm font-black text-blue-600 transition hover:bg-blue-50">
+            <p className="mt-4 text-sm font-medium leading-relaxed text-slate-300">Konsultasikan minatmu dengan AI Advisor kami untuk jalur yang lebih personal.</p>
+            <Link to="/counselor" className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-4 text-sm font-black text-slate-950 transition hover:bg-blue-50">
               Buka Konselor AI
               <ArrowRight size={18} />
             </Link>
@@ -360,7 +360,7 @@ export default function RoadmapDetail() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleSpeech}
-        className={`fixed bottom-8 right-8 z-[100] flex h-14 w-14 items-center justify-center rounded-full text-white shadow-2xl transition-all ${isSpeaking ? 'bg-rose-600 shadow-rose-600/40' : 'bg-blue-600 shadow-blue-600/40'}`}
+        className={`fixed bottom-8 right-8 z-100 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-2xl transition-all ${isSpeaking ? 'bg-rose-600 shadow-rose-600/40' : 'bg-blue-600 shadow-blue-600/40'}`}
       >
         {isSpeaking ? <Square size={20} fill="currentColor" /> : <Volume2 size={24} />}
       </motion.button>
