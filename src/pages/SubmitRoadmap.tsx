@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { 
-  Plus, Trash2, Link as LinkIcon, Send, 
-  CheckCircle2, Zap, 
-  Target, Lightbulb, 
+import {
+  Plus, Trash2, Link as LinkIcon, Send,
+  CheckCircle2, Zap,
+  Target, Lightbulb,
   BookOpen, Edit3, FileText, ArrowLeft, Search,
   Briefcase, Save, AlertCircle, X, ChevronDown, ChevronUp,
   ImageIcon, Layout, ListChecks, Upload, Globe, Clock, BarChart, Info, Book, FileCode, DollarSign, Check,
@@ -134,8 +134,8 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
     salaryUSA: '',
   });
 
-  const [faqs, setFaqs] = useState<{q: string, a: string}[]>([{q: '', a: ''}]);
-  const [topUniversities, setTopUniversities] = useState<{local: string[], global: string[]}>({ local: [''], global: [''] });
+  const [faqs, setFaqs] = useState<{ q: string, a: string }[]>([{ q: '', a: '' }]);
+  const [topUniversities, setTopUniversities] = useState<{ local: string[], global: string[] }>({ local: [''], global: [''] });
   const [universityWorld, setUniversityWorld] = useState({
     overview: '',
     requiredSkills: [''],
@@ -170,7 +170,7 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
       salaryIndo: roadmap.salaryIndo,
       salaryUSA: roadmap.salaryUSA,
     });
-    setFaqs(roadmap.faqs?.length ? roadmap.faqs : [{q: '', a: ''}]);
+    setFaqs(roadmap.faqs?.length ? roadmap.faqs : [{ q: '', a: '' }]);
     setTopUniversities(roadmap.topUniversities || { local: [''], global: [''] });
     setUniversityWorld(roadmap.universityWorld || { overview: '', requiredSkills: [''], whyChoose: [{ title: '', desc: '' }] });
     setPhases(roadmap.phases?.length > 0 ? roadmap.phases : [{ title: '', description: '', stats: '', isSaved: false, topics: [createEmptyTopic()] }]);
@@ -185,7 +185,7 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
   }, [error]);
 
   const addPhase = () => setPhases([...phases, { title: '', description: '', stats: '', isSaved: false, topics: [createEmptyTopic()] }]);
-  
+
   const toggleSavePhase = (idx: number) => {
     const next = [...phases];
     if (!next[idx].isSaved && (!next[idx].title || next[idx].title.trim() === '')) {
@@ -306,14 +306,14 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
         <button type="button" onClick={() => updateTopicData(pi, ti, 'showProject', true)} className="w-full py-4 rounded-xl bg-white border border-dashed border-emerald-300 text-emerald-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-50 transition-all"><Plus size={18} /> Tambah Proyek Portofolio (Opsional)</button>
       );
     }
-    
+
     return (
       <div className="p-6 rounded-2xl bg-white border border-emerald-200 shadow-md space-y-6 relative">
         <button type="button" onClick={() => updateTopicData(pi, ti, 'showProject', false)} className="absolute top-4 right-4 text-slate-300 hover:text-red-500 flex items-center gap-1 text-[10px] font-bold"><X size={14} /> HAPUS PROYEK</button>
         <div className="flex items-center gap-2 border-b border-slate-50 pb-4"><ListChecks size={20} className="text-emerald-600" /><h5 className="font-bold text-slate-900">Formulir Proyek Portofolio</h5></div>
-        
+
         <input placeholder="Judul Proyek" className="h-10 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-sm" value={topic.project.title} onChange={(e) => updateProject(pi, ti, 'title', e.target.value)} />
-        
+
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="space-y-1"><label className="text-[10px] font-bold text-blue-600">Latar Belakang</label><textarea placeholder="..." rows={2} className="w-full p-4 rounded-xl bg-slate-50 border-none font-bold text-sm" value={topic.project.background} onChange={(e) => updateProject(pi, ti, 'background', e.target.value)} /></div>
           <div className="space-y-1"><label className="text-[10px] font-bold text-emerald-600">Skill</label><textarea placeholder="..." rows={2} className="w-full p-4 rounded-xl bg-slate-50 border-none font-bold text-sm" value={topic.project.skillsLearned} onChange={(e) => updateProject(pi, ti, 'skillsLearned', e.target.value)} /></div>
@@ -335,9 +335,9 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
             {/* Brief Deskripsi for Murni */}
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-amber-500 uppercase flex items-center gap-2"><Target size={12} /> Instruksi & Brief Tugas Lengkap (Artikel)</label>
-              <ArticleBuilder 
-                blocks={topic.project.contentBlocks || []} 
-                onChange={(blocks) => updateProject(pi, ti, 'contentBlocks', blocks)} 
+              <ArticleBuilder
+                blocks={topic.project.contentBlocks || []}
+                onChange={(blocks) => updateProject(pi, ti, 'contentBlocks', blocks)}
               />
             </div>
           </div>
@@ -355,19 +355,19 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
                   </div>
                   <div className="space-y-2 pt-2">
                     <label className="text-[10px] font-bold text-slate-500 uppercase">Konten Instruksi Step (Artikel)</label>
-                    <ArticleBuilder 
-                      blocks={step.contentBlocks || []} 
-                      onChange={(blocks) => updateInteractiveStep(pi, ti, stepIdx, 'contentBlocks', blocks)} 
+                    <ArticleBuilder
+                      blocks={step.contentBlocks || []}
+                      onChange={(blocks) => updateInteractiveStep(pi, ti, stepIdx, 'contentBlocks', blocks)}
                     />
                   </div>
-                  
+
                   {/* Mode Pertanyaan / Percabangan vs Simple Checklist */}
                   <div className="space-y-3 pt-3 border-t border-slate-200">
                     <div className="flex flex-col gap-2">
                       <label className="text-[10px] font-bold text-slate-500">Pertanyaan Percabangan (Kosongkan jika hanya 1 ceklis biasa)</label>
                       <input placeholder="Misal: Apakah berhasil dijalankan di localhost?" className="h-9 w-full rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={step.question || ''} onChange={(e) => updateInteractiveStep(pi, ti, stepIdx, 'question', e.target.value)} />
                     </div>
-                    
+
                     {!step.question ? (
                       <div className="flex gap-4 items-center bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer"><input type="checkbox" checked={step.requiresProof || false} onChange={(e) => updateInteractiveStep(pi, ti, stepIdx, 'requiresProof', e.target.checked)} className="rounded border-slate-300 text-blue-600" /> Wajib Screenshot</label>
@@ -380,13 +380,13 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
                           <div key={choice.id} className="p-3 bg-white border border-slate-100 shadow-sm rounded-lg space-y-3 relative">
                             <button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].project.interactiveSteps[stepIdx].choices = n[pi].topics[ti].project.interactiveSteps[stepIdx].choices.filter((_: any, i: number) => i !== choiceIdx); setPhases(n); }} className="absolute top-3 right-3 text-slate-200 hover:text-red-500"><Trash2 size={14} /></button>
                             <input placeholder="Label Pilihan (misal: Berhasil)" className="h-8 w-full md:w-1/2 rounded-md bg-slate-50 border-none px-3 font-bold text-xs" value={choice.label} onChange={(e) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'label', e.target.value)} />
-                             <div className="space-y-1">
-                               <label className="text-[10px] font-bold text-slate-400 uppercase">Guidance / Bantuan (Artikel)</label>
-                               <ArticleBuilder 
-                                 blocks={choice.contentBlocks || []} 
-                                 onChange={(blocks) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'contentBlocks', blocks)} 
-                               />
-                             </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold text-slate-400 uppercase">Guidance / Bantuan (Artikel)</label>
+                              <ArticleBuilder
+                                blocks={choice.contentBlocks || []}
+                                onChange={(blocks) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'contentBlocks', blocks)}
+                              />
+                            </div>
                             <div className="flex gap-4 items-center flex-wrap pt-2 border-t border-slate-50">
                               <label className="flex items-center gap-2 text-[10px] font-bold text-slate-600 cursor-pointer"><input type="checkbox" checked={choice.requiresProof || false} onChange={(e) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'requiresProof', e.target.checked)} className="rounded border-slate-300 text-blue-600" /> Wajib Screenshot</label>
                               <label className="flex items-center gap-2 text-[10px] font-bold text-slate-600 cursor-pointer"><input type="checkbox" checked={choice.requiresExplanation || false} onChange={(e) => updateStepChoice(pi, ti, stepIdx, choiceIdx, 'requiresExplanation', e.target.checked)} className="rounded border-slate-300 text-blue-600" /> Wajib Penjelasan</label>
@@ -412,7 +412,7 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const payload = {
       ...formData,
       phases,
@@ -441,7 +441,7 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
       });
       setIsSubmitting(false);
       setIsSuccess(true);
-      
+
       // Reset setelah sukses
       setTimeout(() => {
         setIsSuccess(false);
@@ -528,63 +528,63 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
           <div className="px-6 py-2 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold flex items-center gap-2 border border-emerald-100 animate-pulse"><Zap size={14} /> Misi: Lengkapi Detail Materi</div>
         </div>
         <div className="mb-12 bg-white rounded-3xl p-8 border border-emerald-100 shadow-sm flex items-center gap-8">
-           <div className="h-20 w-20 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg"><Trophy size={40} /></div>
-           <div className="flex-1">
-             <h2 className="text-2xl font-black text-slate-900">{formData.title}</h2>
-             <p className="text-sm font-bold text-slate-400 uppercase tracking-tighter">Bantu komunitas dengan melengkapi detail materi di bawah ini!</p>
-           </div>
+          <div className="h-20 w-20 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg"><Trophy size={40} /></div>
+          <div className="flex-1">
+            <h2 className="text-2xl font-black text-slate-900">{formData.title}</h2>
+            <p className="text-sm font-bold text-slate-400 uppercase tracking-tighter">Bantu komunitas dengan melengkapi detail materi di bawah ini!</p>
+          </div>
         </div>
         <div className="space-y-6">
           {phases.map((phase, pi) => (
             <div key={pi} className="space-y-4">
-               <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4 flex items-center gap-2"><Layout size={14} /> {phase.title}</h3>
-               <div className="grid gap-4">
-                 {phase.topics.map((topic, ti) => {
-                   const isComplete = isTopicComplete(topic);
-                   return (
-                     <div key={ti} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden transition-all">
-                        <div className="p-5 flex items-center justify-between">
-                           <div className="flex items-center gap-4">
-                              <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${isComplete ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600 animate-pulse'}`}>
-                                {isComplete ? <Check size={20} /> : <AlertTriangle size={20} />}
-                              </div>
-                              <div>
-                                <h4 className="font-bold text-slate-900">{topic.title}</h4>
-                                <p className={`text-[10px] font-black uppercase ${isComplete ? 'text-emerald-500' : 'text-amber-500'}`}>{isComplete ? 'Sudah Lengkap' : 'Butuh Detail Summary, Referensi, atau Proyek'}</p>
-                              </div>
-                           </div>
-                           <button onClick={() => updateTopicData(pi, ti, 'isDetailed', !topic.isDetailed)} className={`px-6 py-2.5 rounded-xl font-bold text-xs transition-all ${topic.isDetailed ? 'bg-slate-900 text-white shadow-lg' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md'}`}>{topic.isDetailed ? 'Tutup' : 'Lengkapi Sekarang'}</button>
+              <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4 flex items-center gap-2"><Layout size={14} /> {phase.title}</h3>
+              <div className="grid gap-4">
+                {phase.topics.map((topic, ti) => {
+                  const isComplete = isTopicComplete(topic);
+                  return (
+                    <div key={ti} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden transition-all">
+                      <div className="p-5 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${isComplete ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600 animate-pulse'}`}>
+                            {isComplete ? <Check size={20} /> : <AlertTriangle size={20} />}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-slate-900">{topic.title}</h4>
+                            <p className={`text-[10px] font-black uppercase ${isComplete ? 'text-emerald-500' : 'text-amber-500'}`}>{isComplete ? 'Sudah Lengkap' : 'Butuh Detail Summary, Referensi, atau Proyek'}</p>
+                          </div>
                         </div>
-                        {topic.isDetailed && (
-                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="px-8 pb-8 space-y-8 border-t border-slate-50 pt-8 bg-slate-50/30">
-                              <div className="grid gap-4 md:grid-cols-3">
-                                <div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Waktu</label><input placeholder="10 Min" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.timeEstimate} onChange={(e) => updateTopicData(pi, ti, 'timeEstimate', e.target.value)} /></div>
-                                <div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Level</label><select className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.difficulty} onChange={(e) => updateTopicData(pi, ti, 'difficulty', e.target.value)}><option value="Easy Peasy">Easy Peasy</option><option value="Intermediate">Intermediate</option></select></div>
-                                <div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Key Concept</label><input placeholder="Misal: IAM" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.keyConcepts} onChange={(e) => updateTopicData(pi, ti, 'keyConcepts', e.target.value)} /></div>
-                              </div>
-                              <textarea placeholder="5 Minute Summary..." className="w-full rounded-xl p-4 font-bold text-base ring-1 ring-emerald-100 bg-white shadow-inner" rows={3} value={topic.summary} onChange={(e) => updateTopicData(pi, ti, 'summary', e.target.value)} />
-                              <div className="space-y-4 pt-4 border-t border-slate-100">
-                                <div className="flex items-center justify-between"><label className="text-xs font-bold text-indigo-600 uppercase flex items-center gap-2"><BookOpen size={14} /> Materi Referensi</label><button type="button" onClick={() => addResource(pi, ti)} className="text-[11px] font-bold text-blue-600 hover:underline">+ Tambah Sumber</button></div>
-                                <div className="grid gap-4">{topic.resources.map((res, ri) => (<div key={ri} className="bg-white p-5 rounded-2xl border border-emerald-50 shadow-sm space-y-4 relative"><button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].resources = n[pi].topics[ti].resources.filter((_, i) => i !== ri); setPhases(n); }} className="absolute top-4 right-4 text-slate-200 hover:text-red-500 transition-colors"><Trash2 size={16} /></button><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Tipe</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.type} onChange={(e) => updateResource(pi, ti, ri, 'type', e.target.value as any)}><option value="web">Web</option><option value="book">Buku</option><option value="documentation">Dokumentasi</option><option value="youtube">YouTube</option><option value="course">Course</option></select></div><div className="space-y-1 md:col-span-1"><label className="text-[10px] font-bold text-slate-400">Judul</label><input placeholder="Judul Materi" className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs" value={res.title} onChange={(e) => updateResource(pi, ti, ri, 'title', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400 flex items-center gap-1"><CreditCard size={10} /> Status</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.priceType} onChange={(e) => updateResource(pi, ti, ri, 'priceType', e.target.value as any)}><option value="Gratis">Gratis</option><option value="Berbayar">Berbayar</option></select></div></div><textarea placeholder="Deskripsi..." rows={2} className="w-full p-3 rounded-lg bg-slate-50 border-none font-bold text-xs" value={res.description} onChange={(e) => updateResource(pi, ti, ri, 'description', e.target.value)} /><input placeholder="https://..." className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs text-blue-600 underline" value={res.link} onChange={(e) => updateResource(pi, ti, ri, 'link', e.target.value)} /></div>))}</div>
-                              </div>
-                              <div className="space-y-3 pt-4 border-t border-slate-100"><label className="text-xs font-bold text-blue-600 flex items-center gap-2"><Info size={14} /> Cost Note / FAQ</label><textarea placeholder="Apakah butuh biaya?..." className="w-full rounded-xl p-4 font-bold text-sm bg-blue-50/50 border border-blue-100" rows={2} value={topic.costNote} onChange={(e) => updateTopicData(pi, ti, 'costNote', e.target.value)} /></div>
-                              <div className="space-y-4 pt-6 border-t border-emerald-100">
-                                {renderProjectForm(pi, ti, topic)}
-                              </div>
-                              <div className="flex justify-center pt-6 border-t border-emerald-100"><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', false)} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-10 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"><Check size={18} /> Simpan Progres Materi</button></div>
-                          </motion.div>
-                        )}
-                     </div>
-                   );
-                 })}
-               </div>
+                        <button onClick={() => updateTopicData(pi, ti, 'isDetailed', !topic.isDetailed)} className={`px-6 py-2.5 rounded-xl font-bold text-xs transition-all ${topic.isDetailed ? 'bg-slate-900 text-white shadow-lg' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md'}`}>{topic.isDetailed ? 'Tutup' : 'Lengkapi Sekarang'}</button>
+                      </div>
+                      {topic.isDetailed && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="px-8 pb-8 space-y-8 border-t border-slate-50 pt-8 bg-slate-50/30">
+                          <div className="grid gap-4 md:grid-cols-3">
+                            <div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Waktu</label><input placeholder="10 Min" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.timeEstimate} onChange={(e) => updateTopicData(pi, ti, 'timeEstimate', e.target.value)} /></div>
+                            <div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Level</label><select className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.difficulty} onChange={(e) => updateTopicData(pi, ti, 'difficulty', e.target.value)}><option value="Easy Peasy">Easy Peasy</option><option value="Intermediate">Intermediate</option></select></div>
+                            <div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Key Concept</label><input placeholder="Misal: IAM" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.keyConcepts} onChange={(e) => updateTopicData(pi, ti, 'keyConcepts', e.target.value)} /></div>
+                          </div>
+                          <textarea placeholder="5 Minute Summary..." className="w-full rounded-xl p-4 font-bold text-base ring-1 ring-emerald-100 bg-white shadow-inner" rows={3} value={topic.summary} onChange={(e) => updateTopicData(pi, ti, 'summary', e.target.value)} />
+                          <div className="space-y-4 pt-4 border-t border-slate-100">
+                            <div className="flex items-center justify-between"><label className="text-xs font-bold text-indigo-600 uppercase flex items-center gap-2"><BookOpen size={14} /> Materi Referensi</label><button type="button" onClick={() => addResource(pi, ti)} className="text-[11px] font-bold text-blue-600 hover:underline">+ Tambah Sumber</button></div>
+                            <div className="grid gap-4">{topic.resources.map((res, ri) => (<div key={ri} className="bg-white p-5 rounded-2xl border border-emerald-50 shadow-sm space-y-4 relative"><button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].resources = n[pi].topics[ti].resources.filter((_, i) => i !== ri); setPhases(n); }} className="absolute top-4 right-4 text-slate-200 hover:text-red-500 transition-colors"><Trash2 size={16} /></button><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Tipe</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.type} onChange={(e) => updateResource(pi, ti, ri, 'type', e.target.value as any)}><option value="web">Web</option><option value="book">Buku</option><option value="documentation">Dokumentasi</option><option value="youtube">YouTube</option><option value="course">Course</option></select></div><div className="space-y-1 md:col-span-1"><label className="text-[10px] font-bold text-slate-400">Judul</label><input placeholder="Judul Materi" className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs" value={res.title} onChange={(e) => updateResource(pi, ti, ri, 'title', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400 flex items-center gap-1"><CreditCard size={10} /> Status</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.priceType} onChange={(e) => updateResource(pi, ti, ri, 'priceType', e.target.value as any)}><option value="Gratis">Gratis</option><option value="Berbayar">Berbayar</option></select></div></div><textarea placeholder="Deskripsi..." rows={2} className="w-full p-3 rounded-lg bg-slate-50 border-none font-bold text-xs" value={res.description} onChange={(e) => updateResource(pi, ti, ri, 'description', e.target.value)} /><input placeholder="https://..." className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs text-blue-600 underline" value={res.link} onChange={(e) => updateResource(pi, ti, ri, 'link', e.target.value)} /></div>))}</div>
+                          </div>
+                          <div className="space-y-3 pt-4 border-t border-slate-100"><label className="text-xs font-bold text-blue-600 flex items-center gap-2"><Info size={14} /> Cost Note / FAQ</label><textarea placeholder="Apakah butuh biaya?..." className="w-full rounded-xl p-4 font-bold text-sm bg-blue-50/50 border border-blue-100" rows={2} value={topic.costNote} onChange={(e) => updateTopicData(pi, ti, 'costNote', e.target.value)} /></div>
+                          <div className="space-y-4 pt-6 border-t border-emerald-100">
+                            {renderProjectForm(pi, ti, topic)}
+                          </div>
+                          <div className="flex justify-center pt-6 border-t border-emerald-100"><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', false)} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-10 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"><Check size={18} /> Simpan Progres Materi</button></div>
+                        </motion.div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>
         <div className="flex flex-col items-center pt-12">
-          <button 
-            type="button" 
-            onClick={handleSubmit} 
+          <button
+            type="button"
+            onClick={handleSubmit}
             disabled={isSubmitting}
             className="rounded-2xl bg-slate-900 px-12 py-5 text-xl font-bold text-white shadow-xl hover:bg-black transition-all active:scale-95 flex items-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
           >
@@ -615,8 +615,8 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
       <div className="flex items-center justify-between mb-10">
         <button onClick={() => { setMode('none'); setSelectedRoadmapId(null); }} className="flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-blue-600 transition-colors"><ArrowLeft size={16} /> Kembali</button>
         <div className="flex items-center gap-3 px-4 py-2 bg-slate-100 rounded-full">
-           <div className={`h-2 w-2 rounded-full ${mode === 'edit_roadmap' ? 'bg-amber-500 animate-pulse' : 'bg-blue-500'}`}></div>
-           <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{mode === 'edit_roadmap' ? 'Editing Mode' : 'New Creation'}</span>
+          <div className={`h-2 w-2 rounded-full ${mode === 'edit_roadmap' ? 'bg-amber-500 animate-pulse' : 'bg-blue-500'}`}></div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{mode === 'edit_roadmap' ? 'Editing Mode' : 'New Creation'}</span>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="space-y-10">
@@ -624,14 +624,14 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
           <div className="flex items-center gap-3 border-b pb-4"><Briefcase className="text-blue-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Informasi Dasar</h2></div>
           <div className="grid gap-6">
             <div className="grid gap-6 md:grid-cols-3">
-               <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Judul Roadmap</label><input required placeholder="Misal: Software Engineer" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} /></div>
-               <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Kategori</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}><option value="IT & Software">IT & Software</option><option value="Kesehatan">Kesehatan</option><option value="Seni & Desain">Seni & Desain</option><option value="Kedinasan">Kedinasan</option><option value="Lainnya">Lainnya (Kustom)</option></select></div>
-               <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Tipe Profesi (Template)</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}><option value="skill_based">Skill & Project Based (Contoh: IT)</option><option value="education_based">Education Path (Contoh: Dokter)</option></select></div>
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Judul Roadmap</label><input required placeholder="Misal: Software Engineer" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} /></div>
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Kategori</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}><option value="IT & Software">IT & Software</option><option value="Kesehatan">Kesehatan</option><option value="Seni & Desain">Seni & Desain</option><option value="Kedinasan">Kedinasan</option><option value="Lainnya">Lainnya (Kustom)</option></select></div>
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Tipe Profesi (Template)</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })}><option value="skill_based">Skill & Project Based (Contoh: IT)</option><option value="education_based">Education Path (Contoh: Dokter)</option></select></div>
             </div>
-            <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Deskripsi Utama</label><textarea placeholder="Gambarkan jalur karir ini..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} /></div>
+            <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Deskripsi Utama</label><textarea placeholder="Gambarkan jalur karir ini..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} /></div>
             <div className="grid gap-6 md:grid-cols-2">
-               <div className="space-y-2"><label className="text-sm font-bold text-slate-500 flex items-center gap-2"><DollarSign size={14} /> Gaji Rata-rata (ID)</label><input placeholder="Rp 8jt - 20jt" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.salaryIndo} onChange={(e) => setFormData({...formData, salaryIndo: e.target.value})} /></div>
-               <div className="space-y-2"><label className="text-sm font-bold text-slate-500 flex items-center gap-2"><Globe size={14} /> Gaji Global (USA)</label><input placeholder="$80k - $150k" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.salaryUSA} onChange={(e) => setFormData({...formData, salaryUSA: e.target.value})} /></div>
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500 flex items-center gap-2"><DollarSign size={14} /> Gaji Rata-rata (ID)</label><input placeholder="Rp 8jt - 20jt" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.salaryIndo} onChange={(e) => setFormData({ ...formData, salaryIndo: e.target.value })} /></div>
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500 flex items-center gap-2"><Globe size={14} /> Gaji Global (USA)</label><input placeholder="$80k - $150k" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.salaryUSA} onChange={(e) => setFormData({ ...formData, salaryUSA: e.target.value })} /></div>
             </div>
           </div>
         </section>
@@ -640,25 +640,25 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
         <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
           <div className="flex items-center gap-3 border-b pb-4"><School className="text-blue-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Dunia Perkuliahan & Karir</h2></div>
           <div className="space-y-6">
-             <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Overview Jurusan</label><textarea placeholder="Gambaran perkuliahan..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={universityWorld.overview} onChange={(e) => setUniversityWorld({...universityWorld, overview: e.target.value})} /></div>
-             <div className="grid gap-6 md:grid-cols-2">
-               <div className="space-y-4">
-                 <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Pengetahuan & Keahlian</label><button type="button" onClick={() => setUniversityWorld({...universityWorld, requiredSkills: [...universityWorld.requiredSkills, '']})} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
-                 {universityWorld.requiredSkills.map((skill, i) => (
-                   <div key={i} className="flex gap-2"><input placeholder="Contoh: Observasi" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={skill} onChange={(e) => { const newSkills = [...universityWorld.requiredSkills]; newSkills[i] = e.target.value; setUniversityWorld({...universityWorld, requiredSkills: newSkills}); }} /><button type="button" onClick={() => setUniversityWorld({...universityWorld, requiredSkills: universityWorld.requiredSkills.filter((_, idx) => idx !== i)})} className="text-slate-300 hover:text-red-500"><Trash2 size={18}/></button></div>
-                 ))}
-               </div>
-               <div className="space-y-4">
-                 <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Kenapa Memilih Jurusan Ini?</label><button type="button" onClick={() => setUniversityWorld({...universityWorld, whyChoose: [...universityWorld.whyChoose, {title: '', desc: ''}]})} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
-                 {universityWorld.whyChoose.map((reason, i) => (
-                   <div key={i} className="flex flex-col gap-3 p-4 bg-slate-50 rounded-xl relative shadow-sm border border-slate-100">
-                     <button type="button" onClick={() => setUniversityWorld({...universityWorld, whyChoose: universityWorld.whyChoose.filter((_, idx) => idx !== i)})} className="absolute top-3 right-3 text-slate-300 hover:text-red-500"><Trash2 size={16}/></button>
-                     <input placeholder="Judul Alasan" className="h-10 w-11/12 rounded-lg bg-white border border-slate-100 px-3 font-bold text-sm" value={reason.title} onChange={(e) => { const newReasons = [...universityWorld.whyChoose]; newReasons[i].title = e.target.value; setUniversityWorld({...universityWorld, whyChoose: newReasons}); }} />
-                     <textarea placeholder="Penjelasan singkat" className="w-11/12 rounded-lg bg-white border border-slate-100 p-3 text-sm font-medium" rows={2} value={reason.desc} onChange={(e) => { const newReasons = [...universityWorld.whyChoose]; newReasons[i].desc = e.target.value; setUniversityWorld({...universityWorld, whyChoose: newReasons}); }} />
-                   </div>
-                 ))}
-               </div>
-             </div>
+            <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Overview Jurusan</label><textarea placeholder="Gambaran perkuliahan..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={universityWorld.overview} onChange={(e) => setUniversityWorld({ ...universityWorld, overview: e.target.value })} /></div>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Pengetahuan & Keahlian</label><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, requiredSkills: [...universityWorld.requiredSkills, ''] })} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+                {universityWorld.requiredSkills.map((skill, i) => (
+                  <div key={i} className="flex gap-2"><input placeholder="Contoh: Observasi" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={skill} onChange={(e) => { const newSkills = [...universityWorld.requiredSkills]; newSkills[i] = e.target.value; setUniversityWorld({ ...universityWorld, requiredSkills: newSkills }); }} /><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, requiredSkills: universityWorld.requiredSkills.filter((_, idx) => idx !== i) })} className="text-slate-300 hover:text-red-500"><Trash2 size={18} /></button></div>
+                ))}
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Kenapa Memilih Jurusan Ini?</label><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, whyChoose: [...universityWorld.whyChoose, { title: '', desc: '' }] })} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+                {universityWorld.whyChoose.map((reason, i) => (
+                  <div key={i} className="flex flex-col gap-3 p-4 bg-slate-50 rounded-xl relative shadow-sm border border-slate-100">
+                    <button type="button" onClick={() => setUniversityWorld({ ...universityWorld, whyChoose: universityWorld.whyChoose.filter((_, idx) => idx !== i) })} className="absolute top-3 right-3 text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
+                    <input placeholder="Judul Alasan" className="h-10 w-11/12 rounded-lg bg-white border border-slate-100 px-3 font-bold text-sm" value={reason.title} onChange={(e) => { const newReasons = [...universityWorld.whyChoose]; newReasons[i].title = e.target.value; setUniversityWorld({ ...universityWorld, whyChoose: newReasons }); }} />
+                    <textarea placeholder="Penjelasan singkat" className="w-11/12 rounded-lg bg-white border border-slate-100 p-3 text-sm font-medium" rows={2} value={reason.desc} onChange={(e) => { const newReasons = [...universityWorld.whyChoose]; newReasons[i].desc = e.target.value; setUniversityWorld({ ...universityWorld, whyChoose: newReasons }); }} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -667,15 +667,15 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
           <div className="flex items-center gap-3 border-b pb-4"><Globe className="text-emerald-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Top 5 Universitas</h2></div>
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-4">
-              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Dalam Negeri</label><button type="button" onClick={() => setTopUniversities({...topUniversities, local: [...topUniversities.local, '']})} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Dalam Negeri</label><button type="button" onClick={() => setTopUniversities({ ...topUniversities, local: [...topUniversities.local, ''] })} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
               {topUniversities.local.map((univ, i) => (
-                <div key={i} className="flex gap-2"><input placeholder="UI (Jakarta)" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={univ} onChange={(e) => { const newLocal = [...topUniversities.local]; newLocal[i] = e.target.value; setTopUniversities({...topUniversities, local: newLocal}); }} /><button type="button" onClick={() => setTopUniversities({...topUniversities, local: topUniversities.local.filter((_, idx) => idx !== i)})} className="text-slate-300 hover:text-red-500"><Trash2 size={18}/></button></div>
+                <div key={i} className="flex gap-2"><input placeholder="UI (Jakarta)" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={univ} onChange={(e) => { const newLocal = [...topUniversities.local]; newLocal[i] = e.target.value; setTopUniversities({ ...topUniversities, local: newLocal }); }} /><button type="button" onClick={() => setTopUniversities({ ...topUniversities, local: topUniversities.local.filter((_, idx) => idx !== i) })} className="text-slate-300 hover:text-red-500"><Trash2 size={18} /></button></div>
               ))}
             </div>
             <div className="space-y-4">
-              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Luar Negeri</label><button type="button" onClick={() => setTopUniversities({...topUniversities, global: [...topUniversities.global, '']})} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Luar Negeri</label><button type="button" onClick={() => setTopUniversities({ ...topUniversities, global: [...topUniversities.global, ''] })} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
               {topUniversities.global.map((univ, i) => (
-                <div key={i} className="flex gap-2"><input placeholder="Harvard (USA)" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={univ} onChange={(e) => { const newGlobal = [...topUniversities.global]; newGlobal[i] = e.target.value; setTopUniversities({...topUniversities, global: newGlobal}); }} /><button type="button" onClick={() => setTopUniversities({...topUniversities, global: topUniversities.global.filter((_, idx) => idx !== i)})} className="text-slate-300 hover:text-red-500"><Trash2 size={18}/></button></div>
+                <div key={i} className="flex gap-2"><input placeholder="Harvard (USA)" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={univ} onChange={(e) => { const newGlobal = [...topUniversities.global]; newGlobal[i] = e.target.value; setTopUniversities({ ...topUniversities, global: newGlobal }); }} /><button type="button" onClick={() => setTopUniversities({ ...topUniversities, global: topUniversities.global.filter((_, idx) => idx !== i) })} className="text-slate-300 hover:text-red-500"><Trash2 size={18} /></button></div>
               ))}
             </div>
           </div>
@@ -685,12 +685,12 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
         <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
           <div className="flex items-center justify-between border-b pb-4">
             <div className="flex items-center gap-3"><Info className="text-amber-500" size={20} /><h2 className="text-xl font-bold text-slate-900">Common Questions (FAQ)</h2></div>
-            <button type="button" onClick={() => setFaqs([...faqs, {q: '', a: ''}])} className="text-sm font-bold text-blue-600 hover:underline">+ Tambah Pertanyaan</button>
+            <button type="button" onClick={() => setFaqs([...faqs, { q: '', a: '' }])} className="text-sm font-bold text-blue-600 hover:underline">+ Tambah Pertanyaan</button>
           </div>
           <div className="grid gap-4">
             {faqs.map((faq, i) => (
               <div key={i} className="flex gap-4 p-5 bg-slate-50 rounded-2xl relative shadow-sm border border-slate-100">
-                <button type="button" onClick={() => setFaqs(faqs.filter((_, idx) => idx !== i))} className="absolute top-4 right-4 text-slate-300 hover:text-red-500"><Trash2 size={18}/></button>
+                <button type="button" onClick={() => setFaqs(faqs.filter((_, idx) => idx !== i))} className="absolute top-4 right-4 text-slate-300 hover:text-red-500"><Trash2 size={18} /></button>
                 <div className="flex-1 space-y-3 pr-8">
                   <input placeholder="Pertanyaan..." className="h-11 w-full rounded-xl bg-white border border-slate-100 px-4 font-bold text-sm" value={faq.q} onChange={(e) => { const newFaqs = [...faqs]; newFaqs[i].q = e.target.value; setFaqs(newFaqs); }} />
                   <textarea placeholder="Jawaban..." className="w-full rounded-xl bg-white border border-slate-100 p-4 text-sm font-medium" rows={2} value={faq.a} onChange={(e) => { const newFaqs = [...faqs]; newFaqs[i].a = e.target.value; setFaqs(newFaqs); }} />
@@ -703,20 +703,20 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
         <section className="space-y-8">
           <div className="flex items-center justify-between px-2"><h2 className="text-xl font-bold text-slate-900">Alur Belajar (Fase)</h2><button type="button" onClick={addPhase} className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition-all hover:scale-105">+ Tambah Fase</button></div>
           <div className="space-y-8">{phases.map((phase, pi) => (<div key={pi} className="relative"><div className="absolute -left-3 -top-3 z-10 h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-base font-bold shadow-xl">{pi + 1}</div>{!phase.isSaved ? (<motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8"><div className="grid gap-6 md:grid-cols-2"><input placeholder="Judul Fase" className="h-12 rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={phase.title} onChange={(e) => updatePhase(pi, 'title', e.target.value)} /><input placeholder="Stats" className="h-12 rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={phase.stats} onChange={(e) => updatePhase(pi, 'stats', e.target.value)} /></div><div className="space-y-6 pt-6 border-t border-slate-50"><div className="flex items-center justify-between"><label className="text-sm font-bold text-indigo-500 uppercase tracking-wider">Materi Pembelajaran</label><button type="button" onClick={() => addTopic(pi)} className="text-xs font-bold text-blue-600 hover:underline">+ TAMBAH MATERI</button></div><div className="space-y-4">{phase.topics.map((topic, ti) => (<div key={ti} className="flex flex-col gap-3"><div className="flex gap-3 items-center"><input placeholder="Judul Materi..." className="h-12 flex-1 rounded-xl bg-slate-100 border-none px-4 font-bold text-base" value={topic.title} onChange={(e) => updateTopicData(pi, ti, 'title', e.target.value)} /><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', !topic.isDetailed)} className={`flex items-center gap-2 px-6 h-12 rounded-xl font-bold text-xs transition-all shadow-sm ${topic.isDetailed ? 'bg-slate-900 text-white' : 'bg-white text-blue-600 border border-slate-100 hover:bg-blue-50'}`}>{topic.isDetailed ? 'Tutup Konten' : 'Lengkapi Konten'}</button><button type="button" onClick={() => { const n = [...phases]; n[pi].topics = n[pi].topics.filter((_, i) => i !== ti); setPhases(n); }} className="text-slate-200 hover:text-red-500"><Trash2 size={18} /></button></div>{topic.isDetailed && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="ml-4 rounded-2xl bg-emerald-50/20 border border-emerald-100 p-8 space-y-8 shadow-inner overflow-hidden"><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Waktu</label><input placeholder="10 Min" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.timeEstimate} onChange={(e) => updateTopicData(pi, ti, 'timeEstimate', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Level</label><select className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.difficulty} onChange={(e) => updateTopicData(pi, ti, 'difficulty', e.target.value)}><option value="Easy Peasy">Easy Peasy</option><option value="Intermediate">Intermediate</option></select></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Key Concept</label><input placeholder="Misal: IAM" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.keyConcepts} onChange={(e) => updateTopicData(pi, ti, 'keyConcepts', e.target.value)} /></div></div><textarea placeholder="Deskripsi materi..." className="w-full rounded-xl bg-white border border-emerald-100 p-4 font-bold text-sm" rows={2} value={topic.description} onChange={(e) => updateTopicData(pi, ti, 'description', e.target.value)} /><textarea placeholder="5 Minute Summary..." className="w-full rounded-xl p-4 font-bold text-base ring-1 ring-emerald-50 bg-white" rows={3} value={topic.summary} onChange={(e) => updateTopicData(pi, ti, 'summary', e.target.value)} /><div className="space-y-4 pt-6 border-t border-emerald-100"><div className="flex items-center justify-between"><label className="text-xs font-bold text-indigo-600 uppercase flex items-center gap-2"><BookOpen size={14} /> Materi Referensi</label><button type="button" onClick={() => addResource(pi, ti)} className="text-[11px] font-bold text-blue-600 hover:underline">+ Tambah Sumber</button></div><div className="grid gap-4">{topic.resources.map((res, ri) => (<div key={ri} className="bg-white p-5 rounded-2xl border border-emerald-50 shadow-sm space-y-4 relative"><button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].resources = n[pi].topics[ti].resources.filter((_, i) => i !== ri); setPhases(n); }} className="absolute top-4 right-4 text-slate-200 hover:text-red-500"><Trash2 size={16} /></button><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Tipe</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.type} onChange={(e) => updateResource(pi, ti, ri, 'type', e.target.value as any)}><option value="web">Web</option><option value="book">Buku</option><option value="documentation">Dokumentasi</option><option value="youtube">YouTube</option><option value="course">Course</option></select></div><div className="space-y-1 md:col-span-1"><label className="text-[10px] font-bold text-slate-400">Judul</label><input placeholder="Judul" className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs" value={res.title} onChange={(e) => updateResource(pi, ti, ri, 'title', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Status</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.priceType} onChange={(e) => updateResource(pi, ti, ri, 'priceType', e.target.value as any)}><option value="Gratis">Gratis</option><option value="Berbayar">Berbayar</option></select></div></div><textarea placeholder="Deskripsi..." rows={2} className="w-full p-3 rounded-lg bg-slate-50 border-none font-bold text-xs" value={res.description} onChange={(e) => updateResource(pi, ti, ri, 'description', e.target.value)} /><input placeholder="https://..." className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs text-blue-600 underline" value={res.link} onChange={(e) => updateResource(pi, ti, ri, 'link', e.target.value)} /></div>))}</div></div><div className="space-y-3 pt-6 border-t border-emerald-100"><label className="text-xs font-bold text-blue-600 flex items-center gap-2"><Info size={14} /> Cost Note / FAQ</label><textarea placeholder="Apakah butuh biaya?..." className="w-full rounded-xl p-4 font-bold text-sm bg-blue-50/50 border border-blue-100" rows={2} value={topic.costNote} onChange={(e) => updateTopicData(pi, ti, 'costNote', e.target.value)} /></div><div className="space-y-4 pt-6 border-t border-emerald-100">
-                                {renderProjectForm(pi, ti, topic)}
-                              </div><div className="flex justify-center pt-6 border-t border-emerald-100"><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', false)} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-10 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"><Check size={18} /> Simpan Materi Ini</button></div></motion.div>)}</div>))}</div></div><div className="flex justify-end pt-6 items-center gap-3">{mode === 'edit_roadmap' && <button type="button" onClick={() => setPhases(phases.filter((_, i) => i !== pi))} className="flex items-center gap-2 rounded-xl bg-red-50 px-6 py-3 text-sm font-bold text-red-600 hover:bg-red-100 transition-all"><Trash2 size={18} /> Hapus Fase</button>}<button type="button" onClick={() => toggleSavePhase(pi)} className="flex items-center gap-2 rounded-xl bg-slate-900 px-8 py-3 text-sm font-bold text-white transition-all"><Save size={18} /> Simpan Struktur Fase</button></div></motion.div>) : (<div className="rounded-3xl bg-slate-50 border border-slate-200 p-8 flex items-center justify-between shadow-sm hover:bg-white transition-all group"><div><h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{phase.title}</h3><p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-tighter">{phase.stats}</p></div><button type="button" onClick={() => toggleSavePhase(pi)} className="h-12 w-12 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 shadow-sm transition-all"><Edit3 size={18} /></button></div>)}</div>))}</div></section>
+            {renderProjectForm(pi, ti, topic)}
+          </div><div className="flex justify-center pt-6 border-t border-emerald-100"><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', false)} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-10 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"><Check size={18} /> Simpan Materi Ini</button></div></motion.div>)}</div>))}</div></div><div className="flex justify-end pt-6 items-center gap-3">{mode === 'edit_roadmap' && <button type="button" onClick={() => setPhases(phases.filter((_, i) => i !== pi))} className="flex items-center gap-2 rounded-xl bg-red-50 px-6 py-3 text-sm font-bold text-red-600 hover:bg-red-100 transition-all"><Trash2 size={18} /> Hapus Fase</button>}<button type="button" onClick={() => toggleSavePhase(pi)} className="flex items-center gap-2 rounded-xl bg-slate-900 px-8 py-3 text-sm font-bold text-white transition-all"><Save size={18} /> Simpan Struktur Fase</button></div></motion.div>) : (<div className="rounded-3xl bg-slate-50 border border-slate-200 p-8 flex items-center justify-between shadow-sm hover:bg-white transition-all group"><div><h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{phase.title}</h3><p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-tighter">{phase.stats}</p></div><button type="button" onClick={() => toggleSavePhase(pi)} className="h-12 w-12 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 shadow-sm transition-all"><Edit3 size={18} /></button></div>)}</div>))}</div></section>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
           {isAdmin && initialData ? (
             <>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => onAction && onAction('reject')}
                 className="w-full sm:w-auto rounded-2xl px-12 py-5 text-xl font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 flex items-center justify-center gap-3"
               >
                 Tolak Kontribusi
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isSubmitting}
                 className="w-full sm:w-auto rounded-2xl px-12 py-5 text-xl font-bold text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed bg-emerald-600 hover:bg-emerald-700"
               >
@@ -725,8 +725,8 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
               </button>
             </>
           ) : isAdmin && !initialData ? (
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isSubmitting}
               className="w-full sm:w-auto rounded-2xl px-12 py-5 text-xl font-bold text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700"
             >
@@ -734,8 +734,8 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
               Publish Roadmap Baru
             </button>
           ) : (
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isSubmitting}
               className={`rounded-2xl px-12 py-5 text-xl font-bold text-white shadow-xl transition-all active:scale-95 flex items-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed ${mode === 'edit_roadmap' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}
             >
@@ -746,7 +746,7 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
                 </>
               ) : (
                 <>
-                  {mode === 'edit_roadmap' ? 'Perbarui Roadmap' : 'Kirim Kontribusi'} 
+                  {mode === 'edit_roadmap' ? 'Perbarui Roadmap' : 'Kirim Kontribusi'}
                   <Send size={24} />
                 </>
               )}

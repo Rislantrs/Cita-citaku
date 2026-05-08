@@ -4,6 +4,7 @@ import { Mic, MicOff, Send, Bot, MessageSquare, History, PlusCircle, Trash2 } fr
 import * as motion from 'motion/react-client';
 
 import { toast } from 'sonner';
+import { auth } from '../lib/firebase';
 
 const SUGGESTED_TOPICS = [
   { label: "Analisis RIASEC saya", prompt: "Tolong jelaskan lebih dalam tentang hasil tes RIASEC saya." },
@@ -71,13 +72,25 @@ export default function AICounselor() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          task: 'counselor',
+          userId: auth.currentUser?.uid,
           messages: newMessages.map(m => ({
             role: m.role,
-            parts: [{ text: m.content }]
+            content: m.content
           }))
         })
       });
+
       const data = await response.json();
+
+      if (response.status === 429) {
+        toast.error(data.error || 'Kuota harian habis');
+        setMessages([...newMessages, { role: 'model', content: data.text || 'Maaf, kuota harian kamu sudah habis.' }]);
+        return;
+      }
+
+      if (!response.ok) throw new Error(data.error || 'Gagal mengirim pesan');
+
       setMessages([...newMessages, { role: 'model', content: data.text }]);
     } catch (err) {
       toast.error('Gagal mengirim pesan. Silakan coba lagi.');

@@ -17,6 +17,7 @@ import {
   X,
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
+import { fetchProjects } from '../lib/api';
 
 interface BriefSection {
   number: number;
@@ -271,26 +272,64 @@ export default function ProjectExplore() {
   const [stepProofs, setStepProofs] = useState<Record<string, string>>({});
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isAiOpen, setIsAiOpen] = useState(false);
+  const [projects, setProjects] = useState<Project[]>(DUMMY_PROJECTS);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+  const [projectError, setProjectError] = useState<string | null>(null);
 
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua');
 
   useEffect(() => {
+    let cancelled = false;
+
+    async function loadProjects() {
+      try {
+        setIsLoadingProjects(true);
+        setProjectError(null);
+
+        const result = await fetchProjects();
+        const items = result.items as Project[];
+
+        if (!cancelled && Array.isArray(items) && items.length > 0) {
+          setProjects(items);
+        }
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+        if (!cancelled) {
+          setProjectError('Data project dari server belum tersedia. Menampilkan project contoh.');
+          setProjects(DUMMY_PROJECTS);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingProjects(false);
+        }
+      }
+    }
+
+    loadProjects();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     const projectTitle = searchParams.get('title');
     if (projectTitle) {
-      const found = DUMMY_PROJECTS.find(p => p.title.toLowerCase() === projectTitle.toLowerCase());
+      const found = projects.find(p => p.title.toLowerCase() === projectTitle.toLowerCase());
       if (found) {
         setActiveProject(found);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, projects]);
 
-  const categories = ['Semua', ...Array.from(new Set(DUMMY_PROJECTS.map(p => p.category)))];
+  const categories = ['Semua', ...Array.from(new Set(projects.map(p => p.category)))];
 
-  const filteredProjects = DUMMY_PROJECTS.filter(project => {
+  const filteredProjects = projects.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         project.introduction.toLowerCase().includes(searchQuery.toLowerCase());
+                         project.introduction.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         project.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === 'Semua' || project.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -816,42 +855,52 @@ export default function ProjectExplore() {
   }
 
   return (
-    <div className="page-shell min-h-screen pb-32 pt-28">
+    <div className="page-shell min-h-screen bg-[#FCFCFD] pb-32 pt-28">
       <div className="mx-auto max-w-7xl px-6">
-        <header className="mb-16">
-          <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-700 mb-6">
-            Misi Masa Depan
-          </div>
-          <h1 className="mb-6 text-6xl font-black tracking-tight text-gray-900 sm:text-7xl">
-            Pilih Misi <span className="text-blue-600">Anda.</span>
+        <header className="mb-12">
+          <span className="text-blue-600 text-[9px] font-black tracking-[0.4em] uppercase mb-3 block">Misi Masa Depan</span>
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 leading-tight">
+            Pilih Misi <span className="text-slate-400">Terbaik Anda.</span>
           </h1>
-          <p className="max-w-2xl text-xl font-medium leading-relaxed text-gray-500">
+          <p className="text-sm text-slate-500 font-medium mt-3 leading-relaxed max-w-md">
             Bangun portofolio nyata dengan tantangan industri yang dirancang untuk menguji batas kemampuan Anda.
           </p>
         </header>
 
-        {/* Search & Filter Section */}
-        <section className="mb-16 space-y-8">
-          <div className="relative max-w-2xl">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+        {/* Search & Filter Section - Refined */}
+        <section className="mb-12 space-y-8">
+          <div className="relative max-w-xl">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
             <input 
               type="text"
               placeholder="Cari tantangan, teknologi, atau topik..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-4xl border border-slate-200 bg-white py-6 pl-16 pr-8 text-lg font-medium shadow-sm outline-none transition focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
+              className="w-full rounded-xl border border-slate-100 bg-white py-3.5 pl-12 pr-6 text-xs font-bold shadow-sm outline-none transition focus:border-blue-200 focus:ring-4 focus:ring-blue-50/50"
             />
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          {isLoadingProjects && (
+            <div className="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4 text-xs font-bold text-blue-700">
+              Memuat project terbaru dari server...
+            </div>
+          )}
+
+          {projectError && (
+            <div className="rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4 text-xs font-bold text-amber-700">
+              {projectError}
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`rounded-full px-8 py-3 text-sm font-black transition-all ${
+                className={`rounded-lg px-5 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
                   selectedCategory === category 
-                  ? 'bg-gray-900 text-white shadow-xl shadow-gray-200' 
-                  : 'bg-white border border-gray-100 text-gray-500 hover:border-gray-300 hover:text-gray-900 shadow-sm'
+                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10' 
+                  : 'bg-white border border-slate-100 text-slate-400 hover:border-slate-300 hover:text-slate-600 shadow-sm'
                 }`}
               >
                 {category}
@@ -860,52 +909,50 @@ export default function ProjectExplore() {
           </div>
         </section>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {filteredProjects.map((project) => (
             <motion.div
               key={project.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              whileHover={{ y: -12 }}
               onClick={() => setActiveProject(project)}
-              className="group cursor-pointer overflow-hidden rounded-[3rem] border border-slate-200 bg-white p-4 shadow-sm transition-all hover:shadow-2xl hover:shadow-blue-100/50"
+              className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-100 bg-white p-2.5 shadow-sm transition-all hover:border-blue-100 hover:shadow-xl hover:shadow-blue-500/5"
             >
-              <div className="relative mb-8 aspect-4/3 overflow-hidden rounded-[2.5rem]">
+              <div className="relative mb-4 aspect-[4/3] overflow-hidden rounded-xl bg-slate-50">
                 <img 
-                  src="file:///C:/Users/Rislan/.gemini/antigravity/brain/6b2fba9b-7dae-4660-bdc2-a0c0f9762fa6/banking_chatbot_project_cover_1778076117795.png" 
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                  src={project.image || "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=1200"} 
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
                   alt={project.title} 
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
-                <div className="absolute left-6 top-6">
-                  <span className="rounded-full bg-white/90 backdrop-blur px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-900">
+                <div className="absolute left-3 top-3">
+                  <span className="rounded-md bg-white/95 backdrop-blur-sm px-2.5 py-1 text-[8px] font-black uppercase tracking-widest text-slate-900 shadow-sm border border-slate-100/50">
                     {project.category}
                   </span>
                 </div>
               </div>
 
-              <div className="px-4 pb-6">
-                <div className="mb-4 flex flex-wrap gap-2">
+              <div className="px-2.5 pb-4">
+                <div className="mb-2 flex flex-wrap gap-2">
                   {project.skills.slice(0, 2).map((skill) => (
-                    <span key={skill} className="text-[10px] font-bold text-blue-600/60 uppercase tracking-wider">
-                      # {skill}
+                    <span key={skill} className="text-[8px] font-bold text-blue-500/80 uppercase tracking-wider">
+                      #{skill}
                     </span>
                   ))}
                 </div>
-                <h3 className="mb-3 text-2xl font-black leading-tight text-gray-900 transition-colors group-hover:text-blue-600">
+                <h3 className="mb-2 text-sm font-black leading-tight text-slate-800 transition-colors group-hover:text-blue-600">
                   {project.title}
                 </h3>
-                <p className="mb-8 line-clamp-2 text-sm font-medium leading-relaxed text-gray-500">
+                <p className="mb-6 line-clamp-2 text-[11px] font-medium leading-relaxed text-slate-400">
                   {project.introduction}
                 </p>
                 
-                <div className="flex items-center justify-between pt-6 border-t border-gray-50">
-                  <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-gray-400 group-hover:text-blue-600 transition-colors">
-                    Mulai Project <ArrowRight size={14} />
+                <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+                  <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-300 group-hover:text-blue-600 transition-colors">
+                    Mulai Misi <ArrowRight size={10} />
                   </div>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors group-hover:bg-blue-600 group-hover:text-white">
-                    <Sparkles size={16} />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-300 transition-colors group-hover:bg-blue-600 group-hover:text-white">
+                    <Sparkles size={12} />
                   </div>
                 </div>
               </div>

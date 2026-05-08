@@ -12,16 +12,23 @@ service cloud.firestore {
     function existing() { return resource.data; }
     function isSignedIn() { return request.auth != null; }
     function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
-    function isAdmin() {
+    function currentRole() {
       return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : 'user';
+    }
+    function isAdmin() {
+      return currentRole() in ['admin', 'super_admin'];
+    }
+    function isModerator() {
+      return currentRole() in ['moderator', 'admin', 'super_admin'];
     }
 
     function isValidUser(data) {
       return data.keys().hasAll(['fullName', 'email', 'role', 'createdAt', 'updatedAt'])
         && data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 100
         && data.email is string && data.email.size() > 0 && data.email.size() <= 150
-        && data.role in ['user', 'admin']
+        && data.role in ['user', 'admin', 'moderator', 'super_admin']
         && data.createdAt == request.time
         && data.updatedAt == request.time;
     }
@@ -33,9 +40,10 @@ service cloud.firestore {
       allow create: if isOwner(userId) && isValidId(userId) && isValidUser(incoming())
         && incoming().role == 'user'; 
 
-      allow update: if isOwner(userId) && isValidId(userId)
-        && (
-          incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'testResults', 'progressTracker', 'badges', 'updatedAt'])
+      allow update: if (
+          isOwner(userId)
+          && isValidId(userId)
+          && incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'testResults', 'progressTracker', 'badges', 'updatedAt'])
           && incoming().updatedAt == request.time
         ) || isAdmin();
 
@@ -47,6 +55,11 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    match /projects/{projectId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
     function isValidSubmission(data) {
       return data.keys().hasAll(['careerData', 'status', 'submittedById', 'createdAt', 'updatedAt'])
         && data.status in ['pending', 'approved', 'rejected']
@@ -54,18 +67,19 @@ service cloud.firestore {
         && data.createdAt == request.time
         && data.updatedAt == request.time
         && data.careerData is map
-        && data.careerData.title is string && data.careerData.title.size() <= 150;
+        && data.careerData.title is string && data.careerData.title.size() > 0 && data.careerData.title.size() <= 150
+        && data.careerData.category is string && data.careerData.category.size() > 0 && data.careerData.category.size() <= 80;
     }
 
     match /submissions/{submissionId} {
-      allow get: if isOwner(existing().submittedById) || isAdmin();
-      allow list: if isAdmin() || (isSignedIn() && resource.data.submittedById == request.auth.uid);
+      allow get: if isOwner(existing().submittedById) || isModerator();
+      allow list: if isModerator();
 
       allow create: if isSignedIn() && isValidId(submissionId)
         && isValidSubmission(incoming())
         && incoming().status == 'pending';
 
-      allow update: if isAdmin();
+      allow update: if isModerator();
       allow delete: if isAdmin();
     }
   }

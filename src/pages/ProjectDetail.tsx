@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Clock, 
-  Gauge, 
-  Calendar, 
-  Lightbulb, 
-  Zap, 
-  MessageSquare, 
+import {
+  ArrowLeft,
+  Clock,
+  Gauge,
+  Calendar,
+  Lightbulb,
+  Zap,
+  MessageSquare,
   Rocket,
   Target,
   ChevronDown,
@@ -31,13 +31,13 @@ export default function ProjectDetail() {
 
   return (
     <div className="page-shell fixed inset-0 flex overflow-hidden bg-(--bg-primary)" style={{ zIndex: 999 }}>
-      <SEO 
+      <SEO
         title={`${project.title} - Panduan Proyek`}
         description={project.summary}
       />
 
       {/* Main Content Area - Clean white background for readability */}
-      <main 
+      <main
         className="relative flex h-full flex-1 flex-col overflow-y-auto bg-(--bg-primary) transition-all duration-500 ease-in-out"
         style={isChatOpen ? { marginRight: '450px' } : undefined}
       >
@@ -53,8 +53,8 @@ export default function ProjectDetail() {
               <h2 className="truncate text-sm font-black text-slate-950 sm:max-w-md" style={{ maxWidth: '200px' }}>{project.title}</h2>
             </div>
           </div>
-          
-          <button 
+
+          <button
             onClick={() => setIsChatOpen(!isChatOpen)}
             className={`hidden lg:flex items-center gap-2 rounded-full px-5 py-2 text-xs font-black transition-all ${isChatOpen ? 'bg-slate-900 text-white' : 'bg-blue-700 text-white shadow-lg shadow-blue-700/20'}`}
           >
@@ -114,7 +114,7 @@ export default function ProjectDetail() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {project.resources.map((resource, idx) => (
-                <a 
+                <a
                   key={idx}
                   href={resource.link}
                   target="_blank"
@@ -159,7 +159,7 @@ export default function ProjectDetail() {
             <div className="space-y-6">
               {project.projects.map((p, idx) => (
                 <div key={idx} className="overflow-hidden rounded-4xl border border-slate-200 bg-white/80 shadow-sm transition-all hover:shadow-md hover:scale-[1.01] hover:border-blue-200 group">
-                  <Link 
+                  <Link
                     to={`/explore-projects?title=${encodeURIComponent(p.title)}`}
                     className="flex w-full items-center justify-between p-10 text-left"
                   >
@@ -179,10 +179,10 @@ export default function ProjectDetail() {
       </main>
 
       {/* Project Chat Sidebar - Stays fixed on right */}
-      <ProjectChatSidebar 
-        isOpen={isChatOpen} 
-        onClose={() => setIsChatOpen(false)} 
-        projectTitle={project.title} 
+      <ProjectChatSidebar
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        projectTitle={project.title}
       />
     </div>
   );
