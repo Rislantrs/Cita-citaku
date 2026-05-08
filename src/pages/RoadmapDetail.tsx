@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  BookOpen, 
-  Globe2, 
-  Sparkles, 
-  Wallet, 
-  CheckCircle2, 
-  Volume2, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Globe2,
+  Sparkles,
+  Wallet,
+  CheckCircle2,
+  Volume2,
   Square,
   School,
   Library,
@@ -79,7 +79,7 @@ export default function RoadmapDetail() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-      <SEO 
+      <SEO
         title={`Roadmap Menjadi ${career.title}`}
         description={career.description}
         keywords={`roadmap karir, cara menjadi ${career.title}, belajar ${career.title}, gaji ${career.title} indonesia`}
@@ -92,16 +92,16 @@ export default function RoadmapDetail() {
           <ArrowLeft size={16} />
           Kembali ke Katalog
         </Link>
-        
+
         <div className="max-w-4xl space-y-6">
           <div className="flex items-center gap-3">
-             <span className="rounded-full bg-blue-50 px-4 py-1 text-[10px] font-black uppercase tracking-widest text-blue-600 ring-1 ring-blue-100">
-               {career.categoryId}
-             </span>
-             <span className="h-1 w-1 rounded-full bg-gray-300"></span>
-             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-               {career.type === 'skill_based' ? 'Skill Path' : 'Education Path'}
-             </span>
+            <span className="rounded-full bg-blue-50 px-4 py-1 text-[10px] font-black uppercase tracking-widest text-blue-600 ring-1 ring-blue-100">
+              {career.categoryId}
+            </span>
+            <span className="h-1 w-1 rounded-full bg-gray-300"></span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              {career.type === 'skill_based' ? 'Skill Path' : 'Education Path'}
+            </span>
           </div>
           <h1 className="text-5xl font-black tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
             {career.title}
@@ -126,7 +126,7 @@ export default function RoadmapDetail() {
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Overview Jurusan</p>
                 </div>
               </div>
-              
+
               <div className="space-y-10">
                 <p className="text-base leading-relaxed text-gray-600">
                   {career.universityWorld.overview}
@@ -144,7 +144,7 @@ export default function RoadmapDetail() {
                       ))}
                     </ul>
                   </div>
-                  
+
                   <div className="space-y-5">
                     <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3">Kenapa Memilih Jurusan Ini?</h3>
                     <div className="space-y-4">
@@ -186,8 +186,8 @@ export default function RoadmapDetail() {
                   <div key={stepKey} className="relative flex flex-col sm:flex-row gap-8">
                     {/* Step Indicator */}
                     <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white border border-gray-100 text-xl font-black text-gray-300 shadow-sm transition-all group-hover:border-blue-600">
-                       {stepIndex + 1}
-                       {isActive && <div className="absolute -inset-1 rounded-2xl border-2 border-blue-600 animate-pulse"></div>}
+                      {stepIndex + 1}
+                      {isActive && <div className="absolute -inset-1 rounded-2xl border-2 border-blue-600 animate-pulse"></div>}
                     </div>
 
                     <div className="flex-1 space-y-6">
@@ -204,35 +204,34 @@ export default function RoadmapDetail() {
                       <div className="grid gap-6">
                         {/* Projects Grid - BACK TO CLICKABLE */}
                         <div className="space-y-4">
-                           <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400">
+                          <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400">
                             <Bookmark size={14} /> {career.type === 'skill_based' ? 'Modul Pelajaran & Proyek' : 'Topik Studi Utama'}
                           </h4>
                           <div className="grid gap-3 sm:grid-cols-2">
-                             {step.projects.map((proj) => {
-                               const projectSlug = projectSlugMap[proj];
-                               return (
-                                 <Link 
-                                   key={proj} 
-                                   to={projectSlug ? `/project/${projectSlug}` : '#'}
-                                   className={`group flex items-center justify-between gap-4 rounded-2xl p-5 border transition-all ${
-                                     projectSlug 
-                                       ? 'bg-white border-gray-200 hover:border-blue-500 hover:shadow-md' 
-                                       : 'bg-gray-50/50 border-transparent cursor-default'
-                                   }`}
-                                 >
-                                   <div className="flex items-center gap-3">
-                                     <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${projectSlug ? 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white' : 'bg-gray-100 text-gray-400'}`}>
-                                       <BookOpen size={18} />
-                                     </div>
-                                     <div className="flex flex-col">
-                                       <span className="text-sm font-bold text-gray-700">{proj}</span>
-                                       {projectSlug && <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 opacity-0 group-hover:opacity-100">Buka Misi</span>}
-                                     </div>
-                                   </div>
-                                   {projectSlug && <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />}
-                                 </Link>
-                               );
-                             })}
+                            {step.projects.map((proj) => {
+                              const projectSlug = projectSlugMap[proj];
+                              return (
+                                <Link
+                                  key={proj}
+                                  to={projectSlug ? `/project/${projectSlug}` : '#'}
+                                  className={`group flex items-center justify-between gap-4 rounded-2xl p-5 border transition-all ${projectSlug
+                                    ? 'bg-white border-gray-200 hover:border-blue-500 hover:shadow-md'
+                                    : 'bg-gray-50/50 border-transparent cursor-default'
+                                    }`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${projectSlug ? 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                      <BookOpen size={18} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-bold text-gray-700">{proj}</span>
+                                      {projectSlug && <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 opacity-0 group-hover:opacity-100">Buka Misi</span>}
+                                    </div>
+                                  </div>
+                                  {projectSlug && <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />}
+                                </Link>
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
@@ -245,40 +244,40 @@ export default function RoadmapDetail() {
 
           {/* FAQs Editorial - Simplified Accordion */}
           <section className="space-y-12">
-             <div className="flex items-center gap-4">
-                <div className="h-px flex-1 bg-gray-100"></div>
-                <h2 className="text-xl font-black text-gray-400 uppercase tracking-[0.2em]">Common Questions</h2>
-                <div className="h-px flex-1 bg-gray-100"></div>
-             </div>
-             <div className="mx-auto max-w-3xl space-y-3">
-                {career.faqs.map((faq, i) => (
-                  <div key={i} className="overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:border-blue-100 shadow-sm">
-                    <button 
-                      onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
-                      className="flex w-full items-center justify-between p-6 text-left"
+            <div className="flex items-center gap-4">
+              <div className="h-px flex-1 bg-gray-100"></div>
+              <h2 className="text-xl font-black text-gray-400 uppercase tracking-[0.2em]">Common Questions</h2>
+              <div className="h-px flex-1 bg-gray-100"></div>
+            </div>
+            <div className="mx-auto max-w-3xl space-y-3">
+              {career.faqs.map((faq, i) => (
+                <div key={i} className="overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:border-blue-100 shadow-sm">
+                  <button
+                    onClick={() => setOpenFaqIndex(openFaqIndex === i ? null : i)}
+                    className="flex w-full items-center justify-between p-6 text-left"
+                  >
+                    <h4 className={`text-base font-bold transition-colors ${openFaqIndex === i ? 'text-blue-600' : 'text-gray-900'}`}>
+                      {faq.q}
+                    </h4>
+                    <ChevronDown
+                      size={18}
+                      className={`text-gray-400 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-600' : ''}`}
+                    />
+                  </button>
+                  {openFaqIndex === i && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      className="px-6 pb-6"
                     >
-                      <h4 className={`text-base font-bold transition-colors ${openFaqIndex === i ? 'text-blue-600' : 'text-gray-900'}`}>
-                        {faq.q}
-                      </h4>
-                      <ChevronDown 
-                        size={18} 
-                        className={`text-gray-400 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-blue-600' : ''}`} 
-                      />
-                    </button>
-                    {openFaqIndex === i && (
-                      <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        className="px-6 pb-6"
-                      >
-                        <p className="text-sm leading-relaxed text-gray-500 border-t border-gray-50 pt-4">
-                          {faq.a}
-                        </p>
-                      </motion.div>
-                    )}
-                  </div>
-                ))}
-             </div>
+                      <p className="text-sm leading-relaxed text-gray-500 border-t border-gray-50 pt-4">
+                        {faq.a}
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+              ))}
+            </div>
           </section>
         </main>
 
@@ -312,7 +311,7 @@ export default function RoadmapDetail() {
               <div className="space-y-4">
                 <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">Luar Negeri (Global)</p>
                 <div className="space-y-3">
-                   {career.topUniversities.global.map((uni, i) => (
+                  {career.topUniversities.global.map((uni, i) => (
                     <div key={i} className="flex items-center gap-3">
                       <span className="text-xs font-black text-gray-600">{i + 1}</span>
                       <span className="text-sm font-bold text-gray-100">{uni}</span>
@@ -329,7 +328,7 @@ export default function RoadmapDetail() {
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Estimasi Gaji</p>
               <h3 className="text-xl font-black text-gray-900">Pasar Kerja</h3>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-gray-500">Indonesia</span>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Sparkles, Upload, Plus, FileText, Trash2, Save, BrainCircuit, CheckCircle2 } from 'lucide-react';
 import * as motion from 'motion/react-client';
 
@@ -8,21 +8,35 @@ export function AdminRiasec() {
     { id: '2', text: 'Saya senang menganalisis data atau memecahkan misteri', category: 'Investigative', points: 5 },
   ]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const categories = ['Realistic', 'Investigative', 'Artistic', 'Social', 'Enterprising', 'Conventional'];
 
-  const handleAiGenerate = () => {
+  const handleAiGenerate = async () => {
+    if (!uploadedFile) {
+      alert("Silakan unggah dokumen (PDF/TXT) terlebih dahulu untuk dianalisis oleh AI.");
+      return;
+    }
+    
     setIsGenerating(true);
-    // Simulate AI parsing a document
-    setTimeout(() => {
-      setQuestions(prev => [
-        ...prev,
-        { id: Date.now().toString(), text: 'Saya menikmati mengajar atau melatih orang lain', category: 'Social', points: 5 },
-        { id: (Date.now() + 1).toString(), text: 'Saya suka memimpin proyek dan mengambil keputusan', category: 'Enterprising', points: 5 }
-      ]);
-      setIsGenerating(false);
-    }, 2000);
+    
+    // Simulating API Call to LLM (e.g., Gemini / OpenAI)
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Mock response based on the "file"
+    const generatedQuestions = [
+      { id: Date.now().toString(), text: `Saya merasa tertantang saat harus memahami dokumen kompleks seperti "${uploadedFile.name}"`, category: 'Investigative', points: 5 },
+      { id: (Date.now() + 1).toString(), text: 'Saya sangat teliti dalam memastikan semua detail laporan sudah benar.', category: 'Conventional', points: 5 },
+      { id: (Date.now() + 2).toString(), text: 'Saya bisa meyakinkan orang lain tentang pentingnya informasi ini.', category: 'Enterprising', points: 5 }
+    ];
+
+    setQuestions(prev => [...prev, ...generatedQuestions]);
+    setUploadedFile(null);
+    setIsGenerating(false);
+    alert(`AI berhasil mengekstrak ${generatedQuestions.length} soal RIASEC dari dokumen Anda!`);
   };
+
 
   const addQuestion = () => {
     setQuestions([...questions, { id: Date.now().toString(), text: '', category: 'Realistic', points: 5 }]);
@@ -54,9 +68,21 @@ export function AdminRiasec() {
             <p className="text-sm text-indigo-900/70 font-medium">Upload dokumen kurikulum atau psikologi. AI akan otomatis mengekstrak dan memformatnya menjadi soal RIASEC.</p>
             
             <div className="flex gap-3 pt-2">
-              <button className="flex-1 flex flex-col items-center justify-center gap-2 h-24 rounded-2xl border-2 border-dashed border-indigo-200 bg-white/50 hover:bg-white transition-colors cursor-pointer text-indigo-600">
-                <Upload size={20} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Upload PDF/TXT</span>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept=".pdf,.txt,.doc,.docx" 
+                onChange={e => setUploadedFile(e.target.files?.[0] || null)} 
+              />
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className={`flex-1 flex flex-col items-center justify-center gap-2 h-24 rounded-2xl border-2 border-dashed transition-colors cursor-pointer ${uploadedFile ? 'border-emerald-400 bg-emerald-50 text-emerald-700' : 'border-indigo-200 bg-white/50 hover:bg-white text-indigo-600'}`}
+              >
+                {uploadedFile ? <CheckCircle2 size={20} /> : <Upload size={20} />}
+                <span className="text-[10px] font-black uppercase tracking-widest text-center px-2">
+                  {uploadedFile ? uploadedFile.name.substring(0, 20) + (uploadedFile.name.length > 20 ? '...' : '') : 'Upload PDF/TXT'}
+                </span>
               </button>
               <button 
                 onClick={handleAiGenerate}

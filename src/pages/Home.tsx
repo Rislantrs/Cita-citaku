@@ -1,199 +1,314 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, BrainCircuit, Compass, Map, ShieldCheck, Sparkles, Star, UserCircle } from "lucide-react";
+import { ArrowRight, BookOpen, Map, ShieldCheck, Sparkles, ChevronRight, ChevronLeft } from "lucide-react";
 import * as motion from "motion/react-client";
 import SEO from "../components/SEO";
-
-const CAREER_SPOTLIGHT = [
-  { title: "Software Engineer", label: "Teknologi", blurb: "Bangun aplikasi web, mobile, dan AI product yang dipakai banyak orang.", accent: "from-sky-100 to-blue-100", darkAccent: "from-blue-900/20 to-indigo-900/20" },
-  { title: "Psikolog Karier", label: "Kesehatan", blurb: "Bantu siswa dan profesional menemukan arah karier yang realistis.", accent: "from-blue-50 to-cyan-100", darkAccent: "from-cyan-900/20 to-blue-900/20" },
-  { title: "Product Manager", label: "Bisnis", blurb: "Satukan riset, strategi, dan eksekusi untuk membangun produk.", accent: "from-indigo-100 to-blue-100", darkAccent: "from-indigo-900/20 to-slate-900/20" },
-];
+import { careerCatalog, CAREER_CATEGORIES } from '../lib/careerCatalog';
 
 const FEATURE_POINTS = [
-  { icon: <BrainCircuit size={18} />, title: "Tes jati diri lebih dalam", text: "RIASEC + vibe MBTI untuk menangkap minat, gaya kerja, dan preferensi interaksi." },
-  { icon: <Map size={18} />, title: "Roadmap yang konkret", text: "Setiap cita-cita punya langkah belajar, skill, sertifikasi, dan milestone." },
-  { icon: <ShieldCheck size={18} />, title: "Aman dan terukur", text: "Fokus pada aksesibilitas, validasi, dan struktur data yang siap berkembang." },
+  { title: "Tes jati diri lebih dalam", text: "RIASEC + vibe MBTI untuk menangkap minat, gaya kerja, dan preferensi interaksi." },
+  { title: "Roadmap yang konkret", text: "Setiap cita-cita punya langkah belajar, skill, sertifikasi, dan milestone." },
+  { title: "Aman dan terukur", text: "Fokus pada aksesibilitas, validasi, dan struktur data yang siap berkembang." },
 ];
 
 export default function Home() {
   const { t } = useTranslation();
+  const [parallaxY, setParallaxY] = useState(0);
+
+  // Parallax on scroll
+  useEffect(() => {
+    const onScroll = () => setParallaxY(window.scrollY * 0.3);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Scroll-triggered reveal
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('revealed');
+      }),
+      { threshold: 0.15 }
+    );
+    document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="flex flex-col gap-32 py-10 lg:py-20">
-      <SEO 
+    <div className="flex flex-col">
+      <SEO
         title="Beranda"
         description="Temukan jati diri melalui kuis psikometrik, eksplorasi ribuan cita-cita, dan ikuti peta jalan (roadmap) belajar yang konkret sampai ke industri."
         keywords="cita-citaku, eksplorasi karir, tes riasec indonesia, roadmap belajar, masa depan"
         url="https://cita-citaku.id"
       />
-      {/* Hero Section */}
-      <section className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-4 lg:flex-row lg:items-center">
-        <motion.div
-          className="flex-1 space-y-8"
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-blue-600 ring-1 ring-blue-100" style={{ backgroundColor: 'rgba(var(--accent-blue), 0.1)' }}>
-            <Sparkles size={16} />
-            Platform Eksplorasi Karir No. 1
-          </div>
-          
-          <h1 className="text-5xl font-black leading-[1.1] sm:text-7xl lg:text-8xl" style={{ color: 'var(--text-primary)' }}>
-            Arah Masa Depan, <br />
-            <span
-              className="bg-clip-text text-transparent italic"
-              style={{ backgroundImage: 'linear-gradient(to right, rgb(37 99 235), rgb(99 102 241))' }}
-            >
-              Lebih Jelas.
-            </span>
-          </h1>
-          
-          <p className="max-w-xl text-xl leading-relaxed opacity-70" style={{ color: 'var(--text-secondary)' }}>
-            Temukan jati diri melalui kuis psikometrik, eksplorasi ribuan cita-cita, dan ikuti peta jalan (roadmap) belajar yang konkret sampai ke industri.
-          </p>
 
-          <div className="flex flex-col gap-4 pt-4 sm:flex-row">
-            <Link to="/test" className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-8 py-5 text-lg font-bold text-white transition-all hover:-translate-y-1 hover:bg-blue-700 shadow-xl shadow-blue-600/20">
-              <span>Mulai Tes Sekarang</span>
-              <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link 
-              to="/roadmap" 
-              className="group inline-flex items-center justify-center gap-2 rounded-2xl border px-8 py-5 text-lg font-bold transition-all hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-600/5"
-              style={{ 
-                backgroundColor: 'rgba(37, 99, 235, 0.03)', 
-                borderColor: 'rgba(37, 99, 235, 0.1)',
-                color: 'var(--text-primary)' 
+      {/* HERO SECTION */}
+      <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-slate-50">
+        {/* Background Photo with Parallax */}
+        <div className="absolute inset-0 z-0 opacity-40">
+          <img
+            src="/images/hero-modern.png"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white" />
+        </div>
+
+        {/* Animated Mesh Gradient Background */}
+        <div className="mesh-gradient-container opacity-60">
+          <div className="mesh-gradient-blob w-[600px] h-[600px] bg-blue-400/30 top-[-10%] left-[-10%]" />
+          <div className="mesh-gradient-blob w-[500px] h-[500px] bg-indigo-400/20 bottom-[10%] right-[0%]" style={{ animationDelay: '-5s' }} />
+          <div className="mesh-gradient-blob w-[400px] h-[400px] bg-purple-400/10 top-[20%] right-[10%]" style={{ animationDelay: '-10s' }} />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-block px-4 py-1 rounded-full bg-blue-50 border border-blue-100 text-[11px] font-bold tracking-widest uppercase text-blue-600 mb-8"
+            >
+              Platform Eksplorasi Karir Indonesia
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-5xl sm:text-7xl lg:text-[7rem] font-black leading-[0.95] tracking-tighter mb-10"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Arah Masa Depan, <br />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500">
+                Lebih Jelas.
+              </span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto mb-14 leading-relaxed"
+            >
+              Temukan jati diri melalui kuis psikometrik, eksplorasi cita-cita, dan ikuti peta jalan belajar yang konkret sampai ke industri.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-5"
+            >
+              <Link
+                to="/test"
+                className="group relative flex items-center gap-3 rounded-full bg-blue-600 px-12 py-5 text-[15px] font-bold text-white shadow-2xl shadow-blue-600/30 transition-all hover:-translate-y-1 hover:scale-105 active:scale-95"
+              >
+                Mulai Tes Sekarang
+                <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+
+              <Link
+                to="/roadmap"
+                className="flex items-center gap-3 rounded-full border border-slate-200 bg-white/50 backdrop-blur-sm px-12 py-5 text-[15px] font-bold text-slate-700 transition-all hover:bg-white hover:border-slate-300 hover:-translate-y-1"
+              >
+                Cari Profesi
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="py-32 px-6 reveal-on-scroll">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid gap-16 md:grid-cols-3">
+            {FEATURE_POINTS.map((item, idx) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.12 }}
+                className="space-y-4"
+              >
+                <div className="w-10 h-[2px] bg-blue-600 rounded-full" />
+                <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{item.title}</h3>
+                <p className="text-[15px] leading-relaxed opacity-50" style={{ color: 'var(--text-secondary)' }}>{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-4xl mx-auto px-6 w-full"><div className="fluid-separator" /></div>
+
+      {/* WHY SECTION */}
+      <section className="py-32 px-6 reveal-on-scroll">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-[12px] font-semibold tracking-[0.25em] uppercase text-blue-600 mb-4">Mengapa Cita-citaku</p>
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.15] max-w-2xl" style={{ color: 'var(--text-primary)' }}>
+            Bukan sekadar<br />daftar profesi.
+          </h2>
+
+          <div className="mt-20 grid gap-12 md:grid-cols-3">
+            {[
+              { title: 'Eksplorasi yang luas', text: 'Lebih banyak pilihan jalur, dan lebih banyak konteks untuk tiap profesi.' },
+              { title: 'Roadmap Manusiawi', text: 'Setiap tahap dijelaskan singkat, jelas, dan terasa bisa dikerjakan.' },
+              { title: 'Rekomendasi Pintar', text: 'Hasil kuis langsung dikaitkan ke profesi dan jalur belajar yang relevan.' },
+            ].map((item, idx) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="space-y-4"
+              >
+                <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-blue-600 opacity-60">0{idx + 1}</span>
+                <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{item.title}</h3>
+                <p className="text-[15px] leading-relaxed opacity-50" style={{ color: 'var(--text-secondary)' }}>{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CATEGORY GRID */}
+      <section className="relative py-32 px-6">
+        <div className="relative z-10 max-w-5xl mx-auto mb-16 text-center">
+          <p className="text-[12px] font-semibold tracking-[0.25em] uppercase text-blue-600 mb-3">Bidang Karir</p>
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            Eksplorasi duniamu.
+          </h2>
+          <p className="mt-6 text-[15px] max-w-2xl mx-auto opacity-50" style={{ color: 'var(--text-secondary)' }}>
+            Pilih bidang yang paling sesuai dengan minat dan bakatmu, lalu temukan roadmap karir yang tepat.
+          </p>
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {CAREER_CATEGORIES.slice(0, 6).map((category) => {
+            return (
+              <Link
+                key={category.id}
+                to={`/roadmap`}
+                className="group relative overflow-hidden rounded-[2rem] aspect-[4/3] sm:aspect-square md:aspect-[4/3] flex flex-col justify-end p-8 hover-lift click-feedback shadow-xl"
+                style={{ backgroundColor: 'var(--card-bg)' }}
+              >
+                {/* Background Photo */}
+                <img
+                  src={`/images/cat-${category.id}.png`}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  aria-hidden="true"
+                />
+
+                {/* Gradient Overlay for Text Readability */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-500 group-hover:opacity-60`}
+                />
+
+                <div className="relative z-10 text-white">
+                  <span className="text-[10px] font-black tracking-[0.2em] uppercase opacity-70 mb-2 block">
+                    {careerCatalog.filter(c => c.categoryId === category.id).length} Profesi Tersedia
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-black mb-2 leading-tight">{category.label}</h3>
+                  <div className="flex items-center text-[13px] font-semibold opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                    Jelajahi <ArrowRight size={16} className="ml-2" />
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+
+        {CAREER_CATEGORIES.length > 6 && (
+          <div className="relative z-10 mt-12 flex justify-center">
+            <Link
+              to="/roadmap"
+              className="click-feedback inline-flex items-center gap-2 rounded-full px-8 py-4 text-[13px] font-semibold transition-all hover:-translate-y-0.5"
+              style={{
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-primary)',
+                backgroundColor: 'rgba(255,255,255,0.6)'
               }}
             >
-              <Compass size={20} className="text-blue-600 transition-transform group-hover:rotate-45" />
-              <span>Cari Profesi</span>
+              Lihat Semua Kategori <ArrowRight size={14} />
             </Link>
           </div>
-        </motion.div>
+        )}
+      </section>
 
-        <motion.div
-          className="flex-1"
-          initial={{ opacity: 0, scale: 0.9, x: 30 }}
-          animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <div className="relative">
-            <div className="absolute -inset-4 rounded-[3rem] bg-blue-100/20 blur-3xl" />
-            <img 
-              src="/images/roadmap-hero.png" 
-              alt="Career Roadmap Illustration" 
-              className="relative h-auto w-full rounded-[2.5rem] object-cover shadow-2xl"
-            />
+      {/* STEPS SECTION */}
+      <section className="py-32 px-6 reveal-on-scroll">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-20">
+            <p className="text-[12px] font-semibold tracking-[0.25em] uppercase text-blue-600 mb-4">Cara Kerja</p>
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
+              3 langkah untuk memulai.
+            </h2>
           </div>
-        </motion.div>
-      </section>
 
-      {/* Feature Grid */}
-      <section className="mx-auto w-full max-w-7xl px-4">
-        <div className="grid gap-8 md:grid-cols-3">
-          {FEATURE_POINTS.map((item, idx) => (
-            <motion.div 
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="theme-card group rounded-[2.5rem] p-10 transition-all hover:shadow-xl hover:border-blue-600/30"
-            >
-              <div className="mb-6 inline-flex rounded-2xl bg-blue-600 p-4 text-white shadow-lg shadow-blue-500/30">
-                {item.icon}
-              </div>
-              <h3 className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>{item.title}</h3>
-              <p className="mt-4 text-lg leading-relaxed opacity-70" style={{ color: 'var(--text-secondary)' }}>{item.text}</p>
-            </motion.div>
-          ))}
+          <div className="space-y-16">
+            {[
+              { num: '01', title: 'Kenali Dirimu', desc: 'Ikuti tes berbasis RIASEC untuk memahami minat dan potensi terpendam.' },
+              { num: '02', title: 'Temukan Karir', desc: 'Jelajahi banyak cita-cita yang dirancang lengkap dengan kurikulum industri.' },
+              { num: '03', title: 'Ikuti Roadmap', desc: 'Dapatkan panduan bertahap dari sekolah hingga dunia kerja.' },
+            ].map((step, idx) => (
+              <motion.div
+                key={step.num}
+                initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="flex gap-8 items-start"
+              >
+                <span className="text-5xl sm:text-6xl font-black text-blue-600 opacity-15 shrink-0 leading-none select-none">{step.num}</span>
+                <div className="pt-2 space-y-2">
+                  <h3 className="text-xl sm:text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{step.title}</h3>
+                  <p className="text-[15px] leading-relaxed opacity-50 max-w-md" style={{ color: 'var(--text-secondary)' }}>{step.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Why Section */}
-      <section className="mx-auto w-full max-w-6xl px-4">
-        <div className="mb-16 text-center">
-          <p className="text-xs font-black uppercase tracking-[0.3em] text-blue-600">Mengapa Cita-citaku</p>
-          <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl" style={{ color: 'var(--text-primary)' }}>Bukan sekadar daftar profesi.</h2>
+      {/* CTA SECTION */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="photo-overlay absolute inset-0">
+          <img
+            src="/images/hero-student.png"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            aria-hidden="true"
+          />
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {[
-            { icon: <Compass size={24} />, title: 'Eksplorasi yang luas', text: 'Lebih banyak pilihan jalur, dan lebih banyak konteks untuk tiap profesi.' },
-            { icon: <BookOpen size={24} />, title: 'Roadmap Manusiawi', text: 'Setiap tahap dijelaskan singkat, jelas, dan terasa bisa dikerjakan.' },
-            { icon: <Star size={24} />, title: 'Rekomendasi Pintar', text: 'Hasil kuis akan langsung dikaitkan ke profesi dan jalur belajar yang relevan.' },
-          ].map((item, index) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="theme-card p-8"
-              style={{ borderRadius: '2rem' }}
-            >
-              <div className="inline-flex rounded-xl bg-slate-950 p-3 text-white">
-                {item.icon}
-              </div>
-              <h3 className="mt-5 text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{item.title}</h3>
-              <p className="mt-3 text-sm leading-7 opacity-60" style={{ color: 'var(--text-secondary)' }}>{item.text}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Steps Section */}
-      <section className="max-w-6xl mx-auto px-4 w-full">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-black" style={{ color: 'var(--text-primary)' }}>Cara Kerja Cita-citaku</h2>
-          <p className="opacity-60 mt-4 text-lg" style={{ color: 'var(--text-secondary)' }}>3 langkah untuk memulai perjalanan karirmu.</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          <StepCard
-            number="1"
-            icon={<UserCircle size={32} className="text-blue-500" />}
-            title="Kenali Dirimu"
-            description="Ikuti tes berbasis RIASEC untuk memahami minat dan potensi terpendam."
-            delay={0.1}
-          />
-          <StepCard
-            number="2"
-            icon={<Compass size={32} className="text-orange-500" />}
-            title="Temukan Karir"
-            description="Jelajahi banyak cita-cita yang dirancang lengkap dengan kurikulum industri."
-            delay={0.2}
-          />
-          <StepCard
-            number="3"
-            icon={<Map size={32} className="text-emerald-500" />}
-            title="Ikuti Roadmap"
-            description="Dapatkan panduan bertahap dari sekolah hingga dunia kerja."
-            delay={0.3}
-          />
+        <div className="relative z-10 max-w-3xl mx-auto text-center px-6">
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            Sudah siap menemukan<br />potensimu?
+          </h2>
+          <p className="mt-6 text-lg opacity-40" style={{ color: 'var(--text-secondary)' }}>
+            Tes ini gratis dan akan menjadi langkah awal perubahan besarmu.
+          </p>
+          <Link
+            to="/test"
+            className="click-feedback mt-10 inline-flex items-center gap-3 rounded-full bg-blue-600 px-10 py-4 text-[15px] font-semibold text-white shadow-lg shadow-blue-600/15 transition-all hover:-translate-y-1"
+          >
+            Mulai Sekarang
+            <ArrowRight size={18} />
+          </Link>
         </div>
       </section>
     </div>
-  );
-}
-
-function StepCard({ number, icon, title, description, delay }: { number: string, icon: React.ReactNode, title: string, description: string, delay: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay }}
-      className="theme-card group relative rounded-[2.5rem] p-8 transition-all hover:-translate-y-2"
-    >
-      <div className="absolute -top-5 -left-5 w-12 h-12 bg-slate-950 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg group-hover:scale-110 transition-transform">
-        {number}
-      </div>
-      <div className="mb-6 inline-flex p-4 bg-slate-50 rounded-2xl transition-colors">
-        {icon}
-      </div>
-      <h3 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{title}</h3>
-      <p className="opacity-60 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{description}</p>
-    </motion.div>
   );
 }

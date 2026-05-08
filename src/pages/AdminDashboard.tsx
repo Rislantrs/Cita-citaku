@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   CheckCircle2, XCircle, Eye, Search, Filter, ShieldCheck, 
   Users, FileText, TrendingUp, ChevronRight, MoreVertical,
@@ -7,6 +7,8 @@ import {
 import * as motion from 'motion/react-client';
 import { AdminRiasec } from '../components/admin/AdminRiasec';
 import SubmitRoadmap from './SubmitRoadmap';
+import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { doc, updateDoc, setDoc, serverTimestamp, collection, addDoc, getDocs, query, orderBy } from 'firebase/firestore';
 
 type AdminView = 'dashboard' | 'review' | 'roadmaps' | 'riasec' | 'admins';
 
@@ -16,11 +18,32 @@ export default function AdminDashboard() {
   const [reviewingSubmission, setReviewingSubmission] = useState<any | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
 
-  // Mock Data
-  const [submissions, setSubmissions] = useState([
-    { id: '1', title: 'Cloud Security Engineer', author: 'Rislan T.', date: '2 jam yang lalu', category: 'Tech', status: 'pending', steps: 5 },
-    { id: '2', title: 'Digital Marketing Lead', author: 'Sarah A.', date: '5 jam yang lalu', category: 'Business', status: 'pending', steps: 4 },
-  ]);
+  // Submissions Data from Firestore
+  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchSubmissions = async () => {
+    setIsLoading(true);
+    try {
+      const q = query(collection(db, 'submissions'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      const data = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        // Format date for display
+        date: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate().toLocaleString() : 'Baru saja'
+      }));
+      setSubmissions(data);
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, []);
 
   const stats = [
     { label: 'Total User', value: '1,240', icon: <Users className="text-blue-600" />, trend: '+12%' },
@@ -35,6 +58,60 @@ export default function AdminDashboard() {
     { id: 'riasec', label: 'Bank Soal RIASEC', icon: <BrainCircuit size={20} /> },
     { id: 'admins', label: 'Manajemen Admin', icon: <UserPlus size={20} /> },
   ];
+
+  const handleModerationAction = async (action: 'approve' | 'reject', data?: any) => {
+    if (!reviewingSubmission?.id && !isCreatingNew) return;
+
+    try {
+      const submissionId = reviewingSubmission?.id;
+      
+      if (action === 'reject') {
+        if (submissionId) {
+          const docRef = doc(db, 'submissions', submissionId);
+          await updateDoc(docRef, {
+            status: 'rejected',
+            updatedAt: serverTimestamp(),
+            moderatedAt: serverTimestamp()
+          });
+        }
+        alert('Kontribusi ditolak');
+      } else {
+        // APPROVE / PUBLISH
+        const roadmapData = {
+          ...data,
+          status: 'published',
+          publishedAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+
+        if (submissionId) {
+          // Update submission status
+          const subRef = doc(db, 'submissions', submissionId);
+          await updateDoc(subRef, {
+            status: 'approved',
+            updatedAt: serverTimestamp(),
+            moderatedAt: serverTimestamp()
+          });
+        }
+
+        // Create or Update Public Roadmap
+        // If it has a slug, use it as ID, otherwise generate one
+        const slug = data?.slug || data?.title?.toLowerCase()?.replace(/\s+/g, '-');
+        const roadmapRef = doc(db, 'roadmaps', slug);
+        await setDoc(roadmapRef, roadmapData, { merge: true });
+        
+        alert('Roadmap Berhasil Di-publish!');
+      }
+
+      setReviewingSubmission(null);
+      setIsCreatingNew(false);
+      // Refresh list
+      fetchSubmissions();
+    } catch (error) {
+      console.error('Moderation failed:', error);
+      alert('Gagal memproses aksi. Silakan cek konsol.');
+    }
+  };
 
   // Overlay for Editor
   if (reviewingSubmission || isCreatingNew) {
@@ -51,10 +128,8 @@ export default function AdminDashboard() {
         <SubmitRoadmap 
           isAdmin={true} 
           initialData={reviewingSubmission}
-          onAction={(action) => {
-            alert(action === 'reject' ? 'Ditolak' : 'Aksi: ' + action);
-            setReviewingSubmission(null);
-            setIsCreatingNew(false);
+          onAction={(action, data) => {
+            handleModerationAction(action as any, data);
           }}
         />
       </div>

@@ -10,6 +10,9 @@ import {
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { ArticleBuilder, ContentBlock } from '../components/ArticleBuilder';
+import { db } from '../lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '../lib/AuthContext';
 
 type ContributionMode = 'none' | 'new_roadmap' | 'edit_roadmap' | 'add_content';
 
@@ -112,6 +115,7 @@ interface SubmitRoadmapProps {
 }
 
 export default function SubmitRoadmap({ isAdmin = false, initialData = null, onAction }: SubmitRoadmapProps = {}) {
+  const { user } = useAuth();
   const [mode, setMode] = useState<ContributionMode>(isAdmin ? (initialData ? 'edit_roadmap' : 'new_roadmap') : 'none');
   const [selectedRoadmapId, setSelectedRoadmapId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -409,18 +413,46 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulasi pengiriman data
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    
-    // Reset setelah sukses
-    setTimeout(() => {
-      setIsSuccess(false);
-      setMode('none');
-      setSelectedRoadmapId(null);
-    }, 2000);
+    const payload = {
+      ...formData,
+      phases,
+      faqs,
+      topUniversities,
+      universityWorld,
+      updatedAt: new Date().toISOString()
+    };
+
+    if (isAdmin && onAction) {
+      // For Admin, we pass the data back to AdminDashboard to handle Firestore
+      await onAction('approve', payload);
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Regular User Submit to Firestore
+      const submissionRef = collection(db, 'submissions');
+      await addDoc(submissionRef, {
+        ...payload,
+        author: user?.displayName || 'Anonim',
+        authorUid: user?.uid || 'anonymous',
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+      setIsSubmitting(false);
+      setIsSuccess(true);
+      
+      // Reset setelah sukses
+      setTimeout(() => {
+        setIsSuccess(false);
+        setMode('none');
+        setSelectedRoadmapId(null);
+      }, 2000);
+    } catch (error) {
+      console.error("Error submitting contribution", error);
+      setError("Gagal mengirim kontribusi. Silakan coba lagi.");
+      setIsSubmitting(false);
+    }
   };
 
   // SUCCESS SCREEN

@@ -1,24 +1,59 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Map, Code, Brain, Palette, Heart, Briefcase, GraduationCap, Building2, ChevronRight, Sparkles, Target, LibraryBig } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { careerCatalog, CAREER_CATEGORIES, CareerCategory } from '../lib/careerCatalog';
 import { RoadmapCardSkeleton } from '../components/Skeleton';
 import SEO from '../components/SEO';
+import { db } from '../lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function Roadmap() {
   const [activeCategory, setActiveCategory] = useState<CareerCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [roadmaps, setRoadmaps] = useState<any[]>([]);
 
   useEffect(() => {
-    // Simulate initial loading
-    const timer = setTimeout(() => setIsLoading(false), 1200);
-    return () => clearTimeout(timer);
+    async function fetchRoadmaps() {
+      setIsLoading(true);
+      try {
+        const snapshot = await getDocs(collection(db, 'roadmaps'));
+        const firestoreRoadmaps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Merge with local catalog, unique by slug
+        const combined: any[] = [...firestoreRoadmaps];
+        careerCatalog.forEach(local => {
+          if (!combined.some(c => c.slug === local.slug)) {
+            combined.push(local);
+          }
+        });
+        
+        setRoadmaps(combined);
+      } catch (error) {
+        console.error("Error fetching roadmaps:", error);
+        setRoadmaps(careerCatalog);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchRoadmaps();
   }, []);
 
-  const filteredCareers = careerCatalog.filter((career) => {
+  // Scroll reveal
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('revealed');
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const filteredCareers = roadmaps.filter((career) => {
     const matchesCategory = activeCategory === 'all' || career.categoryId === activeCategory;
     const matchesSearch = career.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           career.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -26,145 +61,122 @@ export default function Roadmap() {
   });
 
   const suggestions = searchQuery.length > 1 
-    ? careerCatalog.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
+    ? roadmaps.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
     : [];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    <div className="flex flex-col">
       <SEO 
         title="Katalog Roadmap Karir"
         description="Eksplorasi ratusan jalur karir masa depan lengkap dengan roadmap belajar, skill, dan standar industri global."
         keywords="katalog karir, daftar profesi, roadmap belajar, masa depan anak muda indonesia"
         url="https://cita-citaku.id/roadmap"
       />
-      {/* Premium Open Hero Section */}
-      <section className="relative mb-24">
-        <div className="flex flex-col items-center gap-16 lg:flex-row lg:justify-between">
-          <div className="max-w-2xl space-y-10 text-center lg:text-left">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black text-blue-600 ring-1 ring-blue-100"
-              style={{ backgroundColor: 'rgba(var(--accent-blue), 0.1)' }}
-            >
-              <Sparkles size={16} />
-              <span>Katalog Karir Masa Depan</span>
-            </motion.div>
-            
-            <div className="space-y-6">
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-6xl font-black tracking-tight sm:text-8xl"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Eksplorasi <br />
-                <span className="text-blue-600">Roadmap Karir.</span>
-              </motion.h1>
-              
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-xl leading-relaxed sm:text-2xl opacity-70"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                Temukan langkah konkret menuju profesi impianmu. <br className="hidden lg:block" /> 
-                Dari nol hingga standar industri global.
-              </motion.p>
-            </div>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="relative mx-auto max-w-lg lg:mx-0"
-            >
-              <div className="group relative flex items-center">
-                <Search className="absolute left-6 text-slate-400 transition-colors group-focus-within:text-blue-600" size={24} />
-                <input
-                  type="text"
-                  placeholder="Cari profesi (misal: Software Engineer)..."
-                  value={searchQuery}
-                  onFocus={() => setShowSuggestions(true)}
-                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="theme-input h-20 w-full rounded-[2rem] border-none pl-16 pr-8 text-lg font-medium transition-all focus:ring-8 focus:ring-blue-600/5"
-                />
-                
-                {/* Smart Auto-complete Dropdown */}
-                {showSuggestions && suggestions.length > 0 && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute top-24 z-50 w-full overflow-hidden rounded-[2rem] border theme-card shadow-2xl"
-                  >
-                    {suggestions.map((s) => (
-                      <button
-                        key={s.slug}
-                        onClick={() => {
-                          setSearchQuery(s.title);
-                          setShowSuggestions(false);
-                        }}
-                        className="flex w-full items-center gap-4 px-8 py-4 text-left transition hover:bg-blue-50/50"
-                      >
-                        <Search size={16} className="text-blue-600" />
-                        <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{s.title}</span>
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-          </div>
+      {/* ─── Hero ─── */}
+      <section className="relative pt-20 pb-32 px-6 overflow-hidden">
+        <div className="photo-overlay absolute inset-0">
+          <img 
+            src="/images/hero-collab.png" 
+            alt="" 
+            className="absolute inset-0 w-full h-full object-cover"
+            aria-hidden="true"
+          />
+        </div>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="hidden lg:block"
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-[12px] font-semibold tracking-[0.25em] uppercase text-blue-600 mb-6"
           >
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-6 pt-16">
-                <div className="rounded-[2.5rem] bg-blue-600 p-10 text-white shadow-2xl shadow-blue-600/30">
-                  <LibraryBig size={40} />
-                  <p className="mt-6 text-4xl font-black">7+</p>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-100 opacity-80">Profesi Terpilih</p>
-                </div>
-                <div className="theme-card rounded-[2.5rem] p-10 shadow-sm">
-                  <Target size={40} className="text-blue-600" />
-                  <p className="mt-6 text-4xl font-black">Detail</p>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] opacity-40">Kurikulum Industri</p>
-                </div>
-              </div>
-              <div className="space-y-6">
-                <div className="theme-card rounded-[2.5rem] p-10 shadow-sm">
-                  <Sparkles size={40} className="text-blue-600" />
-                  <p className="mt-6 text-4xl font-black">100+</p>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] opacity-40">Modul Belajar</p>
-                </div>
-                <div className="rounded-[2.5rem] bg-slate-950 p-10 text-white">
-                  <Map size={40} className="text-blue-400" />
-                  <p className="mt-6 text-4xl font-black">Visual</p>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Alur Roadmap</p>
-                </div>
-              </div>
+            Katalog Karir Masa Depan
+          </motion.p>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl sm:text-7xl font-black tracking-tight leading-[1.05]"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Eksplorasi{' '}
+            <span className="text-blue-600">Roadmap Karir.</span>
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-6 text-lg max-w-xl mx-auto opacity-50"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Temukan langkah konkret menuju profesi impianmu. 
+            Dari nol hingga standar industri global.
+          </motion.p>
+
+          {/* Search */}
+          <motion.div 
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="relative mt-10 max-w-lg mx-auto"
+          >
+            <div className="group relative flex items-center">
+              <Search className="absolute left-5 opacity-30 transition-opacity group-focus-within:opacity-70 group-focus-within:text-blue-600" size={20} />
+              <input
+                type="text"
+                placeholder="Cari profesi (misal: Software Engineer)..."
+                value={searchQuery}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-14 w-full rounded-full pl-14 pr-6 text-[15px] font-medium transition-all focus:ring-4 focus:ring-blue-600/5 focus:outline-none"
+                style={{ 
+                  backgroundColor: 'var(--card-bg)', 
+                  border: '1px solid var(--border-color)',
+                  color: 'var(--text-primary)'
+                }}
+              />
+              
+              {showSuggestions && suggestions.length > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute top-16 z-50 w-full overflow-hidden rounded-2xl shadow-xl"
+                  style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' }}
+                >
+                  {suggestions.map((s) => (
+                    <button
+                      key={s.slug}
+                      onClick={() => {
+                        setSearchQuery(s.title);
+                        setShowSuggestions(false);
+                      }}
+                      className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition hover:bg-blue-50/50"
+                    >
+                      <Search size={14} className="opacity-30" />
+                      <span className="text-[14px] font-medium" style={{ color: 'var(--text-primary)' }}>{s.title}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Modern Category Filter */}
-      <div className="mb-16">
-        <div className="flex flex-wrap items-center justify-center gap-2">
+      {/* ─── Category Filter ─── */}
+      <div className="px-6 -mt-8 relative z-20">
+        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-2">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`rounded-2xl px-8 py-4 text-xs font-black uppercase tracking-widest transition-all ${
+            className={`click-feedback rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-[0.1em] uppercase transition-all ${
               activeCategory === 'all' 
-              ? 'bg-slate-950 text-white shadow-xl' 
-              : 'theme-card text-slate-500 hover:bg-slate-50'
+              ? 'bg-slate-950 text-white shadow-lg' 
+              : 'opacity-40 hover:opacity-80'
             }`}
+            style={activeCategory !== 'all' ? { backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' } : {}}
           >
             Semua
           </button>
@@ -172,11 +184,12 @@ export default function Roadmap() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`rounded-2xl px-8 py-4 text-xs font-black uppercase tracking-widest transition-all ${
+              className={`click-feedback rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-[0.1em] uppercase transition-all ${
                 activeCategory === cat.id 
-                ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' 
-                : 'theme-card text-slate-500 hover:bg-slate-50'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/15' 
+                : 'opacity-40 hover:opacity-80'
               }`}
+              style={activeCategory !== cat.id ? { backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)' } : {}}
             >
               {cat.label}
             </button>
@@ -184,86 +197,64 @@ export default function Roadmap() {
         </div>
       </div>
 
-      {/* Career Grid with Micro-interactions */}
-      <motion.div 
-        layout
-        className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {isLoading ? (
-          [...Array(6)].map((_, i) => <RoadmapCardSkeleton key={i} />)
-        ) : (
-          filteredCareers.map((career, idx) => (
-            <motion.div
-              key={career.slug}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ 
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-                delay: idx * 0.02 
-              }}
-            >
-              <Link 
-                to={`/roadmap/${career.slug}`}
-                className="theme-card group block h-full rounded-[3rem] p-10 transition-all hover:-translate-y-3 hover:border-blue-100 hover:shadow-[0_40px_100px_-30px_rgba(37,99,235,0.15)]"
+      {/* ─── Career Grid ─── */}
+      <section className="py-20 px-6">
+        <motion.div 
+          layout
+          className="max-w-6xl mx-auto grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {isLoading ? (
+            [...Array(6)].map((_, i) => <RoadmapCardSkeleton key={i} />)
+          ) : (
+            filteredCareers.map((career, idx) => (
+              <motion.div
+                key={career.slug}
+                layout
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ delay: idx * 0.03 }}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-3xl transition-all group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-600/20" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
-                    {getIcon(career.iconKey)}
+                <Link 
+                  to={`/roadmap/${career.slug}`}
+                  className="hover-lift hover-glow click-feedback group block h-full rounded-3xl p-8 transition-all"
+                  style={{ 
+                    backgroundColor: 'var(--card-bg)', 
+                    border: '1px solid var(--border-color)' 
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-blue-600 opacity-60">
+                      {career.categoryId}
+                    </span>
                   </div>
-                  <div className="rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-600" style={{ backgroundColor: 'rgba(var(--accent-blue), 0.1)' }}>
-                    {career.categoryId}
-                  </div>
-                </div>
 
-                <div className="mt-10 space-y-5">
-                  <h3 className="text-3xl font-black leading-tight" style={{ color: 'var(--text-primary)' }}>{career.title}</h3>
-                  <p className="text-lg leading-relaxed line-clamp-2 opacity-60" style={{ color: 'var(--text-secondary)' }}>
+                  <h3 className="text-xl font-bold leading-snug mb-3" style={{ color: 'var(--text-primary)' }}>
+                    {career.title}
+                  </h3>
+                  <p className="text-[13px] leading-relaxed opacity-40 line-clamp-2 mb-6" style={{ color: 'var(--text-secondary)' }}>
                     {career.description}
                   </p>
                   
-                  <div className="flex items-center justify-between pt-6 border-t theme-border">
-                    <div className="flex flex-col">
-                      <span className="text-xs font-black uppercase tracking-widest opacity-40">Kurikulum</span>
-                      <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{career.roadmap.length} Tahap Belajar</span>
-                    </div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full opacity-40 transition-all group-hover:bg-blue-600 group-hover:text-white group-hover:rotate-[-45deg] group-hover:opacity-100" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-                      <ChevronRight size={24} />
-                    </div>
+                  <div className="flex items-center justify-between pt-5" style={{ borderTop: '1px solid var(--border-color)' }}>
+                    <span className="text-[12px] font-medium opacity-30">{career.roadmap.length} Tahap Belajar</span>
+                    <span className="text-[12px] font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      Lihat <ArrowRight size={12} />
+                    </span>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))
-        )}
-      </motion.div>
-      
-      {filteredCareers.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <div className="flex h-24 w-24 items-center justify-center rounded-full opacity-20 mb-8" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-            <Search size={48} />
+                </Link>
+              </motion.div>
+            ))
+          )}
+        </motion.div>
+        
+        {filteredCareers.length === 0 && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-32 text-center">
+            <h3 className="text-2xl font-bold opacity-30" style={{ color: 'var(--text-primary)' }}>Pencarian Tidak Ditemukan</h3>
+            <p className="mt-3 text-[15px] opacity-30" style={{ color: 'var(--text-secondary)' }}>Coba gunakan kata kunci yang lebih umum.</p>
           </div>
-          <h3 className="text-3xl font-black" style={{ color: 'var(--text-primary)' }}>Pencarian Tidak Ditemukan</h3>
-          <p className="mt-3 text-lg opacity-40" style={{ color: 'var(--text-secondary)' }}>Coba gunakan kata kunci yang lebih umum atau kategori lain.</p>
-        </div>
-      )}
+        )}
+      </section>
     </div>
   );
-}
-
-function getIcon(key: string) {
-  const size = 36;
-  switch (key) {
-    case 'code': return <Code size={size} />;
-    case 'brain': return <Brain size={size} />;
-    case 'palette': return <Palette size={size} />;
-    case 'heart': return <Heart size={size} />;
-    case 'briefcase': return <Briefcase size={size} />;
-    case 'graduation': return <GraduationCap size={size} />;
-    case 'building': return <Building2 size={size} />;
-    default: return <Code size={size} />;
-  }
 }
