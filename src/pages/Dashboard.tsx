@@ -3,7 +3,7 @@ import { useAuth } from '../lib/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, setDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import { 
+import {
   ArrowUpRight,
   ArrowRight,
   CheckCircle2,
@@ -11,6 +11,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
+import SEO from '../components/SEO';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -78,7 +79,12 @@ export default function Dashboard() {
 
   return (
     <div className="page-shell max-w-6xl mx-auto px-6 py-16 lg:py-24">
-      
+      <SEO
+        title="Dasbor Pribadi"
+        description="Pantau progres roadmap karir, hasil tes RIASEC, dan target belajarmu di satu dasbor yang fokus dan rapi."
+        keywords="dasbor cita-cita, progres karir, target belajar"
+      />
+
       {/* ─── Welcome ─── */}
       <header className="mb-16 max-w-3xl">
         <motion.div

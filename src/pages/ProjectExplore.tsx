@@ -17,6 +17,9 @@ import {
   X,
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
+import { auth } from '../lib/firebase';
+import { toast } from 'sonner';
+import SEO from '../components/SEO';
 import { fetchProjects } from '../lib/api';
 
 interface BriefSection {
@@ -272,6 +275,9 @@ export default function ProjectExplore() {
   const [stepProofs, setStepProofs] = useState<Record<string, string>>({});
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isAiOpen, setIsAiOpen] = useState(false);
+  const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
+  const [aiInput, setAiInput] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const [projects, setProjects] = useState<Project[]>(DUMMY_PROJECTS);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
   const [projectError, setProjectError] = useState<string | null>(null);
@@ -342,6 +348,49 @@ export default function ProjectExplore() {
     setCompletedSteps((prev) => (prev.includes(stepId) ? prev.filter((value) => value !== stepId) : [...prev, stepId]));
   };
 
+  const handleAiSend = async (overrideInput?: string) => {
+    const textToSend = overrideInput || aiInput;
+    if (!textToSend.trim() || isAiLoading || !activeProject) return;
+
+    const newMessages = [...aiMessages, { role: 'user' as const, content: textToSend }];
+    setAiMessages(newMessages);
+    setAiInput('');
+    setIsAiLoading(true);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task: 'counselor', // Gunakan task counselor untuk project help
+          userId: auth.currentUser?.uid,
+          messages: newMessages.map((m) => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            content: m.content,
+          })),
+          context: `User sedang mengerjakan project: ${activeProject.title}. Brief: ${activeProject.introduction}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 429) {
+        toast.error(data.error || 'Kuota harian habis');
+        setAiMessages([...newMessages, { role: 'assistant', content: data.text || 'Maaf, kuota harian kamu sudah habis.' }]);
+        return;
+      }
+
+      if (!response.ok) throw new Error(data.error || 'Gagal mengirim pesan');
+
+      setAiMessages([...newMessages, { role: 'assistant', content: data.text }]);
+    } catch (err) {
+      toast.error('Gagal terhubung dengan AI. Silakan coba lagi.');
+      setAiMessages([...newMessages, { role: 'assistant', content: 'Maaf, saya sedang mengalami kendala koneksi.' }]);
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
   const handleStepChoice = (stepId: string, choiceId: string, nextStepId?: string | null) => {
     setStepChoices((prev) => ({ ...prev, [stepId]: choiceId }));
     if (nextStepId) {
@@ -370,7 +419,6 @@ export default function ProjectExplore() {
                   <h2 className="max-w-50 truncate text-sm font-black text-gray-900 sm:max-w-sm">{activeProject.title}</h2>
                 </div>
               </div>
-                    <h2 className="max-w-50 truncate text-sm font-black text-slate-950 sm:max-w-sm">{activeProject.title}</h2>
               <div className="hidden items-center gap-3 sm:flex">
                 <button className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-gray-400 hover:text-gray-900">
                   <Share2 size={15} /> Pamerkan
@@ -793,29 +841,51 @@ export default function ProjectExplore() {
 
             {/* Sidebar Content */}
             <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
-              <div className="flex flex-col items-center pt-8 text-center">
-                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 text-blue-700">
-                  <Sparkles size={32} />
-                </div>
-                <h3 className="mb-2 text-xl font-black tracking-tight text-gray-900">
-                  Chat about {activeProject.title}
-                </h3>
-                <p className="mb-8 text-sm leading-6 text-gray-600">
-                  Mari mulai diskusi tentang <span className="font-bold text-blue-700">{activeProject.title}</span>.
-                  Saya siap membantu Anda dengan pertanyaan atau wawasan terkait brief ini.
-                </p>
+              {aiMessages.length === 0 ? (
+                <div className="flex flex-col items-center pt-8 text-center">
+                  <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 text-blue-700">
+                    <Sparkles size={32} />
+                  </div>
+                  <h3 className="mb-2 text-xl font-black tracking-tight text-gray-900">
+                    Chat about {activeProject.title}
+                  </h3>
+                  <p className="mb-8 text-sm leading-6 text-gray-600">
+                    Mari mulai diskusi tentang <span className="font-bold text-blue-700">{activeProject.title}</span>.
+                    Saya siap membantu Anda dengan pertanyaan atau wawasan terkait brief ini.
+                  </p>
 
-                <div className="flex flex-col gap-2 w-full">
-                  {['Jelaskan tentang brief ini', 'Apa yang harus difokuskan?', 'Berikan beberapa ide'].map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      className="w-full rounded-2xl border border-gray-100 bg-white p-4 text-left text-xs font-bold text-gray-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
+                  <div className="flex flex-col gap-2 w-full">
+                    {['Jelaskan tentang brief ini', 'Apa yang harus difokuskan?', 'Berikan beberapa ide'].map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        onClick={() => handleAiSend(suggestion)}
+                        className="w-full rounded-2xl border border-gray-100 bg-white p-4 text-left text-xs font-bold text-gray-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-6">
+                  {aiMessages.map((msg, idx) => (
+                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm font-medium ${msg.role === 'user' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800'}`}>
+                        {msg.content}
+                      </div>
+                    </div>
+                  ))}
+                  {isAiLoading && (
+                    <div className="flex justify-start">
+                      <div className="flex items-center gap-1.5 px-4 py-2 bg-slate-50 rounded-2xl">
+                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" />
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+                        <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:0.4s]" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Sidebar Input */}
@@ -823,10 +893,17 @@ export default function ProjectExplore() {
               <div className="relative flex items-center">
                 <input
                   type="text"
+                  value={aiInput}
+                  onChange={(e) => setAiInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAiSend()}
                   placeholder="Ketik pesan Anda..."
                   className="w-full rounded-2xl border border-gray-200 bg-gray-50/50 py-4 pl-5 pr-14 text-sm text-gray-800 outline-none transition focus:border-blue-400 focus:bg-white"
                 />
-                <button className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-xl bg-gray-900 text-white transition hover:bg-black">
+                <button
+                  onClick={() => handleAiSend()}
+                  disabled={!aiInput.trim() || isAiLoading}
+                  className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-xl bg-gray-900 text-white transition hover:bg-black disabled:opacity-30"
+                >
                   <Send size={18} />
                 </button>
               </div>
@@ -856,6 +933,11 @@ export default function ProjectExplore() {
 
   return (
     <div className="page-shell min-h-screen bg-[#FCFCFD] pb-32 pt-28">
+      <SEO
+        title="Eksplorasi Proyek"
+        description="Bangun portofolio nyata dari proyek interaktif lintas profesi — Cloud, AI, Web Engineering, dan banyak lagi."
+        keywords="proyek karir, portofolio, latihan industri, project based learning"
+      />
       <div className="mx-auto max-w-7xl px-6">
         <header className="mb-12">
           <span className="text-blue-600 text-[9px] font-black tracking-[0.4em] uppercase mb-3 block">Misi Masa Depan</span>

@@ -13,10 +13,11 @@ Roadmap ini disusun berdasarkan skala prioritas: **Keamanan > Fungsionalitas Int
 | **AI Counselor Guardrails** | 🟢 Selesai | System prompt di sisi server untuk menjaga konteks percakapan. |
 | **Minimalist Project Explore** | 🟢 Selesai | Desain ulang grid 4 kolom, tipografi ramping, dan UI bersih. |
 | **Project-Specific Thumbnails** | 🟢 Selesai | Field thumbnail didukung penuh di schema dan UI. |
+| **Interactive AI Workspace** | 🟢 Selesai | Panel AI di Project Explore kini terhubung ke backend & dinamis. |
 | **Project Detail View** | 🟢 Selesai | Implementasi halaman `ProjectDetail.tsx` dengan desain premium. |
-| **AI Smart Orchestrator** | 🟠 In-Progress | Sistem gonta-ganti AI (Groq, OpenRouter, Gemini) secara otomatis. |
-| **User Quota & Rate Limit** | 🟡 Pending | Batasan pesan per user agar API Key gratis tidak cepat habis. |
-| **Multi-Device SSO** | 🟡 Pending | Login Google yang bisa diakses dari berbagai perangkat (Firebase Auth). |
+| **AI Smart Orchestrator** | 🟢 Selesai | Sistem gonta-ganti AI (Groq, OpenRouter, Gemini) secara otomatis. |
+| **User Quota & Rate Limit** | 🟢 Selesai | Batasan pesan per user agar API Key gratis tidak cepat habis. |
+| **Multi-Device SSO** | 🟢 Selesai | Login Google yang bisa diakses dari berbagai perangkat (Firebase Auth). |
 | **Push to GitHub** | 🟡 Pending | Rencana sinkronisasi seluruh perubahan ke repository. |
 
 ---
@@ -43,8 +44,8 @@ Roadmap ini disusun berdasarkan skala prioritas: **Keamanan > Fungsionalitas Int
 | No | Tugas | Deskripsi | Kesulitan |
 | :--- | :--- | :--- | :--- |
 | **11** | **AI Logic Guardrails** | 🟢 **Done** - System prompt di server mencegah penyalahgunaan AI. | 🟠 Medium |
-| **27** | **Smart AI Selection** | 🟠 **In-Progress** - Memilih AI berdasarkan tingkat kesulitan tugas (Logic vs Chat). | 🟠 Medium |
-| **28** | **Token/Usage Quota** | 🟡 **Planned** - Pembatasan jumlah request per user ID untuk menghemat API Free. | 🔴 Hard |
+| **27** | **Smart AI Selection** | 🟢 **Done** - Memilih AI berdasarkan tingkat kesulitan tugas (Logic vs Chat). | 🟠 Medium |
+| **28** | **Token/Usage Quota** | 🟢 **Done** - Pembatasan jumlah request per user ID untuk menghemat API Free. | 🔴 Hard |
 | **10** | **State Persistence (Anti-Reset)** | 🟡 **Planned** - Menggunakan localStorage/Zustand untuk persistensi data. | 🟢 Easy |
 | **14** | **Professional Error Handling** | 🟢 **Done** - Error handling global di API routes & UI indicators. | 🟢 Easy |
 | **03** | **Logic & Link Audit** | 🟡 **Planned** - Pengecekan manual seluruh alur navigasi. | 🟢 Easy |

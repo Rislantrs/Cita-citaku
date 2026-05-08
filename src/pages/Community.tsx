@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Users, Plus, CheckCircle2, Clock, MessageSquare, Heart, Share2, Sparkles, Trophy } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { fetchCareerSubmissions } from '../lib/api';
+import SEO from '../components/SEO';
 
 export default function Community() {
   const { user } = useAuth();
@@ -79,6 +80,11 @@ export default function Community() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 lg:px-6">
+      <SEO
+        title="Komunitas Roadmap"
+        description="Jelajahi roadmap karir kontribusi komunitas — dari Backend Engineer sampai Designer. Like, simpan, dan ikut berkontribusi."
+        keywords="komunitas karir, roadmap kontribusi, kolaborasi belajar"
+      />
       {/* ... Hero tetap sama ... */}
       <section className="relative mb-20 text-center">
         <motion.div 

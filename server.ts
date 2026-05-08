@@ -137,15 +137,12 @@ async function startServer() {
   app.use(express.json({ limit: '1mb' }));
   app.use(mongoSanitize());
 
-  await connectMongo();
-  await ensureCareerSeeded();
-
   registerApiRoutes(app);
 
   // AI Counselor / Assistant / Quiz API
   app.post('/api/chat', async (req, res) => {
     try {
-      const { messages, task = 'counselor', userId } = req.body;
+      const { messages, task = 'counselor', userId, context } = req.body;
       
       if (!messages || !Array.isArray(messages)) {
         res.status(400).json({ error: 'Messages array is required' });
@@ -172,13 +169,17 @@ async function startServer() {
           }
         } catch (mongoErr) {
           console.warn('[Quota] MongoDB error, skipping quota check:', mongoErr);
-          // Kita lanjut saja agar AI tetap bisa menjawab jika DB error
         }
       }
 
-      // Ambil pesan terakhir sebagai prompt, sisanya sebagai history
+      // Ambil pesan terakhir sebagai prompt
       const lastMsg = messages[messages.length - 1];
-      const userPrompt = lastMsg.content || lastMsg.parts?.[0]?.text;
+      let userPrompt = lastMsg.content || lastMsg.parts?.[0]?.text;
+      
+      // Sisipkan context jika ada
+      if (context) {
+        userPrompt = `CONTEXT PROYEK: ${context}\n\nPERTANYAAN USER: ${userPrompt}`;
+      }
       
       const history = messages.slice(0, -1).map(m => ({
         role: m.role === 'model' || m.role === 'assistant' ? 'assistant' : 'user',

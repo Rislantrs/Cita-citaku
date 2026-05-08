@@ -2,10 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Compass, Map, Search } from 'lucide-react';
 import * as motion from 'motion/react-client';
+import SEO from '../components/SEO';
 
 export default function NotFound() {
   return (
     <div className="page-shell flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
+      <SEO
+        title="404 — Halaman Tidak Ditemukan"
+        description="Halaman yang kamu cari belum tersedia. Kembali ke beranda atau eksplor jalur karir lainnya."
+      />
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}

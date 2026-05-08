@@ -8,6 +8,8 @@ import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { ArrowLeft, Sparkles, Brain, Bot, CheckCircle2, Target, Trophy, ArrowRight, LibraryBig } from 'lucide-react';
 import { saveQuizResult } from '../lib/api';
 import { careerCatalog } from '../lib/careerCatalog';
+import { usePersistedState, clearPersistedKey } from '../lib/usePersistedState';
+import SEO from '../components/SEO';
 
 type RiasecCode = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
 
@@ -41,11 +43,17 @@ export default function TestRIASEC() {
   const [searchParams] = useSearchParams();
   const isResultView = searchParams.get('view') === 'result';
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [scores, setScores] = useState<Record<string, number>>(
-    isResultView 
-      ? { R: 2, I: 8, A: 6, S: 4, E: 5, C: 3 }
-      : { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
+  const initialScores = isResultView
+    ? { R: 2, I: 8, A: 6, S: 4, E: 5, C: 3 }
+    : { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+
+  const [currentIndex, setCurrentIndex] = usePersistedState<number>(
+    isResultView ? 'test:idx-result' : 'test:idx',
+    0
+  );
+  const [scores, setScores] = usePersistedState<Record<string, number>>(
+    isResultView ? 'test:scores-result' : 'test:scores',
+    initialScores
   );
   const [finished, setFinished] = useState(isResultView);
 
@@ -53,8 +61,8 @@ export default function TestRIASEC() {
 
   const answer = (weight: number) => {
     const q = QUESTIONS[currentIndex];
-    setScores(prev => ({ ...prev, [q.category]: prev[q.category] + weight }));
-    
+    setScores(prev => ({ ...prev, [q.category]: (prev[q.category] || 0) + weight }));
+
     if (currentIndex + 1 === QUESTIONS.length) {
       setFinished(true);
     } else {
@@ -96,6 +104,11 @@ export default function TestRIASEC() {
   if (finished) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-12 lg:px-6">
+        <SEO
+          title="Hasil Tes RIASEC"
+          description="Visualisasi profil RIASEC kamu beserta rekomendasi karir yang paling cocok berdasarkan tiga kode dominan."
+          keywords="hasil riasec, profil karir, rekomendasi cita-cita"
+        />
         <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
           {[...Array(20)].map((_, i) => (
             <motion.div
@@ -268,8 +281,12 @@ export default function TestRIASEC() {
                   </Link>
                 ))}
               </div>
-              <button 
-                onClick={() => window.location.reload()}
+              <button
+                onClick={() => {
+                  clearPersistedKey('test:idx');
+                  clearPersistedKey('test:scores');
+                  window.location.href = '/test';
+                }}
                 className="w-full rounded-2xl bg-blue-600 py-5 font-black text-white transition hover:bg-blue-700 shadow-xl shadow-blue-600/20"
               >
                 Ulangi Tes
@@ -283,6 +300,11 @@ export default function TestRIASEC() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
+      <SEO
+        title="Tes Jati Diri RIASEC"
+        description="Kuis psikometrik singkat untuk memetakan minat dan gaya kerjamu lewat enam dimensi RIASEC. Hasil instan, tanpa registrasi panjang."
+        keywords="tes riasec, kuis kepribadian karir, jati diri, holland code"
+      />
       <div className="mb-12 flex items-center justify-between">
         <h2 className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>Tes Jati Diri</h2>
         <div className="rounded-full bg-slate-950 px-4 py-1 text-xs font-black text-white">

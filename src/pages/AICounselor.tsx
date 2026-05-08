@@ -5,6 +5,10 @@ import * as motion from 'motion/react-client';
 
 import { toast } from 'sonner';
 import { auth } from '../lib/firebase';
+import { usePersistedState } from '../lib/usePersistedState';
+import SEO from '../components/SEO';
+
+type ChatMessage = { role: 'user' | 'model'; content: string };
 
 const SUGGESTED_TOPICS = [
   { label: "Analisis RIASEC saya", prompt: "Tolong jelaskan lebih dalam tentang hasil tes RIASEC saya." },
@@ -14,7 +18,7 @@ const SUGGESTED_TOPICS = [
 
 export default function AICounselor() {
   const { t } = useTranslation();
-  const [messages, setMessages] = useState<{role: 'user' | 'model', content: string}[]>([]);
+  const [messages, setMessages, clearMessages] = usePersistedState<ChatMessage[]>('counselor:messages', []);
   const [input, setInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -105,7 +109,7 @@ export default function AICounselor() {
       action: {
         label: "Hapus",
         onClick: () => {
-          setMessages([]);
+          clearMessages();
           toast.success("Percakapan dihapus");
         },
       },
@@ -118,10 +122,15 @@ export default function AICounselor() {
 
   return (
     <div className="flex h-[calc(100vh-120px)] max-w-[1600px] mx-auto px-6 pb-6 gap-6">
+      <SEO
+        title="Konselor AI"
+        description="Diskusi karir 1-on-1 bersama konselor AI Cita-citaku — bahas hasil tes, rekomendasi jurusan, dan langkah konkret menuju cita-citamu."
+        keywords="konselor karir, ai chat karir, konsultasi cita-cita, panduan jurusan"
+      />
       {/* Sidebar - Integrated & Minimalist */}
       <aside className="hidden lg:flex flex-col w-[280px] shrink-0 gap-6">
-        <button 
-          onClick={() => setMessages([])}
+        <button
+          onClick={clearMessages}
           className="flex items-center justify-center gap-3 rounded-3xl bg-slate-900 py-5 text-[15px] font-bold text-white transition-all hover:bg-blue-800 hover:-translate-y-1 shadow-xl shadow-slate-900/10"
         >
           <PlusCircle size={20} />

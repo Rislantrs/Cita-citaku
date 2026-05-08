@@ -13,6 +13,7 @@ import { ArticleBuilder, ContentBlock } from '../components/ArticleBuilder';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../lib/AuthContext';
+import SEO from '../components/SEO';
 
 type ContributionMode = 'none' | 'new_roadmap' | 'edit_roadmap' | 'add_content';
 
@@ -607,6 +608,12 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
   // 4. MAIN FORM SCREEN (New & Edit Only)
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 lg:px-6 pb-40">
+      {!isAdmin && (
+        <SEO
+          title="Kontribusi Roadmap"
+          description="Bagikan keahlianmu — buat roadmap karir baru atau perbaiki yang sudah ada untuk membantu komunitas Cita-citaku."
+        />
+      )}
       {error && (
         <motion.div initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} className="fixed left-1/2 top-10 z-[100] flex -translate-x-1/2 items-center gap-3 rounded-xl bg-slate-900 px-6 py-4 text-white shadow-2xl">
           <AlertCircle className="text-red-500" size={18} /><p className="text-sm font-bold">{error}</p>

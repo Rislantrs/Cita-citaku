@@ -361,3 +361,63 @@ body::before {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .editorial-shadow { box-shadow: 0 30px 60px -12px rgba(15, 23, 42, 0.12); }
 .editorial-border { border: 1px solid rgba(15, 23, 42, 0.08); }
+
+/* ─── Extended Micro-interactions ─── */
+.tilt-on-hover {
+	transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+	transform-style: preserve-3d;
+}
+
+.tilt-on-hover:hover {
+	transform: perspective(900px) rotateX(2deg) rotateY(-2deg) translateY(-4px);
+}
+
+.shine-on-hover {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.shine-on-hover::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+	transform: translateX(-120%);
+	transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+	pointer-events: none;
+	z-index: 1;
+}
+
+.shine-on-hover:hover::after {
+	transform: translateX(120%);
+}
+
+.focus-ring {
+	transition: box-shadow 0.2s ease;
+}
+
+.focus-ring:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hover-lift,
+	.hover-glow,
+	.click-feedback,
+	.tilt-on-hover,
+	.shine-on-hover,
+	.float-gentle,
+	.float-gentle-alt,
+	.premium-card,
+	.btn-premium,
+	.reveal-on-scroll,
+	.parallax-bg,
+	.mesh-gradient-blob {
+		animation: none !important;
+		transition: none !important;
+		transform: none !important;
+	}
+	html { scroll-behavior: auto; }
+}
