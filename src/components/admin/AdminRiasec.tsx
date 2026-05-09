@@ -1,18 +1,84 @@
-import { useState, useRef } from 'react';
-import { Sparkles, Upload, Plus, FileText, Trash2, Save, BrainCircuit, CheckCircle2 } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Sparkles, Upload, Plus, FileText, Trash2, Save, BrainCircuit, CheckCircle2, Loader2 } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { toast } from 'sonner';
+import { db } from '../../lib/firebase';
+import { collection, getDocs, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 export function AdminRiasec() {
-  const [questions, setQuestions] = useState([
-    { id: '1', text: 'Saya suka memperbaiki mesin atau barang elektronik', category: 'Realistic', points: 5 },
-    { id: '2', text: 'Saya senang menganalisis data atau memecahkan misteri', category: 'Investigative', points: 5 },
-  ]);
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const categories = ['Realistic', 'Investigative', 'Artistic', 'Social', 'Enterprising', 'Conventional'];
+  
+  // Mapping for Test Page
+  const catMap: Record<string, string> = {
+    'Realistic': 'R',
+    'Investigative': 'I',
+    'Artistic': 'A',
+    'Social': 'S',
+    'Enterprising': 'E',
+    'Conventional': 'C'
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
+  const fetchQuestions = async () => {
+    try {
+      setIsLoading(true);
+      const snapshot = await getDocs(collection(db, 'bank_soal'));
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      if (data.length > 0) {
+        setQuestions(data);
+      } else {
+        // Fallback default
+        setQuestions([
+          { id: '1', text: 'Saya suka memperbaiki mesin atau barang elektronik', category: 'Realistic', points: 5 },
+          { id: '2', text: 'Saya senang menganalisis data atau memecahkan misteri', category: 'Investigative', points: 5 },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching bank soal:", error);
+      toast.error("Gagal mengambil data bank soal.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveQuestions = async () => {
+    try {
+      setIsSaving(true);
+      const batch = writeBatch(db);
+      
+      // Clear existing (optional, or just update)
+      // For simplicity, we just set all current
+      for (const q of questions) {
+        const docRef = doc(db, 'bank_soal', q.id);
+        batch.set(docRef, {
+          text: q.text,
+          category: q.category,
+          categoryCode: catMap[q.category] || q.category[0],
+          points: q.points,
+          updatedAt: new Date().toISOString()
+        });
+      }
+
+      await batch.commit();
+      toast.success("Bank soal berhasil disimpan!");
+    } catch (error) {
+      console.error("Error saving bank soal:", error);
+      toast.error("Gagal menyimpan bank soal.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleAiGenerate = async () => {
     if (!uploadedFile) {
@@ -22,26 +88,61 @@ export function AdminRiasec() {
     
     setIsGenerating(true);
     
-    // Simulating API Call to LLM (e.g., Gemini / OpenAI)
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Mock response based on the "file"
-    const generatedQuestions = [
-      { id: Date.now().toString(), text: `Saya merasa tertantang saat harus memahami dokumen kompleks seperti "${uploadedFile.name}"`, category: 'Investigative', points: 5 },
-      { id: (Date.now() + 1).toString(), text: 'Saya sangat teliti dalam memastikan semua detail laporan sudah benar.', category: 'Conventional', points: 5 },
-      { id: (Date.now() + 2).toString(), text: 'Saya bisa meyakinkan orang lain tentang pentingnya informasi ini.', category: 'Enterprising', points: 5 }
-    ];
+    try {
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
 
-    setQuestions(prev => [...prev, ...generatedQuestions]);
-    setUploadedFile(null);
-    setIsGenerating(false);
-    toast.success(`AI berhasil mengekstrak ${generatedQuestions.length} soal RIASEC dari dokumen Anda!`);
+      const response = await fetch('/api/ai/generate-questions', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Gagal menghasilkan soal');
+      }
+
+      if (data.questions && Array.isArray(data.questions)) {
+        // Map AI response categories to full names if needed
+        const newQuestions = data.questions.map((q: any) => ({
+          id: `ai-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+          text: q.text,
+          category: q.category, // Assuming AI returns full name as requested in prompt
+          points: q.points || 5
+        }));
+
+        setQuestions(prev => [...prev, ...newQuestions]);
+        toast.success(`Berhasil! AI mengekstrak ${newQuestions.length} soal dari dokumen "${uploadedFile.name}".`);
+      }
+      
+      setUploadedFile(null);
+    } catch (error) {
+      console.error("AI Generation failed:", error);
+      toast.error(error instanceof Error ? error.message : "Terjadi kesalahan saat memproses dokumen.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
-
 
   const addQuestion = () => {
     setQuestions([...questions, { id: Date.now().toString(), text: '', category: 'Realistic', points: 5 }]);
   };
+
+  const removeQuestion = async (id: string) => {
+    const next = questions.filter(q => q.id !== id);
+    setQuestions(next);
+    // If it exists in DB, we could delete it here or just wait for Save
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 space-y-4">
+        <Loader2 className="animate-spin text-blue-600" size={40} />
+        <p className="text-sm font-bold text-slate-500">Memuat Bank Soal...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -50,13 +151,17 @@ export function AdminRiasec() {
           <h2 className="text-2xl font-black text-slate-900">Manajemen Tes RIASEC</h2>
           <p className="text-sm font-medium text-slate-500 mt-1">Kelola bank soal untuk tes minat dan bakat.</p>
         </div>
-        <button className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
-          <Save size={16} /> Simpan Perubahan
+        <button 
+          onClick={saveQuestions}
+          disabled={isSaving}
+          className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 disabled:opacity-50"
+        >
+          {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} 
+          {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
         </button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* AI Generator Box */}
         <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100/50 relative overflow-hidden group">
           <div className="absolute -right-10 -top-10 text-indigo-500/10 rotate-12 group-hover:rotate-45 transition-transform duration-700">
             <BrainCircuit size={160} />
@@ -97,11 +202,10 @@ export function AdminRiasec() {
           </div>
         </div>
 
-        {/* Stats Box */}
         <div className="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm flex flex-col justify-center">
           <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Distribusi Soal</h3>
           <div className="space-y-3">
-            {categories.slice(0,3).map(cat => (
+            {categories.map(cat => (
               <div key={cat} className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-600">{cat}</span>
                 <span className="text-xs font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">
@@ -113,7 +217,6 @@ export function AdminRiasec() {
         </div>
       </div>
 
-      {/* Manual Questions List */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
@@ -168,7 +271,7 @@ export function AdminRiasec() {
                     />
                   </div>
                   <button 
-                    onClick={() => setQuestions(questions.filter((_, i) => i !== idx))}
+                    onClick={() => removeQuestion(q.id)}
                     className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors"
                   >
                     <Trash2 size={16} />

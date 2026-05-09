@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   CheckCircle2, XCircle, Eye, Search, Filter, ShieldCheck, 
   Users, FileText, TrendingUp, ChevronRight, MoreVertical,
-  LayoutDashboard, Map, BrainCircuit, UserPlus, LogOut, FileBadge, Plus
+  LayoutDashboard, Map, BrainCircuit, UserPlus, LogOut, FileBadge, Plus, Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import * as motion from 'motion/react-client';
@@ -45,11 +45,13 @@ export default function AdminDashboard() {
 
   const fetchRoadmaps = async () => {
     try {
-      const snapshot = await getDocs(query(collection(db, 'roadmaps'), orderBy('updatedAt', 'desc')));
-      const firestoreData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setRoadmaps(firestoreData);
+      const response = await fetch('/api/careers');
+      const data = await response.json();
+      if (data.items) {
+        setRoadmaps(data.items);
+      }
     } catch (error) {
-      console.error('Error fetching roadmaps:', error);
+      console.error('Error fetching roadmaps from API:', error);
     }
   };
 
@@ -73,11 +75,11 @@ export default function AdminDashboard() {
   ];
 
   const handleModerationAction = async (action: 'approve' | 'reject', data?: any) => {
-    if (!reviewingSubmission?.id && !isCreatingNew) return;
+    // If we are reviewing an existing roadmap, we might not have a submissionId
+    const isFromSubmission = !!(reviewingSubmission?.status && reviewingSubmission?.id && !roadmaps.some(r => r.id === reviewingSubmission.id));
+    const submissionId = isFromSubmission ? reviewingSubmission?.id : null;
 
     try {
-      const submissionId = reviewingSubmission?.id;
-      
       if (action === 'reject') {
         if (submissionId) {
           const docRef = doc(db, 'submissions', submissionId);
@@ -87,54 +89,43 @@ export default function AdminDashboard() {
             moderatedAt: serverTimestamp()
           });
         }
-      toast.info('Kontribusi ditolak');
+        toast.info('Kontribusi ditolak');
       } else {
         // APPROVE / PUBLISH
-        const relatedProjectIds: string[] = [];
-
-        // Extract projects from phases/topics
-        if (data.phases) {
-          for (const phase of data.phases) {
-            for (const topic of phase.topics) {
-              if (topic.showProject && topic.project && topic.project.title) {
-                const projectSlug = topic.project.title.toLowerCase().replace(/\s+/g, '-');
-                const projectRef = doc(db, 'projects', projectSlug);
-                
-                // Map to Project model
-                const projectData = {
-                  id: projectSlug,
-                  title: topic.project.title,
-                  introduction: topic.project.background || '',
-                  background: topic.project.background || '',
-                  skills: topic.project.skillsLearned?.split(',').map((s: string) => s.trim()) || [],
-                  brief: topic.project.description || topic.project.title,
-                  steps: topic.project.interactiveSteps?.map((s: any) => s.title) || [],
-                  briefSections: topic.project.contentBlocks || [],
-                  interactiveSteps: topic.project.interactiveSteps || [],
-                  image: topic.project.image || '',
-                  category: data.idKategori || 'Lainnya',
-                  status: 'published',
-                  author: data.author || 'Contributor',
-                  createdAt: serverTimestamp()
-                };
-
-                await setDoc(projectRef, projectData, { merge: true });
-                relatedProjectIds.push(projectSlug);
-              }
-            }
+        const slug = data?.slug || data?.judul?.toLowerCase()?.replace(/\s+/g, '-') || data?.title?.toLowerCase()?.replace(/\s+/g, '-');
+        
+        // 1. SYNC TO MONGODB (The new main brain)
+        try {
+          const mongoPayload = {
+            ...data,
+            slug,
+            idKategori: data.idKategori || 'tech',
+          };
+          
+          const response = await fetch('/api/careers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(mongoPayload)
+          });
+          
+          if (!response.ok) {
+            console.warn('[admin] Failed to sync to MongoDB, but will continue with Firestore');
           }
+        } catch (e) {
+          console.error('[admin] MongoDB sync error:', e);
         }
 
-        const roadmapData = {
+        // 2. FIRESTORE LEGACY SYNC (Optional, but good for community view)
+        const roadmapRef = doc(db, 'roadmaps', slug);
+        await setDoc(roadmapRef, {
           ...data,
-          proyekTerkait: [...(data.proyekTerkait || []), ...relatedProjectIds],
           status: 'published',
           publishedAt: serverTimestamp(),
           updatedAt: serverTimestamp()
-        };
+        }, { merge: true });
 
+        // 3. UPDATE SUBMISSION STATUS IF EXISTS
         if (submissionId) {
-          // Update submission status
           const subRef = doc(db, 'submissions', submissionId);
           await updateDoc(subRef, {
             status: 'approved',
@@ -142,23 +133,33 @@ export default function AdminDashboard() {
             moderatedAt: serverTimestamp()
           });
         }
-
-        // Create or Update Public Roadmap
-        const slug = data?.slug || data?.judul?.toLowerCase()?.replace(/\s+/g, '-') || data?.title?.toLowerCase()?.replace(/\s+/g, '-');
-        const roadmapRef = doc(db, 'roadmaps', slug);
-        await setDoc(roadmapRef, roadmapData, { merge: true });
         
-        toast.success('Roadmap & Proyek Berhasil Di-publish!');
+        toast.success('Berhasil Di-publish ke Database Utama!');
       }
 
       setReviewingSubmission(null);
       setIsCreatingNew(false);
-      // Refresh list
       fetchSubmissions();
       fetchRoadmaps();
     } catch (error) {
       console.error('Moderation failed:', error);
-      toast.error('Gagal memproses aksi. Silakan cek konsol.');
+      toast.error('Gagal memproses aksi. Pastikan koneksi stabil.');
+    }
+  };
+
+  const handleDeleteCareer = async (slug: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus karir ini secara permanen?')) return;
+    
+    try {
+      const response = await fetch(`/api/careers/${slug}`, { method: 'DELETE' });
+      if (response.ok) {
+        toast.success('Karir berhasil dihapus');
+        fetchRoadmaps();
+      } else {
+        toast.error('Gagal menghapus karir');
+      }
+    } catch (err) {
+      toast.error('Terjadi kesalahan saat menghapus');
     }
   };
 
@@ -304,13 +305,15 @@ export default function AdminDashboard() {
                       {submissions.filter(s => s.status === activeTab).map((sub) => (
                         <tr key={sub.id} className="group hover:bg-slate-50/50 transition-colors">
                           <td className="px-8 py-6">
-                            <p className="font-black text-slate-900">{sub.title}</p>
-                            <p className="text-[10px] font-bold text-slate-400">{sub.category}</p>
+                            <p className="font-black text-slate-900">{sub.judul || sub.title || 'Tanpa Judul'}</p>
+                            <p className="text-[10px] font-bold text-slate-400">{sub.idKategori || sub.category}</p>
                           </td>
                           <td className="px-8 py-6">
                             <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-black text-blue-600">{sub.author[0]}</div>
-                              <span className="text-sm font-bold text-slate-600">{sub.author}</span>
+                              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-black text-blue-600">
+                                {(sub.submittedBy?.name || sub.author || 'A')[0]}
+                              </div>
+                              <span className="text-sm font-bold text-slate-600">{sub.submittedBy?.name || sub.author || 'Anonim'}</span>
                             </div>
                           </td>
                           <td className="px-8 py-6">
@@ -339,22 +342,38 @@ export default function AdminDashboard() {
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {roadmaps.map((roadmap) => (
                   <div 
-                    key={roadmap.id} 
-                    onClick={() => {
-                      setReviewingSubmission(roadmap);
-                      setIsCreatingNew(true);
-                    }}
-                    className="rounded-3xl bg-white border border-slate-100 p-8 flex flex-col items-center justify-center text-center gap-4 hover:border-blue-200 transition-colors cursor-pointer group shadow-sm hover:shadow-md"
+                    key={roadmap.slug || roadmap._id} 
+                    className="relative group"
                   >
-                    <div className="h-16 w-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <FileBadge size={28}/>
+                    <div 
+                      onClick={() => {
+                        setReviewingSubmission(roadmap);
+                        setIsCreatingNew(true);
+                      }}
+                      className="h-full rounded-3xl bg-white border border-slate-100 p-8 flex flex-col items-center justify-center text-center gap-4 hover:border-blue-200 transition-colors cursor-pointer shadow-sm hover:shadow-md"
+                    >
+                      <div className="h-16 w-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover/card:scale-110 transition-transform">
+                        <FileBadge size={28}/>
+                      </div>
+                      <div>
+                        <h3 className="font-black text-slate-900">{roadmap.judul || roadmap.title}</h3>
+                        <p className="text-xs font-bold text-slate-400 mt-1">
+                          {roadmap.idKategori || roadmap.category} • {(roadmap.roadmap || roadmap.phases || []).length} Fase
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-black text-slate-900">{roadmap.judul || roadmap.title}</h3>
-                      <p className="text-xs font-bold text-slate-400 mt-1">
-                        {roadmap.idKategori || roadmap.category} • {(roadmap.roadmap || roadmap.phases || []).length} Fase
-                      </p>
-                    </div>
+                    
+                    {/* Delete Button */}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteCareer(roadmap.slug);
+                      }}
+                      className="absolute top-4 right-4 p-2 bg-red-50 text-red-500 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                      title="Hapus Karir"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 ))}
                 {roadmaps.length === 0 && (

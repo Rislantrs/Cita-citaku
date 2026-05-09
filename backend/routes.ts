@@ -1,5 +1,13 @@
 import type { Express } from 'express';
 import { CareerModel, ProjectModel, QuizResultModel, SubmissionModel, UserModel, ensureCareerSeeded, isMongoReady, memoryStore } from './mongo';
+import multer from 'multer';
+import * as pdfLib from 'pdf-parse';
+import { callAI } from './ai_service';
+
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB Limit
+});
 
 function toPlain(value: unknown) {
   if (value && typeof value === 'object' && 'toObject' in value && typeof (value as { toObject?: () => unknown }).toObject === 'function') {
@@ -104,18 +112,85 @@ export function registerApiRoutes(app: Express) {
       3. matchScore HARUS bervariasi (misal 92, 88, 85) sesuai tingkat kecocokan asli.
       4. Output HANYA JSON.`;
     
-      const { callAI } = await import('./ai_service');
-      const response = await callAI('quiz', prompt);
-      
+      const aiResult = await callAI('quiz', prompt);
       console.log(`[AI] Response generated successfully.`);
       
-      const cleanJson = response.text.replace(/```json|```/g, '').trim();
+      const text = aiResult.text;
+      const firstBrace = text.indexOf('{');
+      const lastBrace = text.lastIndexOf('}');
+
+      if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
+        throw new Error('AI tidak mengembalikan format analisis yang valid (JSON object tidak ditemukan)');
+      }
+
+      const cleanJson = text.substring(firstBrace, lastBrace + 1).trim();
       res.json(JSON.parse(cleanJson));
     } catch (e) {
       console.error("[api] Analysis fatal error:", e);
       res.status(500).json({ 
         error: 'Gagal menganalisis',
         message: e instanceof Error ? e.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.post('/api/ai/generate-questions', upload.single('file'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'Tidak ada file yang diunggah.' });
+      }
+
+      console.log(`[ai-gen] Received file: ${req.file.originalname} (${req.file.size} bytes)`);
+
+      let textContent = '';
+      if (req.file.mimetype === 'application/pdf') {
+        console.log('[ai-gen] Parsing PDF content (Safer Import)...');
+        const PDFParse = (pdfLib as any).PDFParse || (pdfLib as any).default?.PDFParse;
+        if (!PDFParse) throw new Error('PDFParse class not found in library');
+        
+        const parser = new PDFParse({ data: req.file.buffer });
+        const result = await parser.getText();
+        textContent = result.text;
+      } else {
+        textContent = req.file.buffer.toString('utf-8');
+      }
+
+      console.log(`[ai-gen] Text length: ${textContent.length} characters`);
+      if (textContent.trim().length < 50) {
+        return res.status(400).json({ error: 'Teks dokumen terlalu pendek atau gagal diekstrak.' });
+      }
+
+      console.log('[ai-gen] Calling AI generator...');
+      const aiResult = await callAI('generator', `TEKS DOKUMEN:\n${textContent}`);
+      console.log('[ai-gen] AI Result received. Type:', typeof aiResult);
+      
+      console.log('[ai-gen] Parsing AI response...');
+      if (!aiResult || !aiResult.text) {
+        throw new Error('Respon AI kosong atau tidak valid');
+      }
+
+      // Robust JSON extraction: Find the first '[' and the last ']'
+      const text = aiResult.text;
+      const firstBracket = text.indexOf('[');
+      const lastBracket = text.lastIndexOf(']');
+
+      if (firstBracket === -1 || lastBracket === -1 || lastBracket < firstBracket) {
+        console.error('[ai-gen] No JSON array found in response:', text);
+        throw new Error('AI tidak mengembalikan format soal yang valid (JSON array tidak ditemukan)');
+      }
+
+      const cleanJson = text.substring(firstBracket, lastBracket + 1).trim();
+      console.log('[ai-gen] Extracted JSON (first 50 chars):', cleanJson.substring(0, 50));
+      
+      const parsed = JSON.parse(cleanJson);
+      console.log(`[ai-gen] Success! Parsed ${Array.isArray(parsed) ? parsed.length : 0} questions.`);
+      
+      res.json({ questions: parsed });
+    } catch (e: any) {
+      console.error("[ai-gen] FATAL ERROR:", e);
+      res.status(500).json({ 
+        error: 'Gagal membuat soal',
+        message: e.message
       });
     }
   });
@@ -220,32 +295,45 @@ export function registerApiRoutes(app: Express) {
       ];
     }
 
-    const items = await (ProjectModel as any).find(query).sort({ featured: -1, createdAt: -1 }).lean();
-    res.json({ items });
+    try {
+      const items = await (ProjectModel as any).find(query).sort({ featured: -1, createdAt: -1 }).lean();
+      res.json({ items });
+    } catch (err) {
+      console.error('[api] CRITICAL: Failed to fetch projects:', err);
+      res.status(500).json({ 
+        error: 'Gagal mengambil data proyek dari database.',
+        details: err instanceof Error ? err.message : String(err)
+      });
+    }
   });
 
   app.get('/api/projects/:id', async (req, res) => {
     const { id } = req.params;
 
-    if (!isMongoReady()) {
-      const item = (memoryStore.projects as any[]).find((project) => project.id === id);
+    try {
+      if (!isMongoReady()) {
+        const item = (memoryStore.projects as any[]).find((project) => project.id === id);
+        if (!item) {
+          res.status(404).json({ error: 'Project not found' });
+          return;
+        }
+
+        res.json({ item });
+        return;
+      }
+
+      const item = await (ProjectModel as any).findOne({ id }).lean();
+
       if (!item) {
         res.status(404).json({ error: 'Project not found' });
         return;
       }
 
       res.json({ item });
-      return;
+    } catch (err) {
+      console.error(`[api] Failed to fetch project ${id}:`, err);
+      res.status(500).json({ error: 'Gagal mengambil detail proyek.' });
     }
-
-    const item = await (ProjectModel as any).findOne({ id }).lean();
-
-    if (!item) {
-      res.status(404).json({ error: 'Project not found' });
-      return;
-    }
-
-    res.json({ item });
   });
 
   // Submissions
@@ -449,14 +537,36 @@ export function registerApiRoutes(app: Express) {
   });
 
   // Careers
-  app.get('/api/careers', async (_req, res) => {
+  app.get('/api/careers', async (req, res) => {
+    const category = typeof req.query.category === 'string' ? req.query.category : undefined;
+
+    console.log(`[api] GET /api/careers - isMongoReady: ${isMongoReady()}`);
     if (!isMongoReady()) {
-      res.json({ items: memoryStore.careers });
+      console.log('[api] Mongo not ready, using memoryStore');
+      let items = memoryStore.careers;
+      if (category && category !== 'Semua' && category !== 'all') {
+        items = items.filter(c => c.idKategori === category || (c as any).categoryId === category);
+      }
+      console.log(`[api] Returning ${items?.length || 0} items from memory`);
+      res.json({ items: items || [] });
       return;
     }
 
-    const items = await CareerModel.find().sort({ featured: -1, title: 1 }).lean();
-    res.json({ items });
+    try {
+      const query: any = {};
+      if (category && category !== 'Semua' && category !== 'all') {
+        query.categoryId = category;
+      }
+
+      const items = await CareerModel.find(query).sort({ featured: -1, title: 1 }).lean();
+      res.json({ items: items || [] });
+    } catch (err) {
+      console.error('[api] CRITICAL: Failed to fetch careers:', err);
+      res.status(500).json({ 
+        error: 'Gagal mengambil data karir.',
+        details: err instanceof Error ? err.message : String(err)
+      });
+    }
   });
 
   app.get('/api/careers/:slug', async (req, res) => {
@@ -478,5 +588,78 @@ export function registerApiRoutes(app: Express) {
       return;
     }
     res.json({ item });
+  });
+
+  app.delete('/api/careers/:slug', async (req, res) => {
+    const { slug } = req.params;
+
+    if (!isMongoReady()) {
+      const index = memoryStore.careers.findIndex((c) => c.slug === slug);
+      if (index === -1) {
+        res.status(404).json({ error: 'Career not found in memory' });
+        return;
+      }
+      memoryStore.careers.splice(index, 1);
+      res.json({ success: true, message: 'Deleted from memory' });
+      return;
+    }
+
+    try {
+      const result = await CareerModel.findOneAndDelete({ slug } as any);
+      if (!result) {
+        res.status(404).json({ error: 'Career not found in Atlas' });
+        return;
+      }
+      res.json({ success: true, message: 'Deleted from Atlas' });
+    } catch (err) {
+      console.error('[api] Delete failed:', err);
+      res.status(500).json({ error: 'Gagal menghapus karir' });
+    }
+  });
+
+  app.post('/api/careers', async (req, res) => {
+    if (!isMongoReady()) {
+      res.status(503).json({ error: 'Database belum siap.' });
+      return;
+    }
+
+    try {
+      const data = req.body;
+      const slug = data.slug || data.judul?.toLowerCase()?.replace(/\s+/g, '-') || data.title?.toLowerCase()?.replace(/\s+/g, '-');
+
+      if (!slug) {
+        res.status(400).json({ error: 'Slug atau Judul wajib ada.' });
+        return;
+      }
+
+      // Map frontend fields to backend schema if necessary
+      const careerUpdate = {
+        ...data,
+        slug,
+        title: data.judul || data.title,
+        categoryId: data.idKategori || data.categoryId || 'tech',
+      };
+
+      const career = await CareerModel.findOneAndUpdate(
+        { slug } as any,
+        careerUpdate,
+        { upsert: true, new: true }
+      );
+
+      res.json({ ok: true, item: career });
+    } catch (err) {
+      console.error('[api] Failed to save career:', err);
+      res.status(500).json({ error: 'Gagal menyimpan data karir ke database.' });
+    }
+  });
+
+  // Global Error Handler Middleware
+  app.use((err: any, _req: any, res: any, _next: any) => {
+    console.error('[server-error] UNHANDLED EXCEPTION:', err);
+    res.status(500).json({ 
+      error: 'Terjadi kesalahan pada server',
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   });
 }

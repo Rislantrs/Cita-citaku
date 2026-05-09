@@ -1,0 +1,824 @@
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Load environment variables
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  console.error('Error: MONGODB_URI not found in .env');
+  process.exit(1);
+}
+
+// Minimal Schema to match the CareerModel
+const careerSchema = new mongoose.Schema({}, { strict: false, collection: 'careers' });
+const Career = mongoose.model('Career', careerSchema);
+
+// PASTE JSON FROM CLAUDE HERE
+const techCareers = [
+    {
+      "slug": "backend-engineer",
+      "title": "Backend Engineer",
+      "categoryId": "tech",
+      "deskripsi": "Arsitek di balik layar yang membangun dan memelihara logika inti, database, dan server dari sebuah aplikasi. Profesi ini menuntut kemampuan problem-solving yang tinggi untuk memastikan sistem berjalan cepat, aman, dan dapat diskalakan untuk jutaan pengguna.",
+      "keyIkon": "code",
+      "recommendationMajors": [
+        "Teknik Informatika",
+        "Ilmu Komputer",
+        "Sistem Informasi",
+        "Rekayasa Perangkat Lunak"
+      ],
+      "sertifikasi": [
+        "AWS Certified Developer",
+        "Google Cloud Associate Cloud Engineer",
+        "IBM Backend Development Certificate"
+      ],
+      "riasecCategories": [
+        "I",
+        "R",
+        "C"
+      ],
+      "mbtiTags": [
+        "INTJ",
+        "INTP",
+        "ISTJ",
+        "ISTP"
+      ],
+      "roadmap": [
+        {
+          "fase": "Fase 1",
+          "title": "Fundamental Internet & Jaringan",
+          "deskripsi": "Memahami cara kerja internet, HTTP/HTTPS, DNS, dan dasar-dasar jaringan komputer.",
+          "proyek": [
+            "Mempelajari protokol HTTP",
+            "Setup web server lokal",
+            "Eksplorasi cara kerja DNS"
+          ],
+          "meta": "1-2 Bulan"
+        },
+        {
+          "fase": "Fase 2",
+          "title": "Bahasa Pemrograman & Basis Data",
+          "deskripsi": "Menguasai bahasa pemrograman backend (seperti Go, Node.js, atau Java) dan dasar SQL/NoSQL.",
+          "proyek": [
+            "Membuat CRUD sederhana",
+            "Desain skema database relasional",
+            "Implementasi NoSQL untuk data fleksibel"
+          ],
+          "meta": "3-4 Bulan"
+        },
+        {
+          "fase": "Fase 3",
+          "title": "API, Keamanan, & Arsitektur",
+          "deskripsi": "Membangun RESTful API, GraphQL, serta mengimplementasikan autentikasi dan otorisasi (JWT, OAuth).",
+          "proyek": [
+            "Membangun REST API yang aman",
+            "Implementasi login dengan JWT",
+            "Rate limiting & caching dengan Redis"
+          ],
+          "meta": "3-5 Bulan"
+        },
+        {
+          "fase": "Fase 4",
+          "title": "Infrastruktur & Skalabilitas",
+          "deskripsi": "Memahami containerization (Docker), CI/CD, dan cloud provider dasar untuk deployment.",
+          "proyek": [
+            "Dockerize aplikasi backend",
+            "Setup pipeline CI/CD GitHub Actions",
+            "Deploy ke AWS atau GCP"
+          ],
+          "meta": "3-4 Bulan"
+        }
+      ],
+      "infoGaji": {
+        "rentangIDR": "Rp 8.000.000 - Rp 35.000.000 / bulan",
+        "rentangUSD": "$60,000 - $130,000 / tahun",
+        "penjelasan": "Gaji sangat bergantung pada lokasi, pengalaman, dan skala perusahaan (startup lokal vs perusahaan teknologi multinasional)."
+      },
+      "infoPendidikan": {
+        "jurusan": [
+          "Teknik Informatika",
+          "Ilmu Komputer"
+        ],
+        "durasi": "4 Tahun",
+        "jalurAkademik": "S1 (Sarjana)",
+        "gelar": "S.Kom / B.Sc"
+      },
+      "materiBelajar": [
+        {
+          "title": "Roadmap Backend Developer",
+          "tipe": "website",
+          "link": "https://roadmap.sh/backend"
+        },
+        {
+          "title": "Meta Back-End Developer Professional Certificate",
+          "tipe": "video",
+          "link": "https://www.coursera.org/professional-certificates/meta-back-end-developer"
+        }
+      ],
+      "daftarBuku": [
+        {
+          "title": "Designing Data-Intensive Applications",
+          "penulis": "Martin Kleppmann",
+          "link": "https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321"
+        },
+        {
+          "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+          "penulis": "Robert C. Martin",
+          "link": "https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882"
+        }
+      ],
+      "referensiDigital": [
+        {
+          "title": "Hussein Nasser",
+          "tipe": "youtube",
+          "link": "https://www.youtube.com/c/HusseinNasser-software-engineering"
+        },
+        {
+          "title": "ByteByteGo",
+          "tipe": "youtube",
+          "link": "https://www.youtube.com/c/ByteByteGo"
+        }
+      ],
+      "proyekTerkait": [
+        "membangun-rest-api-e-commerce",
+        "sistem-autentikasi-oauth2",
+        "optimasi-query-database-postgresql"
+      ],
+      "faqs": [
+        {
+          "tanya": "Apakah Backend Engineer harus jago matematika?",
+          "jawab": "Tidak selalu. Logika algoritma dan problem-solving jauh lebih penting daripada matematika tingkat lanjut untuk peran backend pada umumnya."
+        },
+        {
+          "tanya": "Bahasa pemrograman apa yang terbaik untuk dimulai?",
+          "jawab": "Node.js (JavaScript/TypeScript) atau Python sangat bagus untuk pemula karena ekosistemnya luas dan dokumentasinya melimpah."
+        }
+      ],
+      "tipe": "skill_based",
+      "universitasTerbaik": {
+        "lokal": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Indonesia (UI)",
+          "Universitas Gadjah Mada (UGM)"
+        ],
+        "global": [
+          "Massachusetts Institute of Technology (MIT)",
+          "Stanford University",
+          "Carnegie Mellon University"
+        ]
+      }
+    },
+    {
+      "slug": "ui-ux-designer",
+      "title": "UI/UX Designer",
+      "categoryId": "tech",
+      "deskripsi": "Penghubung empati antara pengguna dan teknologi. UI/UX Designer merancang antarmuka yang indah secara visual sekaligus memastikan pengalaman pengguna yang mulus, intuitif, dan bermakna saat menggunakan aplikasi.",
+      "keyIkon": "layout",
+      "recommendationMajors": [
+        "Desain Komunikasi Visual (DKV)",
+        "Sistem Informasi",
+        "Interaksi Manusia dan Komputer",
+        "Psikologi"
+      ],
+      "sertifikasi": [
+        "Google UX Design Professional Certificate",
+        "NN/g UX Certification",
+        "IBM Design Thinking"
+      ],
+      "riasecCategories": [
+        "A",
+        "I",
+        "S"
+      ],
+      "mbtiTags": [
+        "ENFP",
+        "INFP",
+        "ENFJ",
+        "INFJ"
+      ],
+      "roadmap": [
+        {
+          "fase": "Fase 1",
+          "title": "Fundamental Desain & Empati Pengguna",
+          "deskripsi": "Memahami prinsip dasar desain, tipografi, warna, dan dasar-dasar User Experience (UX).",
+          "proyek": [
+            "Menganalisis UI dari 5 aplikasi populer",
+            "Belajar teori warna dan grid",
+            "Membuat user persona dasar"
+          ],
+          "meta": "1-2 Bulan"
+        },
+        {
+          "fase": "Fase 2",
+          "title": "Wireframing & Prototyping",
+          "deskripsi": "Menggunakan tools seperti Figma untuk membuat wireframe (low-fidelity) dan prototype (high-fidelity).",
+          "proyek": [
+            "Redesign landing page website",
+            "Membuat alur checkout aplikasi e-commerce",
+            "Membuat prototype interaktif di Figma"
+          ],
+          "meta": "2-3 Bulan"
+        },
+        {
+          "fase": "Fase 3",
+          "title": "UX Research & Usability Testing",
+          "deskripsi": "Melakukan riset pengguna, wawancara, dan menguji prototipe untuk mendapatkan feedback nyata.",
+          "proyek": [
+            "Melakukan A/B testing sederhana",
+            "Menjalankan sesi wawancara pengguna",
+            "Membuat laporan hasil Usability Testing"
+          ],
+          "meta": "2-4 Bulan"
+        },
+        {
+          "fase": "Fase 4",
+          "title": "Design System & Handoff",
+          "deskripsi": "Membangun sistem desain yang konsisten dan mempelajari cara menyerahkan aset desain ke tim developer.",
+          "proyek": [
+            "Membangun komponen UI library di Figma",
+            "Menulis dokumentasi panduan desain",
+            "Kolaborasi simulasi dengan Frontend Developer"
+          ],
+          "meta": "2-3 Bulan"
+        }
+      ],
+      "infoGaji": {
+        "rentangIDR": "Rp 7.000.000 - Rp 25.000.000 / bulan",
+        "rentangUSD": "$55,000 - $110,000 / tahun",
+        "penjelasan": "Gaji bervariasi berdasarkan kualitas portofolio, kemampuan riset, dan ukuran perusahaan."
+      },
+      "infoPendidikan": {
+        "jurusan": [
+          "Desain Komunikasi Visual",
+          "Sistem Informasi"
+        ],
+        "durasi": "4 Tahun",
+        "jalurAkademik": "S1 (Sarjana)",
+        "gelar": "S.Ds / S.Kom"
+      },
+      "materiBelajar": [
+        {
+          "title": "Roadmap UX Design",
+          "tipe": "website",
+          "link": "https://roadmap.sh/ux-design"
+        },
+        {
+          "title": "Google UX Design Professional Certificate",
+          "tipe": "video",
+          "link": "https://www.coursera.org/professional-certificates/google-ux-design"
+        }
+      ],
+      "daftarBuku": [
+        {
+          "title": "Don't Make Me Think, Revisited",
+          "penulis": "Steve Krug",
+          "link": "https://www.amazon.com/Dont-Make-Think-Revisited-Usability/dp/0321965515"
+        },
+        {
+          "title": "The Design of Everyday Things",
+          "penulis": "Don Norman",
+          "link": "https://www.amazon.com/Design-Everyday-Things-Revised-Expanded/dp/0465050654"
+        }
+      ],
+      "referensiDigital": [
+        {
+          "title": "Nielsen Norman Group",
+          "tipe": "website",
+          "link": "https://www.nngroup.com/"
+        },
+        {
+          "title": "Mizko",
+          "tipe": "youtube",
+          "link": "https://www.youtube.com/c/mizko"
+        }
+      ],
+      "proyekTerkait": [
+        "redesign-aplikasi-perbankan",
+        "pembuatan-design-system-komprehensif",
+        "riset-pengguna-fitur-baru"
+      ],
+      "faqs": [
+        {
+          "tanya": "Apakah saya harus bisa coding/menggambar?",
+          "jawab": "Tidak wajib. Anda tidak perlu jago menggambar manual atau coding, namun mengerti dasar HTML/CSS akan sangat membantu komunikasi dengan developer."
+        },
+        {
+          "tanya": "Apa bedanya UI dan UX?",
+          "jawab": "UI (User Interface) berfokus pada tampilan visual dan estetika, sedangkan UX (User Experience) berfokus pada fungsi, alur logika, dan pengalaman keseluruhan pengguna."
+        }
+      ],
+      "tipe": "skill_based",
+      "universitasTerbaik": {
+        "lokal": [
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Bina Nusantara (BINUS)",
+          "Institut Kesenian Jakarta (IKJ)"
+        ],
+        "global": [
+          "Rhode Island School of Design (RISD)",
+          "Parsons School of Design",
+          "University of Washington"
+        ]
+      }
+    },
+    {
+      "slug": "data-scientist",
+      "title": "Data Scientist",
+      "categoryId": "tech",
+      "deskripsi": "Detektif data masa kini. Data Scientist mengekstrak wawasan berharga dari lautan data yang kompleks menggunakan kombinasi matematika, statistik, dan machine learning untuk membantu perusahaan mengambil keputusan strategis.",
+      "keyIkon": "database",
+      "recommendationMajors": [
+        "Matematika",
+        "Statistika",
+        "Ilmu Komputer",
+        "Sains Data"
+      ],
+      "sertifikasi": [
+        "IBM Data Science Professional Certificate",
+        "Google Data Analytics",
+        "AWS Certified Machine Learning"
+      ],
+      "riasecCategories": [
+        "I",
+        "R",
+        "C"
+      ],
+      "mbtiTags": [
+        "INTP",
+        "INTJ",
+        "ENTP",
+        "ISTJ"
+      ],
+      "roadmap": [
+        {
+          "fase": "Fase 1",
+          "title": "Matematika & Statistik Dasar",
+          "deskripsi": "Membangun pondasi dalam aljabar linear, kalkulus dasar, probabilitas, dan statistika.",
+          "proyek": [
+            "Menganalisis distribusi data publik",
+            "Menyelesaikan problem set probabilitas",
+            "Uji hipotesis (A/B Testing dasar)"
+          ],
+          "meta": "2-3 Bulan"
+        },
+        {
+          "fase": "Fase 2",
+          "title": "Pemrograman & Manipulasi Data",
+          "deskripsi": "Menguasai Python atau R, serta library data seperti Pandas, NumPy, dan dasar SQL.",
+          "proyek": [
+            "Membersihkan dataset yang kotor (Data Cleaning)",
+            "Menjalankan query SQL kompleks",
+            "Visualisasi data dengan Matplotlib/Seaborn"
+          ],
+          "meta": "2-4 Bulan"
+        },
+        {
+          "fase": "Fase 3",
+          "title": "Machine Learning Dasar",
+          "deskripsi": "Mempelajari algoritma supervised dan unsupervised learning (Regresi, Klasifikasi, Clustering).",
+          "proyek": [
+            "Membuat model prediksi harga rumah",
+            "Klasifikasi email spam vs non-spam",
+            "Segmentasi pelanggan toko ritel (K-Means)"
+          ],
+          "meta": "3-5 Bulan"
+        },
+        {
+          "fase": "Fase 4",
+          "title": "Advanced ML & Deployment",
+          "deskripsi": "Mempelajari Deep Learning, NLP, dan cara menyebarkan model (MLOps) ke produksi.",
+          "proyek": [
+            "Membangun model analisis sentimen",
+            "Image classification dengan neural networks",
+            "Deploy model machine learning via API FastAPI"
+          ],
+          "meta": "4-6 Bulan"
+        }
+      ],
+      "infoGaji": {
+        "rentangIDR": "Rp 10.000.000 - Rp 40.000.000 / bulan",
+        "rentangUSD": "$80,000 - $150,000 / tahun",
+        "penjelasan": "Peran data tingkat senior atau yang memiliki keahlian Deep Learning/AI sering kali mendapatkan remunerasi tertinggi di pasar teknologi."
+      },
+      "infoPendidikan": {
+        "jurusan": [
+          "Statistika",
+          "Sains Data",
+          "Ilmu Komputer"
+        ],
+        "durasi": "4 Tahun",
+        "jalurAkademik": "S1 (Sarjana)",
+        "gelar": "S.Stat / S.Si / S.Kom"
+      },
+      "materiBelajar": [
+        {
+          "title": "Roadmap AI & Data Scientist",
+          "tipe": "website",
+          "link": "https://roadmap.sh/ai-data-scientist"
+        },
+        {
+          "title": "Machine Learning Specialization by Andrew Ng",
+          "tipe": "video",
+          "link": "https://www.coursera.org/specializations/machine-learning-introduction"
+        }
+      ],
+      "daftarBuku": [
+        {
+          "title": "Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow",
+          "penulis": "Aurélien Géron",
+          "link": "https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1492032646"
+        },
+        {
+          "title": "Python for Data Analysis",
+          "penulis": "Wes McKinney",
+          "link": "https://www.amazon.com/Python-Data-Analysis-Wrangling-IPython/dp/1491957662"
+        }
+      ],
+      "referensiDigital": [
+        {
+          "title": "Kaggle",
+          "tipe": "website",
+          "link": "https://www.kaggle.com/"
+        },
+        {
+          "title": "StatQuest with Josh Starmer",
+          "tipe": "youtube",
+          "link": "https://www.youtube.com/c/joshstarmer"
+        }
+      ],
+      "proyekTerkait": [
+        "sistem-rekomendasi-film",
+        "prediksi-churn-rate-pelanggan",
+        "dashboard-analitik-penjualan"
+      ],
+      "faqs": [
+        {
+          "tanya": "Apakah gelar S2/S3 diwajibkan untuk Data Scientist?",
+          "jawab": "Tidak wajib, tetapi sangat membantu untuk posisi riset lanjutan (Research Scientist) atau di perusahaan deep-tech."
+        },
+        {
+          "tanya": "Apa bedanya Data Analyst dan Data Scientist?",
+          "jawab": "Data Analyst berfokus menganalisis data historis untuk tren masa lalu, sedangkan Data Scientist membangun model prediktif untuk memprediksi masa depan."
+        }
+      ],
+      "tipe": "skill_based",
+      "universitasTerbaik": {
+        "lokal": [
+          "Institut Pertanian Bogor (IPB)",
+          "Universitas Indonesia (UI)",
+          "Institut Teknologi Sepuluh Nopember (ITS)"
+        ],
+        "global": [
+          "Stanford University",
+          "Massachusetts Institute of Technology (MIT)",
+          "University of California, Berkeley"
+        ]
+      }
+    },
+    {
+      "slug": "cyber-security-analyst",
+      "title": "Cyber Security Analyst",
+      "categoryId": "tech",
+      "deskripsi": "Garda terdepan pertahanan dunia digital. Cyber Security Analyst bertugas memantau, mendeteksi, mencegah, dan merespons ancaman siber untuk melindungi aset, jaringan, dan data sensitif perusahaan.",
+      "keyIkon": "shield",
+      "recommendationMajors": [
+        "Teknik Informatika",
+        "Sistem Informasi",
+        "Kriptografi",
+        "Keamanan Siber"
+      ],
+      "sertifikasi": [
+        "CompTIA Security+",
+        "Certified Ethical Hacker (CEH)",
+        "CISSP"
+      ],
+      "riasecCategories": [
+        "I",
+        "R",
+        "E"
+      ],
+      "mbtiTags": [
+        "ISTP",
+        "INTJ",
+        "INTP",
+        "ESTJ"
+      ],
+      "roadmap": [
+        {
+          "fase": "Fase 1",
+          "title": "Dasar IT & Jaringan",
+          "deskripsi": "Memahami sistem operasi (terutama Linux/Unix), arsitektur komputer, dan protokol jaringan TCP/IP.",
+          "proyek": [
+            "Navigasi terminal Linux tingkat mahir",
+            "Menganalisis paket jaringan menggunakan Wireshark",
+            "Setup router dan firewall virtual"
+          ],
+          "meta": "2-3 Bulan"
+        },
+        {
+          "fase": "Fase 2",
+          "title": "Konsep Keamanan Fundamental",
+          "deskripsi": "Mempelajari enkripsi, manajemen akses (IAM), malware, dan standar keamanan ISO/NIST.",
+          "proyek": [
+            "Mempelajari hashing dan enkripsi PGP",
+            "Audit hak akses user di sistem Linux",
+            "Implementasi Two-Factor Authentication (2FA)"
+          ],
+          "meta": "2-4 Bulan"
+        },
+        {
+          "fase": "Fase 3",
+          "title": "Deteksi & Pemantauan Ancaman",
+          "deskripsi": "Menggunakan alat SIEM (Security Information and Event Management) dan menganalisis log sistem.",
+          "proyek": [
+            "Setup sistem deteksi intrusi (Snort)",
+            "Menganalisis log server Apache/Nginx",
+            "Simulasi deteksi serangan DDoS"
+          ],
+          "meta": "3-5 Bulan"
+        },
+        {
+          "fase": "Fase 4",
+          "title": "Ethical Hacking & Incident Response",
+          "deskripsi": "Mempelajari cara peretas bekerja (Penetration Testing) dan prosedur respons ketika insiden terjadi.",
+          "proyek": [
+            "Menemukan kerentanan di aplikasi simulasi (OWASP Top 10)",
+            "Menyusun dokumen SOP Incident Response",
+            "Eksploitasi dasar menggunakan Metasploit di lab terisolasi"
+          ],
+          "meta": "4-6 Bulan"
+        }
+      ],
+      "infoGaji": {
+        "rentangIDR": "Rp 9.000.000 - Rp 35.000.000 / bulan",
+        "rentangUSD": "$75,000 - $140,000 / tahun",
+        "penjelasan": "Meningkatnya ancaman siber global membuat talenta di bidang ini sangat dicari, sehingga gaji cukup tinggi dengan sertifikasi yang diakui."
+      },
+      "infoPendidikan": {
+        "jurusan": [
+          "Kriptografi",
+          "Keamanan Siber",
+          "Teknik Komputer"
+        ],
+        "durasi": "4 Tahun",
+        "jalurAkademik": "S1 (Sarjana)",
+        "gelar": "S.Tr.Kom / S.Kom"
+      },
+      "materiBelajar": [
+        {
+          "title": "Roadmap Cyber Security",
+          "tipe": "website",
+          "link": "https://roadmap.sh/cyber-security"
+        },
+        {
+          "title": "Google Cybersecurity Professional Certificate",
+          "tipe": "video",
+          "link": "https://www.coursera.org/professional-certificates/google-cybersecurity"
+        }
+      ],
+      "daftarBuku": [
+        {
+          "title": "The Web Application Hacker's Handbook",
+          "penulis": "Dafydd Stuttard",
+          "link": "https://www.amazon.com/Web-Application-Hackers-Handbook-Exploiting/dp/1118026470"
+        },
+        {
+          "title": "Social Engineering: The Science of Human Hacking",
+          "penulis": "Christopher Hadnagy",
+          "link": "https://www.amazon.com/Social-Engineering-Science-Human-Hacking/dp/111943338X"
+        }
+      ],
+      "referensiDigital": [
+        {
+          "title": "Hack The Box",
+          "tipe": "website",
+          "link": "https://www.hackthebox.com/"
+        },
+        {
+          "title": "NetworkChuck",
+          "tipe": "youtube",
+          "link": "https://www.youtube.com/c/NetworkChuck"
+        }
+      ],
+      "proyekTerkait": [
+        "audit-keamanan-website-umkm",
+        "setup-siem-splunk-lokal",
+        "lomba-capture-the-flag-ctf"
+      ],
+      "faqs": [
+        {
+          "tanya": "Apakah profesi ini legal?",
+          "jawab": "Sangat legal. Anda adalah 'hacker beretika' (White Hat) yang dibayar perusahaan untuk menemukan celah dan melindunginya, bukan untuk mencuri data."
+        },
+        {
+          "tanya": "Apakah saya harus jago coding?",
+          "jawab": "Kemampuan coding (Python, Bash, PowerShell) sangat penting untuk mengotomatisasi tugas dan memahami eksploitasi, meskipun Anda tidak akan membuat aplikasi dari awal."
+        }
+      ],
+      "tipe": "skill_based",
+      "universitasTerbaik": {
+        "lokal": [
+          "Politeknik Siber dan Sandi Negara (Poltek SSN)",
+          "Institut Teknologi Bandung (ITB)",
+          "Universitas Telkom"
+        ],
+        "global": [
+          "Carnegie Mellon University",
+          "Purdue University",
+          "Georgia Institute of Technology"
+        ]
+      }
+    },
+    {
+      "slug": "devops-engineer",
+      "title": "DevOps Engineer",
+      "categoryId": "tech",
+      "deskripsi": "Jembatan strategis antara pengembangan perangkat lunak (Development) dan operasional IT (Operations). DevOps Engineer mengotomatisasi proses integrasi, pengujian, dan deployment infrastruktur agar rilis software menjadi lebih cepat, aman, dan stabil.",
+      "keyIkon": "server",
+      "recommendationMajors": [
+        "Teknik Informatika",
+        "Sistem Komputer",
+        "Ilmu Komputer"
+      ],
+      "sertifikasi": [
+        "AWS Certified Solutions Architect",
+        "Certified Kubernetes Administrator (CKA)",
+        "HashiCorp Certified: Terraform Associate"
+      ],
+      "riasecCategories": [
+        "R",
+        "I",
+        "C"
+      ],
+      "mbtiTags": [
+        "ISTJ",
+        "INTJ",
+        "ESTJ",
+        "ISTP"
+      ],
+      "roadmap": [
+        {
+          "fase": "Fase 1",
+          "title": "Linux & Scripting",
+          "deskripsi": "Menguasai administrasi sistem operasi Linux, jaringan komputer dasar, dan bash scripting.",
+          "proyek": [
+            "Konfigurasi server Ubuntu dari nol",
+            "Menulis bash script untuk backup otomatis",
+            "Memahami load balancing dan proxy"
+          ],
+          "meta": "2-3 Bulan"
+        },
+        {
+          "fase": "Fase 2",
+          "title": "Containerization",
+          "deskripsi": "Memahami konsep container menggunakan Docker untuk mengisolasi environment aplikasi.",
+          "proyek": [
+            "Membuat Dockerfile untuk aplikasi web",
+            "Mengelola multi-container dengan Docker Compose",
+            "Optimasi ukuran Docker image"
+          ],
+          "meta": "1-2 Bulan"
+        },
+        {
+          "fase": "Fase 3",
+          "title": "CI/CD & Version Control",
+          "deskripsi": "Membangun pipeline Continuous Integration & Continuous Deployment (CI/CD).",
+          "proyek": [
+            "Otomatisasi testing dengan GitHub Actions",
+            "Setup Jenkins pipeline",
+            "Integrasi notifikasi error ke Slack"
+          ],
+          "meta": "2-3 Bulan"
+        },
+        {
+          "fase": "Fase 4",
+          "title": "Orkestrasi, IaC & Cloud",
+          "deskripsi": "Mengelola infrastruktur sebagai kode (Terraform/Ansible) dan orkestrasi container dengan Kubernetes di layanan Cloud.",
+          "proyek": [
+            "Provision server AWS menggunakan Terraform",
+            "Deploy aplikasi skala besar di klaster Kubernetes",
+            "Setup monitoring menggunakan Prometheus & Grafana"
+          ],
+          "meta": "4-6 Bulan"
+        }
+      ],
+      "infoGaji": {
+        "rentangIDR": "Rp 12.000.000 - Rp 45.000.000 / bulan",
+        "rentangUSD": "$90,000 - $160,000 / tahun",
+        "penjelasan": "DevOps adalah salah satu profesi dengan bayaran tertinggi di IT karena kompleksitas peran dan dampaknya yang masif terhadap efisiensi perusahaan."
+      },
+      "infoPendidikan": {
+        "jurusan": [
+          "Teknik Informatika",
+          "Sistem Komputer"
+        ],
+        "durasi": "4 Tahun",
+        "jalurAkademik": "S1 (Sarjana)",
+        "gelar": "S.Kom / B.Eng"
+      },
+      "materiBelajar": [
+        {
+          "title": "Roadmap DevOps",
+          "tipe": "website",
+          "link": "https://roadmap.sh/devops"
+        },
+        {
+          "title": "IBM DevOps and Software Engineering Professional Certificate",
+          "tipe": "video",
+          "link": "https://www.coursera.org/professional-certificates/devops-and-software-engineering"
+        }
+      ],
+      "daftarBuku": [
+        {
+          "title": "The Phoenix Project",
+          "penulis": "Gene Kim, Kevin Behr, George Spafford",
+          "link": "https://www.amazon.com/Phoenix-Project-DevOps-Helping-Business/dp/1942788290"
+        },
+        {
+          "title": "Kubernetes Up & Running",
+          "penulis": "Kelsey Hightower",
+          "link": "https://www.amazon.com/Kubernetes-Running-Dive-Future-Infrastructure/dp/1492046531"
+        }
+      ],
+      "referensiDigital": [
+        {
+          "title": "TechWorld with Nana",
+          "tipe": "youtube",
+          "link": "https://www.youtube.com/c/TechWorldwithNana"
+        },
+        {
+          "title": "DevOps.com",
+          "tipe": "website",
+          "link": "https://devops.com/"
+        }
+      ],
+      "proyekTerkait": [
+        "migrasi-server-lokal-ke-cloud",
+        "pembuatan-pipeline-cicd-otomatis",
+        "infrastruktur-monitoring-dan-alerting"
+      ],
+      "faqs": [
+        {
+          "tanya": "Apakah DevOps adalah posisi pemula (entry-level)?",
+          "jawab": "Biasanya tidak. Posisi DevOps memerlukan pemahaman mendalam tentang pengembangan dan infrastruktur, sehingga sering diisi oleh mantan System Admin atau Backend Engineer."
+        },
+        {
+          "tanya": "Apakah saya harus bisa semua bahasa pemrograman?",
+          "jawab": "Tidak. Anda hanya perlu memahami dasar arsitekturnya, bisa membaca kode (untuk debugging), dan mahir dalam scripting (Bash/Python/Go)."
+        }
+      ],
+      "tipe": "skill_based",
+      "universitasTerbaik": {
+        "lokal": [
+          "Institut Teknologi Bandung (ITB)",
+          "Institut Teknologi Sepuluh Nopember (ITS)",
+          "Universitas Gadjah Mada (UGM)"
+        ],
+        "global": [
+          "Massachusetts Institute of Technology (MIT)",
+          "Stanford University",
+          "University of Illinois at Urbana-Champaign"
+        ]
+      }
+    }
+  ];
+
+async function seedData() {
+  try {
+    console.log('Connecting to MongoDB Atlas...');
+    await mongoose.connect(MONGODB_URI);
+    console.log('Connected!');
+
+    if (techCareers.length === 0) {
+      console.warn('Warning: techCareers array is empty. Please paste the JSON from Claude first.');
+      process.exit(0);
+    }
+
+    console.log(`Injecting ${techCareers.length} careers...`);
+
+    // Use upsert to avoid duplicates based on slug
+    for (const career of techCareers) {
+      await Career.findOneAndUpdate(
+        { slug: career.slug },
+        career,
+        { upsert: true, new: true }
+      );
+      console.log(`- Saved: ${career.title}`);
+    }
+
+    console.log('\nSUCCESS! Data has been injected to MongoDB Atlas.');
+    process.exit(0);
+  } catch (err) {
+    console.error('FAILED to seed data:', err);
+    process.exit(1);
+  }
+}
+
+seedData();

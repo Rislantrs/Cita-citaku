@@ -28,6 +28,8 @@
     "mongodb": "^7.2.0",
     "mongoose": "^9.6.1",
     "motion": "^12.23.24",
+    "multer": "^2.1.1",
+    "pdf-parse": "^2.4.5",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "react-helmet-async": "^3.0.0",

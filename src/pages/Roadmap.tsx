@@ -19,20 +19,16 @@ export default function Roadmap() {
     async function fetchRoadmaps() {
       setIsLoading(true);
       try {
-        const snapshot = await getDocs(collection(db, 'roadmaps'));
-        const firestoreRoadmaps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const response = await fetch('/api/careers');
+        const data = await response.json();
         
-        // Merge with local catalog, unique by slug
-        const combined: any[] = [...firestoreRoadmaps];
-        careerCatalog.forEach(local => {
-          if (!combined.some(c => (c.slug || c.id) === local.slug)) {
-            combined.push(local);
-          }
-        });
-        
-        setRoadmaps(combined);
+        if (data.items) {
+          setRoadmaps(data.items);
+        } else {
+          setRoadmaps(careerCatalog);
+        }
       } catch (error) {
-        console.error("Error fetching roadmaps:", error);
+        console.error("Error fetching roadmaps from API:", error);
         setRoadmaps(careerCatalog);
       } finally {
         setIsLoading(false);
@@ -207,7 +203,7 @@ export default function Roadmap() {
           ) : (
             filteredCareers.map((career, idx) => (
               <motion.div
-                key={career.slug}
+                key={career.slug || career.id || `career-${idx}`}
                 layout
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}

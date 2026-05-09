@@ -4,7 +4,7 @@ import cors from 'cors';
 import mongoSanitize from 'express-mongo-sanitize';
 import path from 'path';
 import { GoogleGenAI } from '@google/genai';
-import { connectMongo, ensureCareerSeeded, UserUsageModel, ChatSessionModel, isMongoReady } from './backend/mongo';
+import { connectMongo, ensureCareerSeeded, ensureProjectSeeded, UserUsageModel, ChatSessionModel, isMongoReady } from './backend/mongo';
 import { registerApiRoutes } from './backend/routes';
 import { callAI, streamAI, type AITaskType } from './backend/ai_service';
 
@@ -122,14 +122,20 @@ async function startServer() {
   const app = express();
   const requestedPort = Number(process.env.PORT || 3001);
 
-  // Connect to MongoDB
-  const mongoConnected = await connectMongo();
-  if (mongoConnected) {
-    console.log('[mongo] connected to cita-citaku');
-    await ensureCareerSeeded();
-  } else {
-    console.warn('[mongo] running without persistent database (hybrid mode)');
-  }
+  // 1. Seed memory store first (Hybrid Mode readiness)
+  await ensureCareerSeeded();
+  await ensureProjectSeeded();
+
+  // 2. Connect to MongoDB in background-ish way or with fast timeout
+  console.log('[mongo] Attempting connection...');
+  connectMongo().then(async connected => {
+    if (connected) {
+      console.log('[mongo] connected to cita-citaku');
+      await ensureCareerSeeded(); // Sync memory to Atlas
+    } else {
+      console.warn('[mongo] running in hybrid mode (local memory)');
+    }
+  });
 
   app.set('trust proxy', true);
   app.use(securityHeaders);

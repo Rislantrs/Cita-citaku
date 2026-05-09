@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Types for AI Request
-export type AITaskType = 'counselor' | 'quiz' | 'assistant' | 'logic' | 'gemma';
+export type AITaskType = 'counselor' | 'quiz' | 'assistant' | 'logic' | 'gemma' | 'generator';
 
 interface AIResponse {
   text: string;
@@ -30,7 +30,26 @@ const SYSTEM_PROMPTS: Record<AITaskType, string> = {
   }
   Gaya Bahasa: Profesional, tajam, namun memberikan semangat. Hindari pengulangan kata yang membosankan.`,
   logic: "Kamu adalah Expert Logika. Selesaikan masalah sulit langkah demi langkah.",
-  gemma: "Kamu adalah Google Gemma. Berikan jawaban yang ringkas dan akurat."
+  gemma: "Kamu adalah Google Gemma. Berikan jawaban yang ringkas dan akurat.",
+  generator: `Anda adalah Pakar Psikometri dan Pembuat Konten Edukasi.
+  Tugas: Ekstrak SEMUA 60 pernyataan (soal) dari teks yang diberikan dan ubah menjadi daftar pernyataan untuk Tes Minat Bakat RIASEC. Jangan ada yang terlewat.
+  
+  Aturan Pembuatan Soal:
+  1. Pernyataan harus dimulai dengan "Saya suka...", "Saya senang...", "Saya merasa...", atau "Saya mampu...".
+  2. Kategorikan setiap soal ke dalam salah satu dari 6 tipe RIASEC: Realistic, Investigative, Artistic, Social, Enterprising, Conventional.
+  3. Buatlah soal sebanyak mungkin sesuai dengan informasi yang ada di teks (target 60 soal jika tersedia).
+  4. Pastikan soal relevan dengan konteks teks yang diberikan (misal: jika teks tentang IT, fokus ke aspek Realistic/Investigative di bidang IT).
+  
+  Output WAJIB JSON murni (array of objects) tanpa penjelasan, tanpa kata pembuka/penutup, dan tanpa markdown block. Langsung mulai dengan [ dan akhiri dengan ].
+  
+  Format:
+  [
+    {
+      "text": "Pernyataan soal",
+      "category": "Realistic / Investigative / Artistic / Social / Enterprising / Conventional",
+      "points": 5
+    }
+  ]`
 };
 
 const GROQ_MODELS: Record<AITaskType, string> = {
@@ -38,7 +57,8 @@ const GROQ_MODELS: Record<AITaskType, string> = {
   assistant: "llama-3.1-8b-instant",
   quiz: "llama-3.3-70b-versatile",
   logic: "llama-3.3-70b-versatile",
-  gemma: "llama-3.1-8b-instant"
+  gemma: "llama-3.1-8b-instant",
+  generator: "llama-3.3-70b-versatile"
 };
 
 const OPENROUTER_MODELS: Record<AITaskType, string> = {
@@ -46,7 +66,8 @@ const OPENROUTER_MODELS: Record<AITaskType, string> = {
   assistant: "meta-llama/llama-3.3-70b-instruct:free",
   quiz: "google/gemini-flash-1.5-exp:free",
   logic: "nvidia/nemotron-3-super-120b-a12b:free",
-  gemma: "google/gemma-2-9b-it:free"
+  gemma: "google/gemma-2-9b-it:free",
+  generator: "google/gemini-flash-1.5-exp:free"
 };
 
 function buildMessages(task: AITaskType, userPrompt: string, history: any[]) {
@@ -238,9 +259,9 @@ export async function streamAI(
 async function callGoogleDirect(task: AITaskType, userPrompt: string, history: any[]): Promise<AIResponse> {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    const modelName = task === 'gemma' ? "gemma-2-27b-it" : "gemini-1.5-flash";
-    const isQuiz = task === 'quiz';
-    const generationConfig = isQuiz ? { responseMimeType: "application/json" } : {};
+    const modelName = task === 'gemma' ? "gemma-2-9b-it" : "gemini-1.5-flash-latest";
+    const isJsonMode = task === 'quiz' || task === 'generator';
+    const generationConfig = isJsonMode ? { responseMimeType: "application/json" } : {};
     
     const model = genAI.getGenerativeModel({ model: modelName, generationConfig });
 

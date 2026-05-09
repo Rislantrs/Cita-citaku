@@ -44,21 +44,18 @@ export default function RoadmapDetail() {
       if (!slug) return;
       setLoading(true);
       try {
-        // Try Firestore first
-        const { doc, getDoc } = await import('firebase/firestore');
-        const { db } = await import('../lib/firebase');
-        const docRef = doc(db, 'roadmaps', slug);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          setCareer({ id: docSnap.id, ...docSnap.data() });
+        const response = await fetch(`/api/careers/${slug}`);
+        if (!response.ok) throw new Error('Failed to fetch from API');
+        const data = await response.json();
+        
+        if (data.item) {
+          setCareer(data.item);
         } else {
-          // Fallback to local catalog
           const local = getCareerBySlug(slug);
           if (local) setCareer(local);
         }
       } catch (error) {
-        console.error("Error loading career detail:", error);
+        console.error("Error loading career detail from API:", error);
         const local = getCareerBySlug(slug);
         if (local) setCareer(local);
       } finally {

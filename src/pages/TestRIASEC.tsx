@@ -14,28 +14,22 @@ import SEO from '../components/SEO';
 
 type RiasecCode = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
 
-const QUESTIONS = [
-  { id: 1, text: 'Saya suka membongkar, memperbaiki, atau merakit barang.', category: 'R' },
-  { id: 2, text: 'Saya nyaman menganalisis data, pola, dan logika yang rumit.', category: 'I' },
-  { id: 3, text: 'Saya menikmati membuat ide visual, tulisan, musik, atau konsep baru.', category: 'A' },
-  { id: 4, text: 'Saya senang membantu orang lain memahami masalah mereka.', category: 'S' },
-  { id: 5, text: 'Saya tertarik memimpin tim, memulai proyek, atau mempengaruhi keputusan.', category: 'E' },
-  { id: 6, text: 'Saya rapi saat menyusun jadwal, file, angka, atau administrasi.', category: 'C' },
-  { id: 7, text: 'Saya lebih suka aktivitas lapangan dan pekerjaan yang melibatkan alat atau mesin.', category: 'R' },
-  { id: 8, text: 'Saya suka bertanya mengapa sesuatu bekerja seperti itu.', category: 'I' },
-  { id: 9, text: 'Saya merasa hidup ketika bisa mengekspresikan ide secara bebas.', category: 'A' },
-  { id: 10, text: 'Saya sabar mendengarkan teman yang sedang butuh dukungan.', category: 'S' },
-  { id: 11, text: 'Saya suka mengejar target, menjual ide, atau membuat sesuatu tumbuh.', category: 'E' },
-  { id: 12, text: 'Saya suka mengikuti prosedur yang jelas dan hasil yang rapi.', category: 'C' },
+const FALLBACK_QUESTIONS = [
+  { id: 'f1', text: 'Saya suka membongkar, memperbaiki, atau merakit barang.', category: 'R' },
+  { id: 'f2', text: 'Saya nyaman menganalisis data, pola, dan logika yang rumit.', category: 'I' },
+  { id: 'f3', text: 'Saya menikmati membuat ide visual, tulisan, musik, atau konsep baru.', category: 'A' },
+  { id: 'f4', text: 'Saya senang membantu orang lain memahami masalah mereka.', category: 'S' },
+  { id: 'f5', text: 'Saya tertarik memimpin tim, memulai proyek, atau mempengaruhi keputusan.', category: 'E' },
+  { id: 'f6', text: 'Saya rapi saat menyusun jadwal, file, angka, atau administrasi.', category: 'C' },
 ];
 
 const RIASEC_INFO: Record<string, { label: string; desc: string }> = {
-  R: { label: 'Realistic', desc: 'Suka bekerja dengan tangan, alat, mesin, dan aktivitas fisik.' },
-  I: { label: 'Investigative', desc: 'Suka riset, analisis, eksperimen, dan memecahkan masalah kompleks.' },
-  A: { label: 'Artistic', desc: 'Suka ekspresi kreatif, seni, musik, dan bekerja tanpa aturan kaku.' },
-  S: { label: 'Social', desc: 'Suka membantu, mengajar, menyembuhkan, dan melayani sesama.' },
-  E: { label: 'Enterprising', desc: 'Suka memimpin, mempengaruhi, menjual ide, dan mencapai target.' },
-  C: { label: 'Conventional', desc: 'Suka keteraturan, data akurat, detail, dan prosedur sistematis.' },
+  R: { label: 'Realistic', desc: 'Suka bekerja dengan tangan, alat, mesin, and aktivitas fisik.' },
+  I: { label: 'Investigative', desc: 'Suka riset, analisis, eksperimen, and memecahkan masalah kompleks.' },
+  A: { label: 'Artistic', desc: 'Suka ekspresi kreatif, seni, musik, and bekerja tanpa aturan kaku.' },
+  S: { label: 'Social', desc: 'Suka membantu, mengajar, menyembuhkan, and melayani sesama.' },
+  E: { label: 'Enterprising', desc: 'Suka memimpin, mempengaruhi, menjual ide, and mencapai target.' },
+  C: { label: 'Conventional', desc: 'Suka keteraturan, data akurat, detail, and prosedur sistematis.' },
 };
 
 export default function TestRIASEC() {
@@ -43,6 +37,9 @@ export default function TestRIASEC() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const isResultView = searchParams.get('view') === 'result';
+
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const initialScores = isResultView
     ? { R: 2, I: 8, A: 6, S: 4, E: 5, C: 3 }
@@ -61,6 +58,39 @@ export default function TestRIASEC() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [dynamicCareers, setDynamicCareers] = useState<any[]>(careerCatalog);
   const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        setIsLoading(true);
+        const { collection, getDocs, query, orderBy } = await import('firebase/firestore');
+        const snapshot = await getDocs(query(collection(db, 'bank_soal'), orderBy('updatedAt', 'desc')));
+        const data = snapshot.docs.map(doc => ({ 
+          id: doc.id, 
+          text: doc.data().text, 
+          category: doc.data().categoryCode || doc.data().category[0] 
+        }));
+        
+        if (data.length > 0) {
+          setQuestions(data);
+        } else {
+          setQuestions(FALLBACK_QUESTIONS);
+        }
+      } catch (err) {
+        console.error("Failed to fetch questions:", err);
+        setQuestions(FALLBACK_QUESTIONS);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    if (!isResultView) {
+      fetchQuestions();
+    } else {
+      setQuestions(FALLBACK_QUESTIONS);
+      setIsLoading(false);
+    }
+  }, [isResultView]);
 
   useEffect(() => {
     if (finished) {
@@ -83,13 +113,14 @@ export default function TestRIASEC() {
     fetchCareers();
   }, []);
 
-  const progress = Math.round((currentIndex / QUESTIONS.length) * 100);
+  const progress = Math.round((currentIndex / (questions.length || 1)) * 100);
 
   const answer = (weight: number) => {
-    const q = QUESTIONS[currentIndex];
+    const q = questions[currentIndex];
+    if (!q) return;
     setScores(prev => ({ ...prev, [q.category]: (prev[q.category] || 0) + weight }));
 
-    if (currentIndex + 1 === QUESTIONS.length) {
+    if (currentIndex + 1 === questions.length) {
       setFinished(true);
     } else {
       setCurrentIndex(prev => prev + 1);
@@ -142,7 +173,7 @@ export default function TestRIASEC() {
   const center = size / 2;
   const radius = size * 0.38; // Slightly smaller to give more space for labels
   const riasecOrder = ['R', 'I', 'A', 'S', 'E', 'C'];
-  const maxPossibleScore = 8;
+  const maxPossibleScore = (questions.length / 6) * 4 || 8;
 
   const radarPoints = riasecOrder.map((type, i) => {
     const score = scores[type];
@@ -157,6 +188,18 @@ export default function TestRIASEC() {
   });
 
   const polygonPath = radarPoints.map(p => `${p.x},${p.y}`).join(' ');
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }} className="text-blue-600">
+           <Brain size={48} />
+        </motion.div>
+        <h2 className="text-xl font-black text-slate-900">Menyiapkan Tes Kamu...</h2>
+        <p className="text-sm font-bold text-slate-400">Mengambil soal dari database</p>
+      </div>
+    );
+  }
 
   if (finished) {
     return (
@@ -397,7 +440,7 @@ export default function TestRIASEC() {
       <div className="mb-12 flex items-center justify-between">
         <h2 className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>Tes Jati Diri</h2>
         <div className="rounded-full bg-slate-950 px-4 py-1 text-xs font-black text-white">
-          {currentIndex + 1} / {QUESTIONS.length}
+          {currentIndex + 1} / {questions.length}
         </div>
       </div>
 
@@ -415,9 +458,9 @@ export default function TestRIASEC() {
         animate={{ opacity: 1, y: 0 }}
         className="rounded-[2.5rem] sm:rounded-[3rem] theme-card p-8 sm:p-12 shadow-sm text-center"
       >
-        <span className="text-xs font-black uppercase tracking-[0.3em] text-blue-600">Kategori: {QUESTIONS[currentIndex].category}</span>
+        <span className="text-xs font-black uppercase tracking-[0.3em] text-blue-600">Kategori: {questions[currentIndex]?.category}</span>
         <h3 className="mt-8 text-3xl font-black leading-tight sm:text-4xl" style={{ color: 'var(--text-primary)' }}>
-          "{QUESTIONS[currentIndex].text}"
+          "{questions[currentIndex]?.text}"
         </h3>
 
         <div className="mt-12 sm:mt-16 grid grid-cols-1 gap-3 sm:grid-cols-5">

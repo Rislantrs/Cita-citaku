@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { careerCatalog, type CareerCatalogItem } from '../src/lib/careerCatalog';
+import { careerCatalog, type ItemKatalogKarir } from '../src/lib/careerCatalog';
 
 const userSchema = new Schema(
   {
@@ -128,11 +128,81 @@ const careerSchema = new Schema(
     title: { type: String, required: true },
     categoryId: { type: String, required: true, index: true },
     description: { type: String, required: true },
+    type: { type: String, enum: ['skill_based', 'education_based'], default: 'skill_based' },
+    keyIkon: { type: String, default: 'code' },
     recommendationMajors: { type: [String], default: [] },
     certifications: { type: [String], default: [] },
     riasecCategories: { type: [String], default: [] },
     mbtiTags: { type: [String], default: [] },
     featured: { type: Boolean, default: false },
+    infoGaji: {
+      rentangIDR: { type: String, default: '' },
+      rentangUSD: { type: String, default: '' },
+      penjelasan: { type: String, default: '' },
+    },
+    infoPendidikan: {
+      jurusan: { type: [String], default: [] },
+      durasi: { type: String, default: '' },
+      jalurAkademik: { type: String, default: '' },
+      gelar: { type: String, default: '' },
+    },
+    materiBelajar: [
+      {
+        judul: { type: String, default: '' },
+        tipe: { type: String, default: 'video' },
+        link: { type: String, default: '' },
+      }
+    ],
+    daftarBuku: [
+      {
+        judul: { type: String, default: '' },
+        penulis: { type: String, default: '' },
+        link: { type: String, default: '' },
+      }
+    ],
+    referensiDigital: [
+      {
+        judul: { type: String, default: '' },
+        tipe: { type: String, default: 'website' },
+        link: { type: String, default: '' },
+      }
+    ],
+    faqs: [
+      {
+        tanya: { type: String, default: '' },
+        jawab: { type: String, default: '' },
+      }
+    ],
+    universitasTerbaik: {
+      lokal: { type: [String], default: [] },
+      global: { type: [String], default: [] },
+    },
+    duniaPerkuliahan: {
+      ringkasan: { type: String, default: '' },
+      keahlianWajib: { type: [String], default: [] },
+      alasanMemilih: [
+        {
+          judul: { type: String, default: '' },
+          deskripsi: { type: String, default: '' },
+        }
+      ],
+    },
+    roadmap: [
+      {
+        fase: { type: String, default: '' },
+        meta: { type: String, default: '' },
+        judul: { type: String, default: '' },
+        deskripsi: { type: String, default: '' },
+        proyek: { type: [String], default: [] },
+        buku: [
+          {
+            judul: { type: String, default: '' },
+            penulis: { type: String, default: '' },
+            link: { type: String, default: '' },
+          }
+        ],
+      }
+    ],
   },
   { timestamps: true },
 );
@@ -186,10 +256,14 @@ export async function connectMongo() {
   }
 
   try {
+    console.log('[mongo] Attempting to connect to Atlas...');
     await mongoose.connect(mongoUri, {
       dbName: process.env.MONGODB_DB_NAME || 'cita-citaku',
+      serverSelectionTimeoutMS: 3000, // 3 seconds timeout
+      connectTimeoutMS: 3000,
     });
     connected = true;
+    console.log('[mongo] Successfully connected to Atlas');
     return true;
   } catch (error) {
     console.error('[mongo] connection failed ERROR:', error);
@@ -199,24 +273,54 @@ export async function connectMongo() {
 }
 
 export function isMongoReady() {
-  return connected && mongoose.connection.readyState === 1;
+  return mongoose.connection.readyState === 1;
 }
 
 const memoryStore = {
   users: new Map<string, { uid: string; name?: string | null; email?: string | null; hasilTes?: unknown }>(),
   submissions: [] as unknown[],
   quizResults: new Map<string, unknown>(),
-  careers: careerCatalog as CareerCatalogItem[],
+  careers: [] as ItemKatalogKarir[],
   projects: [] as unknown[],
 };
 
 export async function ensureCareerSeeded() {
-  if (!isMongoReady()) return;
+  const isReady = isMongoReady();
+  
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const dataPath = path.join(process.cwd(), 'backend', 'data', 'careers.json');
+    
+    if (fs.existsSync(dataPath)) {
+      const raw = fs.readFileSync(dataPath, 'utf8');
+      const careers = JSON.parse(raw);
+      
+      // 1. Always seed memoryStore for safety
+      memoryStore.careers = careers;
+      
+      // 2. If Mongo is ready, sync to Atlas
+      if (isReady) {
+        console.log(`[mongo] Atlas connected. Syncing ${careers.length} careers...`);
+        for (const career of careers) {
+          await CareerModel.findOneAndUpdate(
+            { slug: career.slug } as any,
+            career,
+            { upsert: true, new: true }
+          );
+        }
+        console.log('[mongo] Atlas sync complete!');
+      } else {
+        console.log(`[mongo] Hybrid Mode: Auto-seeded ${careers.length} careers to memory`);
+      }
+    }
+  } catch (err) {
+    console.error('[mongo] Seeding failed:', err);
+  }
+}
 
-  const count = await CareerModel.countDocuments();
-  if (count > 0) return;
-
-  await (CareerModel as any).insertMany(careerCatalog);
+export async function ensureProjectSeeded() {
+  // Let the user manage their own database
 }
 
 export { memoryStore };
