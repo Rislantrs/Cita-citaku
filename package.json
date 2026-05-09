@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
+    "@google/generative-ai": "^0.24.1",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
     "cors": "^2.8.6",
@@ -24,11 +25,13 @@
     "firebase": "^12.12.1",
     "i18next": "^26.0.8",
     "lucide-react": "^0.546.0",
+    "mongodb": "^7.2.0",
     "mongoose": "^9.6.1",
     "motion": "^12.23.24",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "react-i18next": "^17.0.6",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.14.2",
     "sonner": "^2.0.7",
     "vite": "^6.2.3"

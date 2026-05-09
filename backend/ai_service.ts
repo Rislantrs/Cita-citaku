@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Types for AI Request
 export type AITaskType = 'counselor' | 'quiz' | 'assistant' | 'logic' | 'gemma';
@@ -10,7 +10,14 @@ interface AIResponse {
 }
 
 const SYSTEM_PROMPTS: Record<AITaskType, string> = {
-  counselor: "Kamu adalah AI Counselor Cita-citaku. Fokus: Karier, Pendidikan, Roadmap. Gaya: Inspiratif & Ramah.",
+  counselor: `Anda adalah Konselor Karier AI yang empatik, cerdas, dan santai dari Cita-citaku. 
+  Tugas: Berikan saran jurusan & karier berdasarkan minat User.
+  Aturan:
+  - Gunakan bahasa Indonesia santai (seperti kakak ke adik).
+  - Berikan jawaban yang selalu bervariasi (jangan kaku).
+  - Hubungkan dengan tren industri 2026 & gaji masa depan.
+  - Jika User punya RIASEC, gunakan data itu untuk saran yang SANGAT personal.
+  - Selalu akhiri dengan pertanyaan yang mengajak User berpikir kritis.`,
   assistant: "Kamu adalah Project Assistant. Bantu teknis pengerjaan proyek. Gaya: Praktis & Solutif.",
   quiz: "Kamu adalah Quiz Generator. Buat soal pilihan ganda dari teks materi dalam format JSON.",
   logic: "Kamu adalah Expert Logika. Selesaikan masalah sulit langkah demi langkah.",
@@ -212,9 +219,9 @@ export async function streamAI(
 // ─── GOOGLE DIRECT (Fallback) ──────────────────────────────────────────────
 async function callGoogleDirect(task: AITaskType, userPrompt: string, history: any[]): Promise<AIResponse> {
   try {
-    const genAI: any = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY } as any);
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
     const modelName = task === 'gemma' ? "gemma-2-27b-it" : "gemini-2.0-flash-exp";
-    const model = genAI.models.get(modelName);
+    const model = genAI.getGenerativeModel({ model: modelName });
 
     const contents = [
       { role: 'user', parts: [{ text: SYSTEM_PROMPTS[task] }] },

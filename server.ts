@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -200,9 +201,11 @@ async function startServer() {
 
   // ─── SSE STREAMING ENDPOINT ──────────────────────────────────────────────
   app.post('/api/chat/stream', async (req, res) => {
-    const { messages, task = 'counselor', userId, context, sessionId } = req.body;
+    const { task, messages, userId, sessionId, context } = req.body;
+    console.log(`[api] Chat request received - Task: ${task}, User: ${userId}, Session: ${sessionId}`);
 
     if (!messages || !Array.isArray(messages)) {
+      console.error('[api] Error: Messages is missing or not an array');
       res.status(400).json({ error: 'Messages array is required' });
       return;
     }
@@ -260,17 +263,23 @@ async function startServer() {
           res.end();
 
           // Simpan ke MongoDB jika ada userId dan sessionId
+          console.log(`[mongo] Attempting to save chat... userId: ${userId}, sessionId: ${sessionId}, mongoReady: ${isMongoReady()}`);
+          
           if (userId && sessionId && isMongoReady()) {
             try {
+              const rawContent = lastMsg.content || lastMsg.parts?.[0]?.text || "";
+              const autoTitle = rawContent.length > 40 ? rawContent.substring(0, 37) + "..." : rawContent;
+
               await (ChatSessionModel as any).findOneAndUpdate(
                 { sessionId },
                 {
                   userId,
                   task,
+                  $setOnInsert: { title: autoTitle },
                   $push: {
                     messages: {
                       $each: [
-                        { role: 'user', content: lastMsg.content || lastMsg.parts?.[0]?.text },
+                        { role: 'user', content: rawContent },
                         { role: 'assistant', content: fullText }
                       ]
                     }
@@ -278,9 +287,12 @@ async function startServer() {
                 },
                 { upsert: true, new: true }
               );
-            } catch (e) {
-              console.warn('[ChatSession] Save error:', e);
+              console.log(`[mongo] SUCCESS: Chat session saved. Title: ${autoTitle}`);
+            } catch (e: any) {
+              console.error('[mongo] FATAL SAVE ERROR:', e.message);
             }
+          } else {
+            console.warn('[mongo] Skip saving: userId/sessionId missing or mongo not ready');
           }
         },
         // onError
@@ -297,6 +309,32 @@ async function startServer() {
 
   // ─── CHAT HISTORY ENDPOINTS ──────────────────────────────────────────────
   // Ambil daftar sesi chat user
+  app.delete('/api/chat/sessions/:sid', async (req, res) => {
+    const { sid } = req.params;
+    console.log(`[api] DELETE request for session: ${sid}`);
+    if (!isMongoReady()) return res.status(503).json({ error: 'DB not ready' });
+    try {
+      const result = await (ChatSessionModel as any).deleteOne({ sessionId: sid });
+      console.log(`[mongo] Delete result for ${sid}:`, result);
+      res.json({ ok: true });
+    } catch (e) {
+      console.error(`[mongo] Delete error for ${sid}:`, e);
+      res.status(500).json({ error: 'Delete failed' });
+    }
+  });
+
+  app.post('/api/chat/sessions/:sid/pin', async (req, res) => {
+    const { sid } = req.params;
+    const { isPinned } = req.body;
+    if (!isMongoReady()) return res.status(503).json({ error: 'DB not ready' });
+    try {
+      await (ChatSessionModel as any).findOneAndUpdate({ sessionId: sid }, { isPinned });
+      res.json({ ok: true });
+    } catch (e) {
+      res.status(500).json({ error: 'Pin failed' });
+    }
+  });
+
   app.get('/api/chat/sessions', async (req, res) => {
     const userId = req.query.userId as string;
     if (!userId || !isMongoReady()) {
@@ -306,9 +344,9 @@ async function startServer() {
     try {
       const sessions = await (ChatSessionModel as any)
         .find({ userId })
-        .sort({ updatedAt: -1 })
+        .sort({ isPinned: -1, updatedAt: -1 })
         .limit(20)
-        .select('sessionId title task updatedAt messages');
+        .select('sessionId title task isPinned updatedAt messages');
 
       const result = sessions.map((s: any) => ({
         sessionId: s.sessionId,

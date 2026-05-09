@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
-import { Mic, Send, Bot, MessageSquare, History, PlusCircle, Trash2 } from 'lucide-react';
+import { Mic, Send, Bot, MessageSquare, History, PlusCircle, Trash2, Pin, PinOff } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { toast } from 'sonner';
 import { auth } from '../lib/firebase';
@@ -14,6 +15,7 @@ interface ChatSessionInfo {
   title: string;
   updatedAt: string;
   messageCount: number;
+  isPinned?: boolean;
 }
 
 const SUGGESTED_TOPICS = [
@@ -39,23 +41,7 @@ export default function AICounselor() {
   const recognitionRef = useRef<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // LOGIN WALL
-  if (!user) {
-    return (
-      <div className="flex h-[80vh] flex-col items-center justify-center text-center px-4">
-        <div className="mb-8 h-20 w-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center">
-          <Bot size={40} />
-        </div>
-        <h1 className="text-3xl font-black mb-4 text-slate-900 tracking-tight uppercase">AI Counselor Eksklusif</h1>
-        <p className="text-slate-500 font-bold mb-8 max-w-sm mx-auto">
-          Kamu harus masuk akun terlebih dahulu untuk berkonsultasi dengan asisten karir cerdas kami.
-        </p>
-        <Link to="/login" className="inline-flex items-center gap-3 rounded-full bg-blue-600 px-10 py-4 text-sm font-black text-white shadow-xl shadow-blue-600/20 transition-all hover:scale-105 active:scale-95">
-          Login Sekarang
-        </Link>
-      </div>
-    );
-  }
+
 
   // Auto-scroll saat ada pesan baru atau streaming
   useEffect(() => {
@@ -72,12 +58,71 @@ export default function AICounselor() {
   const loadSessions = useCallback(async () => {
     const uid = auth.currentUser?.uid;
     if (!uid) return;
+
+    // 1. Coba muat dari cache dulu agar instan
+    const cached = localStorage.getItem(`chat_sessions_${uid}`);
+    if (cached) {
+      try { setSessions(JSON.parse(cached)); } catch (e) { /* ignore */ }
+    }
+
+    // 2. Muat dari server untuk update terbaru
     try {
       const res = await fetch(`/api/chat/sessions?userId=${uid}`);
       const data = await res.json();
-      if (data.sessions) setSessions(data.sessions);
+      if (data.sessions) {
+        setSessions(data.sessions);
+        // Simpan ke cache
+        localStorage.setItem(`chat_sessions_${uid}`, JSON.stringify(data.sessions));
+      }
     } catch { /* ignore */ }
   }, []);
+
+  useEffect(() => {
+    if (user) loadSessions();
+  }, [user, loadSessions]);
+
+  const togglePin = async (sid: string, currentPinned: boolean, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`/api/chat/sessions/${sid}/pin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isPinned: !currentPinned })
+      });
+      if (res.ok) {
+        toast.success(currentPinned ? "Sematkan dilepas" : "Percakapan disematkan");
+        loadSessions();
+      }
+    } catch {
+      toast.error("Gagal menyematkan");
+    }
+  };
+
+  const deleteSession = async (sid: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    
+    toast.warning("Hapus percakapan ini?", {
+      action: {
+        label: "Hapus",
+        onClick: async () => {
+          try {
+            const res = await fetch(`/api/chat/sessions/${sid}`, { method: 'DELETE' });
+            if (res.ok) {
+              toast.success("Sesi berhasil dihapus");
+              loadSessions();
+              if (sessionId === sid) startNewChat();
+            } else {
+              const data = await res.json().catch(() => ({}));
+              toast.error(`Gagal menghapus: ${data.error || res.statusText || res.status}`);
+            }
+          } catch (err) {
+            toast.error("Terjadi kesalahan jaringan");
+          }
+        },
+      },
+      cancel: { label: "Batal", onClick: () => {} }
+    });
+  };
 
   const loadSession = useCallback(async (sid: string) => {
     try {
@@ -137,12 +182,14 @@ export default function AICounselor() {
     if (!textToSend.trim() || isLoading) return;
 
     const newMessages: ChatMessage[] = [...messages, { role: 'user', content: textToSend }];
+    console.log("[frontend] Sending message to backend...", textToSend);
     setMessages(newMessages);
     setInput('');
     setIsLoading(true);
     setStreamingText('');
 
     try {
+      console.log("[frontend] Starting fetch to /api/chat/stream...");
       const response = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -156,6 +203,7 @@ export default function AICounselor() {
           }))
         })
       });
+      console.log("[frontend] Response received status:", response.status);
 
       // Cek kalau quota habis (respons JSON, bukan SSE)
       if (response.status === 429) {
@@ -216,6 +264,7 @@ export default function AICounselor() {
       }
 
     } catch (err) {
+      console.error("[frontend] Fetch error detail:", err);
       toast.error('Gagal mengirim pesan. Silakan coba lagi.');
       setMessages([...newMessages, { role: 'model', content: 'Maaf, saya sedang mengalami kendala teknis. Coba lagi nanti ya!' }]);
       setStreamingText('');
@@ -240,6 +289,24 @@ export default function AICounselor() {
     });
   };
 
+  // LOGIN WALL (Diletakkan setelah Hooks)
+  if (!user) {
+    return (
+      <div className="flex h-[80vh] flex-col items-center justify-center text-center px-4">
+        <div className="mb-8 h-20 w-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center">
+          <Bot size={40} />
+        </div>
+        <h1 className="text-3xl font-black mb-4 text-slate-900 tracking-tight uppercase">AI Counselor Eksklusif</h1>
+        <p className="text-slate-500 font-bold mb-8 max-w-sm mx-auto">
+          Kamu harus masuk akun terlebih dahulu untuk berkonsultasi dengan asisten karir cerdas kami.
+        </p>
+        <Link to="/login" className="inline-flex items-center gap-3 rounded-full bg-blue-600 px-10 py-4 text-sm font-black text-white shadow-xl shadow-blue-600/20 transition-all hover:scale-105 active:scale-95">
+          Login Sekarang
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-[calc(100vh-120px)] max-w-[1600px] mx-auto px-6 pb-6 gap-6">
       {/* Sidebar - Session History */}
@@ -261,16 +328,40 @@ export default function AICounselor() {
               <p className="text-xs text-slate-400 text-center py-8">Belum ada riwayat chat</p>
             ) : (
               sessions.map((session) => (
-                <button 
+                <div 
                   key={session.sessionId} 
-                  onClick={() => loadSession(session.sessionId)}
-                  className={`flex w-full items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold text-slate-600 transition-all hover:bg-white hover:text-blue-700 hover:shadow-sm ${
-                    session.sessionId === sessionId ? 'bg-white text-blue-700 shadow-sm' : ''
+                  className={`group flex w-full items-center gap-2 rounded-2xl p-1 transition-all ${
+                    session.sessionId === sessionId ? 'bg-white shadow-sm' : 'hover:bg-white/50'
                   }`}
                 >
-                  <MessageSquare size={18} className="opacity-40 shrink-0" />
-                  <span className="truncate">{session.title}</span>
-                </button>
+                  <button 
+                    onClick={() => loadSession(session.sessionId)}
+                    className={`flex-1 flex items-center gap-4 px-4 py-3 text-sm font-bold transition-all text-left ${
+                      session.sessionId === sessionId ? 'text-blue-700' : 'text-slate-600 hover:text-blue-700'
+                    }`}
+                  >
+                    <MessageSquare size={18} className={`${session.isPinned ? 'text-blue-600 fill-blue-600' : 'opacity-40'} shrink-0`} />
+                    <span className="truncate">{session.title}</span>
+                  </button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 pr-2 transition-all">
+                    <button 
+                      onClick={(e) => togglePin(session.sessionId, session.isPinned || false, e)}
+                      className={`p-2 transition-all rounded-xl ${
+                        session.isPinned 
+                          ? 'text-blue-600 hover:bg-blue-50' 
+                          : 'text-slate-300 hover:text-blue-600 hover:bg-blue-50'
+                      }`}
+                    >
+                      {session.isPinned ? <PinOff size={14} /> : <Pin size={14} />}
+                    </button>
+                    <button 
+                      onClick={(e) => deleteSession(session.sessionId, e)}
+                      className="p-2 text-slate-300 hover:text-rose-500 transition-all rounded-xl hover:bg-rose-50"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
               ))
             )}
           </div>
@@ -347,9 +438,15 @@ export default function AICounselor() {
                 <div className={`px-6 py-5 rounded-[2rem] text-base leading-relaxed ${
                   msg.role === 'user' 
                     ? 'bg-slate-900 text-white font-medium shadow-xl shadow-slate-900/10' 
-                    : 'bg-slate-50 text-slate-800 font-medium'
+                    : 'bg-slate-50 text-slate-800 font-medium prose prose-slate max-w-none'
                 }`}>
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
+                  {msg.role === 'user' ? (
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  ) : (
+                    <div className="markdown-content">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -366,8 +463,11 @@ export default function AICounselor() {
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-black shrink-0 bg-blue-600 text-white shadow-lg shadow-blue-600/20">
                   AI
                 </div>
-                <div className="px-6 py-5 rounded-[2rem] text-base leading-relaxed bg-slate-50 text-slate-800 font-medium">
-                  <p className="whitespace-pre-wrap">{streamingText}<span className="inline-block w-2 h-5 bg-blue-500 animate-pulse ml-0.5 rounded-sm" /></p>
+                <div className="px-6 py-5 rounded-[2rem] text-base leading-relaxed bg-slate-50 text-slate-800 font-medium prose prose-slate max-w-none">
+                  <div className="markdown-content">
+                    <ReactMarkdown>{streamingText}</ReactMarkdown>
+                  </div>
+                  <span className="inline-block w-2 h-5 bg-blue-500 animate-pulse ml-0.5 rounded-sm" />
                 </div>
               </div>
             </motion.div>

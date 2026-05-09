@@ -156,6 +156,7 @@ const chatSessionSchema = new mongoose.Schema({
   userId: { type: String, required: true, index: true },
   task: { type: String, default: 'counselor' },
   title: { type: String, default: 'Percakapan Baru' },
+  isPinned: { type: Boolean, default: false },
   messages: { type: [chatMessageSchema], default: [] },
 }, { timestamps: true });
 
@@ -171,7 +172,10 @@ let connected = false;
 
 export async function connectMongo() {
   const mongoUri = process.env.MONGODB_URI;
+  console.log('[mongo] Connecting... URI present:', !!mongoUri);
+  
   if (!mongoUri) {
+    console.warn('[mongo] MONGODB_URI not found in environment');
     connected = false;
     return false;
   }

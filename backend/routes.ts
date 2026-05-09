@@ -86,6 +86,37 @@ export function registerApiRoutes(app: Express) {
     res.json({ ok: true, user: toPlain(user) });
   });
 
+  // User Progress Tracker
+  app.post('/api/users/:uid/progress/roadmap', async (req, res) => {
+    const { uid } = req.params;
+    const { careerSlug } = req.body;
+
+    if (!isMongoReady()) {
+      res.json({ ok: true, message: 'Running in memory mode' });
+      return;
+    }
+
+    try {
+      const updateData: any = {
+        $inc: { 'progressTracker.roadmapVisited': 1 }
+      };
+
+      if (careerSlug) {
+        updateData.$set = { 'progressTracker.lastCareerSlug': careerSlug };
+      }
+
+      const user = await (UserModel as any).findOneAndUpdate(
+        { uid },
+        updateData,
+        { new: true, upsert: true }
+      );
+
+      res.json({ ok: true, progress: user?.progressTracker });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update progress' });
+    }
+  });
+
   // Projects
   app.get('/api/projects', async (req, res) => {
     const category = typeof req.query.category === 'string' ? req.query.category : undefined;

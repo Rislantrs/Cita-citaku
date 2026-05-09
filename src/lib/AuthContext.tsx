@@ -23,9 +23,27 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      
       if (currentUser) {
+        // Cek durasi sesi (1 Minggu = 7 hari)
+        const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+        const loginTime = localStorage.getItem(`login_timestamp_${currentUser.uid}`);
+        
+        if (loginTime && (Date.now() - parseInt(loginTime) > ONE_WEEK_MS)) {
+          console.log("Sesi berakhir (1 minggu). Mengeluarkan pengguna...");
+          await signOut(auth);
+          localStorage.removeItem(`login_timestamp_${currentUser.uid}`);
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
+        // Jika belum ada timestamp (misal baru pertama kali update), buat sekarang
+        if (!loginTime) {
+          localStorage.setItem(`login_timestamp_${currentUser.uid}`, Date.now().toString());
+        }
+
+        setUser(currentUser);
+        
         // Create user in firestore if not exists
         const userRef = doc(db, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
@@ -38,6 +56,8 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
             updatedAt: serverTimestamp(),
           });
         }
+      } else {
+        setUser(null);
       }
       
       setLoading(false);
@@ -47,22 +67,24 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   const loginWithGoogle = async () => {
     try {
-      // Mock Login for UI testing
-      setUser({
-        uid: 'mock-uid-123',
-        displayName: 'Sahabat Cita Tester',
-        email: 'tester@citacitaku.com',
-        photoURL: 'https://ui-avatars.com/api/?name=Sahabat+Cita&background=0D8ABC&color=fff'
-      } as User);
-    } catch (error) {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      const result = await signInWithPopup(auth, provider);
+      if (result.user) {
+        // Simpan waktu login saat berhasil login SSO
+        localStorage.setItem(`login_timestamp_${result.user.uid}`, Date.now().toString());
+      }
+    } catch (error: any) {
       console.error("Login failed", error);
+      if (error.code === 'auth/popup-blocked') {
+        alert('Mohon izinkan popup di browser kamu untuk login.');
+      }
     }
   };
 
   const logout = async () => {
     try {
-      // Mock Logout
-      setUser(null);
+      await signOut(auth);
     } catch (error) {
       console.error("Logout failed", error);
     }
