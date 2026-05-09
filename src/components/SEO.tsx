@@ -1,50 +1,45 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 
 interface SEOProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   keywords?: string;
   image?: string;
   url?: string;
+  type?: string;
 }
 
-export default function SEO({ title, description, keywords, image, url }: SEOProps) {
-  useEffect(() => {
-    // Update Title
-    const fullTitle = `${title} | Cita-citaku - Platform Eksplorasi Karir`;
-    document.title = fullTitle;
+export default function SEO({ 
+  title = "Cita-citaku | Temukan Karier & Masa Depanmu", 
+  description = "Platform edukasi untuk membantu siswa menemukan jurusan kuliah dan karier impian melalui tes RIASEC dan AI Counselor.",
+  keywords = "cita-citaku, eksplorasi karir, tes riasec indonesia, roadmap belajar, masa depan",
+  image = "https://cita-citaku.vercel.app/og-image.png", 
+  url = "https://cita-citaku.vercel.app",
+  type = "website"
+}: SEOProps) {
+  const siteTitle = title.includes("Cita-citaku") ? title : `${title} | Cita-citaku`;
 
-    // Helper to update or create meta tags
-    const updateMetaTag = (name: string, content: string, attr: 'name' | 'property' = 'name') => {
-      let element = document.querySelector(`meta[${attr}="${name}"]`);
-      if (element) {
-        element.setAttribute('content', content);
-      } else {
-        element = document.createElement('meta');
-        element.setAttribute(attr, name);
-        element.setAttribute('content', content);
-        document.head.appendChild(element);
-      }
-    };
+  return (
+    <Helmet>
+      {/* Standard metadata tags */}
+      <title>{siteTitle}</title>
+      <meta name='description' content={description} />
+      <meta name='keywords' content={keywords} />
 
-    // Standard Meta Tags
-    updateMetaTag('description', description);
-    if (keywords) updateMetaTag('keywords', keywords);
+      {/* Facebook Meta Tags */}
+      <meta property="og:type" content={type} />
+      <meta property="og:title" content={siteTitle} />
+      <meta property="og:description" content={description} />
+      <meta property="og:image" content={image} />
+      <meta property="og:url" content={url} />
 
-    // Open Graph / Facebook
-    updateMetaTag('og:type', 'website', 'property');
-    updateMetaTag('og:title', fullTitle, 'property');
-    updateMetaTag('og:description', description, 'property');
-    if (image) updateMetaTag('og:image', image, 'property');
-    if (url) updateMetaTag('og:url', url, 'property');
+      {/* Twitter Meta Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={siteTitle} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={image} />
 
-    // Twitter
-    updateMetaTag('twitter:card', 'summary_large_image', 'property');
-    updateMetaTag('twitter:title', fullTitle, 'property');
-    updateMetaTag('twitter:description', description, 'property');
-    if (image) updateMetaTag('twitter:image', image, 'property');
-
-  }, [title, description, keywords, image, url]);
-
-  return null; // This component doesn't render anything
+      <link rel="canonical" href={url} />
+    </Helmet>
+  );
 }

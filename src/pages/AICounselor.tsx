@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 type ChatMessage = { role: 'user' | 'model'; content: string };
 
@@ -309,6 +310,10 @@ export default function AICounselor() {
 
   return (
     <div className="flex h-[calc(100vh-120px)] max-w-[1600px] mx-auto px-6 pb-6 gap-6">
+      <SEO 
+        title="Konselor AI | Chat dengan Kakak Tingkat AI" 
+        description="Konsultasikan minat, bakat, dan jurusan kuliah kamu dengan AI Counselor kami yang empatik dan berwawasan luas."
+      />
       {/* Sidebar - Session History */}
       <aside className="hidden lg:flex flex-col w-[280px] shrink-0 gap-6">
         <button 

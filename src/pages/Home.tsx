@@ -60,7 +60,10 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <img
             src="/images/hero-modern.png"
-            alt=""
+            alt="Cita-citaku Platform Eksplorasi Karir"
+            width={1920}
+            height={1080}
+            fetchPriority="high"
             className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale-[0.5]"
             aria-hidden="true"
           />
@@ -184,9 +187,11 @@ export default function Home() {
               >
                 <img
                   src={`/images/cat-${category.id}.png`}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  alt={category.label}
+                  width={400}
+                  height={300}
                   loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                 
