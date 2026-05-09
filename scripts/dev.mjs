@@ -4,7 +4,7 @@ const isWindows = process.platform === 'win32';
 const shell = isWindows;
 
 const api = spawn('npm', ['run', 'dev:api'], {
-  env: { ...process.env, PORT: '0' },
+  env: { ...process.env, PORT: '3001' },
   stdio: ['ignore', 'pipe', 'inherit'],
   shell,
 });

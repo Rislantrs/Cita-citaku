@@ -58,6 +58,68 @@ function isAdminLike(role: unknown) {
 }
 
 export function registerApiRoutes(app: Express) {
+  // RIASEC AI Analysis
+  app.post('/api/ai/analyze-riasec', async (req, res) => {
+    const { scores } = req.body;
+    console.log(`[AI] Analyzing scores:`, scores);
+    
+    try {
+      // 1. Ambil daftar karir asli dari database
+      let careers = [];
+      try {
+        if (isMongoReady()) {
+          careers = await CareerModel.find().select('title slug category description').lean() as any[];
+        } else {
+          const { memoryStore } = await import('./mongo');
+          careers = memoryStore.careers || [];
+        }
+      } catch (dbErr) {
+        console.warn("[api] DB fetch failed, using fallback catalog:", dbErr);
+      }
+
+      // Jika kosong, pakai fallback statis agar AI tetap punya data untuk dipilih
+      if (!careers || careers.length === 0) {
+        const { careerCatalog } = await import('../src/lib/careerCatalog');
+        careers = careerCatalog;
+      }
+
+      const careerListStr = careers.map(c => `- ${c.title} (slug: ${c.slug}, kategori: ${c.category})`).join('\n');
+
+      const prompt = `Analisis skor RIASEC ini secara profesional: ${JSON.stringify(scores)}.
+      
+      PILIH MAKSIMAL 4 KARIR dari daftar database ini:
+      ${careerListStr}
+
+      Instruksi Tambahan:
+      1. Berikan interpretasi psikologis yang mendalam tentang perpaduan tipe RIASEC dominan User.
+      2. Berikan output dalam format JSON:
+      {
+        "summary": "Analisis naratif mendalam (min 3 kalimat)",
+        "strengths": ["kekuatan 1", "kekuatan 2"],
+        "challenges": ["tantangan 1", "tantangan 2"],
+        "recommendations": [
+          { "slug": "slug-karir", "matchScore": 95, "reason": "Alasan singkat kenapa cocok" }
+        ]
+      }
+      3. matchScore HARUS bervariasi (misal 92, 88, 85) sesuai tingkat kecocokan asli.
+      4. Output HANYA JSON.`;
+    
+      const { callAI } = await import('./ai_service');
+      const response = await callAI('quiz', prompt);
+      
+      console.log(`[AI] Response generated successfully.`);
+      
+      const cleanJson = response.text.replace(/```json|```/g, '').trim();
+      res.json(JSON.parse(cleanJson));
+    } catch (e) {
+      console.error("[api] Analysis fatal error:", e);
+      res.status(500).json({ 
+        error: 'Gagal menganalisis',
+        message: e instanceof Error ? e.message : 'Unknown error'
+      });
+    }
+  });
+
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true, mongoReady: isMongoReady() });
   });

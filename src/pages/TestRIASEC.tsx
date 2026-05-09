@@ -9,6 +9,7 @@ import { ArrowLeft, Sparkles, Brain, Bot, CheckCircle2, Target, Trophy, ArrowRig
 import { saveQuizResult } from '../lib/api';
 import { careerCatalog } from '../lib/careerCatalog';
 import { usePersistedState, clearPersistedKey } from '../lib/usePersistedState';
+import ReactMarkdown from 'react-markdown';
 import SEO from '../components/SEO';
 
 type RiasecCode = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
@@ -56,6 +57,31 @@ export default function TestRIASEC() {
     initialScores
   );
   const [finished, setFinished] = useState(isResultView);
+  const [aiAnalysis, setAiAnalysis] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [dynamicCareers, setDynamicCareers] = useState<any[]>(careerCatalog);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    if (finished) {
+      setShowConfetti(true);
+      const timer = setTimeout(() => setShowConfetti(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [finished]);
+
+  useEffect(() => {
+    const fetchCareers = async () => {
+      try {
+        const res = await fetch('/api/careers');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) setDynamicCareers(data);
+      } catch (err) {
+        console.warn("Failed to fetch dynamic careers, using static fallback", err);
+      }
+    };
+    fetchCareers();
+  }, []);
 
   const progress = Math.round((currentIndex / QUESTIONS.length) * 100);
 
@@ -80,12 +106,34 @@ export default function TestRIASEC() {
   
   const top3 = sortedScores.slice(0, 3);
 
+  const fetchAnalysis = async () => {
+    if (aiAnalysis || isAnalyzing) return;
+    setIsAnalyzing(true);
+    try {
+      const res = await fetch('/api/ai/analyze-riasec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scores })
+      });
+      const data = await res.json();
+      if (data) setAiAnalysis(data);
+    } catch (err) {
+      console.error("Analysis failed", err);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (finished) fetchAnalysis();
+  }, [finished]);
+
   // Radar Chart Config
   const size = 300;
   const center = size / 2;
   const radius = size * 0.4;
   const riasecOrder = ['R', 'I', 'A', 'S', 'E', 'C'];
-  const maxPossibleScore = 8; // Adjust based on questions per category
+  const maxPossibleScore = 8;
 
   const radarPoints = riasecOrder.map((type, i) => {
     const score = scores[type];
@@ -109,35 +157,37 @@ export default function TestRIASEC() {
           description="Visualisasi profil RIASEC kamu beserta rekomendasi karir yang paling cocok berdasarkan tiga kode dominan."
           keywords="hasil riasec, profil karir, rekomendasi cita-cita"
         />
-        <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ 
-                opacity: 1, 
-                y: -10, 
-                x: Math.random() * window.innerWidth,
-                scale: Math.random() * 0.5 + 0.5,
-                rotate: 0 
-              }}
-              animate={{ 
-                y: window.innerHeight + 10,
-                rotate: 360,
-                opacity: 0
-              }}
-              transition={{ 
-                duration: Math.random() * 2 + 1,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "linear"
-              }}
-              className="absolute h-3 w-3 rounded-full"
-              style={{ 
-                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)] 
-              }}
-            />
-          ))}
-        </div>
+        {showConfetti && (
+          <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ 
+                  opacity: 1, 
+                  y: -10, 
+                  x: Math.random() * window.innerWidth,
+                  scale: Math.random() * 0.5 + 0.5,
+                  rotate: 0 
+                }}
+                animate={{ 
+                  y: window.innerHeight + 10,
+                  rotate: 360,
+                  opacity: 0
+                }}
+                transition={{ 
+                  duration: Math.random() * 2 + 1,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                  ease: "linear"
+                }}
+                className="absolute h-3 w-3 rounded-full"
+                style={{ 
+                  backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)] 
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         <header className="mb-16 text-center">
           <motion.div 
@@ -153,7 +203,6 @@ export default function TestRIASEC() {
         </header>
 
         <div className="grid gap-12 lg:grid-cols-2">
-          {/* Radar & Scores */}
           <div className="space-y-10">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
@@ -188,7 +237,6 @@ export default function TestRIASEC() {
                   ))}
                 </svg>
               </div>
-              
               <div className="mt-12 grid w-full grid-cols-3 gap-4">
                 {top3.map(([type, score]) => (
                   <div key={type} className="rounded-2xl p-4 text-center border theme-border" style={{ backgroundColor: 'var(--bg-secondary)' }}>
@@ -216,7 +264,6 @@ export default function TestRIASEC() {
             </div>
           </div>
 
-          {/* AI Analysis */}
           <div className="space-y-10">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
@@ -236,27 +283,53 @@ export default function TestRIASEC() {
               </div>
 
               <div className="space-y-8">
-                <p className="text-lg font-medium leading-relaxed opacity-80">
-                  Kamu memiliki profil dominan <span className="text-blue-600 font-black">{RIASEC_INFO[top3[0][0]].label}</span>. 
-                  Ini menunjukkan kamu adalah individu yang {top3[0][0] === 'I' ? 'sangat analitis dan haus akan pengetahuan' : 'memiliki dorongan kuat untuk berkreasi dan berekspresi'}.
-                </p>
+                {isAnalyzing ? (
+                  <div className="space-y-4 animate-pulse">
+                    <div className="h-4 bg-slate-200/50 rounded-full w-full"></div>
+                    <div className="h-4 bg-slate-200/50 rounded-full w-5/6"></div>
+                    <div className="h-32 bg-slate-200/50 rounded-[2rem] w-full"></div>
+                  </div>
+                ) : aiAnalysis ? (
+                  <div className="space-y-8">
+                    <div className="prose prose-slate dark:prose-invert max-w-none text-lg font-medium leading-relaxed opacity-80">
+                      <ReactMarkdown>
+                        {aiAnalysis.summary}
+                      </ReactMarkdown>
+                    </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl theme-card p-6 shadow-sm">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-3">Kekuatan</h4>
-                    <ul className="space-y-2 text-sm font-bold opacity-70">
-                      <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-emerald-500" /> Problem Solver Alami</li>
-                      <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-emerald-500" /> Fokus Tinggi</li>
-                    </ul>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="rounded-2xl theme-card p-6 shadow-sm border border-emerald-500/10" style={{ backgroundColor: 'rgba(16, 185, 129, 0.02)' }}>
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-3 flex items-center gap-2">
+                          <CheckCircle2 size={14} /> Kekuatan
+                        </h4>
+                        <ul className="space-y-2 text-sm font-bold opacity-70">
+                          {aiAnalysis.strengths?.map((s: string) => (
+                            <li key={s} className="flex items-start gap-2">
+                              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-emerald-500" /> {s}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="rounded-2xl theme-card p-6 shadow-sm border border-rose-500/10" style={{ backgroundColor: 'rgba(239, 68, 68, 0.02)' }}>
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-rose-500 mb-3 flex items-center gap-2">
+                          <Target size={14} /> Tantangan
+                        </h4>
+                        <ul className="space-y-2 text-sm font-bold opacity-70">
+                          {aiAnalysis.challenges?.map((c: string) => (
+                            <li key={c} className="flex items-start gap-2">
+                              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-rose-500" /> {c}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
-                  <div className="rounded-2xl theme-card p-6 shadow-sm">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-rose-500 mb-3">Tantangan</h4>
-                    <ul className="space-y-2 text-sm font-bold opacity-70">
-                      <li className="flex items-center gap-2"><Target size={14} className="text-rose-500" /> Delegasi Tugas</li>
-                      <li className="flex items-center gap-2"><Target size={14} className="text-rose-500" /> Detail Administratif</li>
-                    </ul>
-                  </div>
-                </div>
+                ) : (
+                  <p className="text-lg font-medium leading-relaxed opacity-80">
+                    Kamu memiliki profil dominan <span className="text-blue-600 font-black">{RIASEC_INFO[top3[0][0]].label}</span>. 
+                    Klik "Ulangi Tes" jika ingin menyegarkan analisis.
+                  </p>
+                )}
               </div>
             </motion.div>
 
@@ -265,7 +338,14 @@ export default function TestRIASEC() {
                 <Trophy size={20} className="text-yellow-500" /> Karir Rekomendasi
               </h3>
               <div className="grid gap-4 sm:grid-cols-2">
-                {careerCatalog.slice(0, 4).map((career) => (
+                {(aiAnalysis?.recommendations && Array.isArray(aiAnalysis.recommendations)
+                  ? aiAnalysis.recommendations.map((rec: any) => {
+                      const career = dynamicCareers.find(c => c.slug === rec.slug);
+                      if (!career) return null;
+                      return { ...career, matchScore: rec.matchScore };
+                    }).filter(Boolean)
+                  : dynamicCareers.slice(0, 4).map(c => ({ ...c, matchScore: 98 }))
+                ).map((career: any) => (
                   <Link 
                     key={career.slug}
                     to={`/roadmap/${career.slug}`}
@@ -276,7 +356,7 @@ export default function TestRIASEC() {
                     </div>
                     <div>
                       <h4 className="font-black group-hover:text-blue-600 transition-colors" style={{ color: 'var(--text-primary)' }}>{career.title}</h4>
-                      <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Cocok 98%</p>
+                      <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Cocok {career.matchScore}%</p>
                     </div>
                   </Link>
                 ))}

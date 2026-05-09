@@ -19,7 +19,16 @@ const SYSTEM_PROMPTS: Record<AITaskType, string> = {
   - Jika User punya RIASEC, gunakan data itu untuk saran yang SANGAT personal.
   - Selalu akhiri dengan pertanyaan yang mengajak User berpikir kritis.`,
   assistant: "Kamu adalah Project Assistant. Bantu teknis pengerjaan proyek. Gaya: Praktis & Solutif.",
-  quiz: "Kamu adalah Quiz Generator. Buat soal pilihan ganda dari teks materi dalam format JSON.",
+  quiz: `Anda adalah Pakar Psikologi Industri dan Konsultan Karir Senior.
+  Tugas: Bedah profil psikologis User berdasarkan skor RIASEC mereka.
+  Output wajib JSON murni:
+  {
+    "summary": "Analisis naratif yang mendalam, cerdas, dan inspiratif (min 3 kalimat). Hubungkan kombinasi tipe dominan mereka secara logis.",
+    "strengths": ["Kekuatan unik hasil kombinasi skor", "Aset kompetitif mereka di dunia kerja"],
+    "challenges": ["Potensi hambatan psikologis", "Hal yang perlu dikembangkan agar sukses"],
+    "recommendedSlugs": ["pilih slug paling relevan"]
+  }
+  Gaya Bahasa: Profesional, tajam, namun memberikan semangat. Hindari pengulangan kata yang membosankan.`,
   logic: "Kamu adalah Expert Logika. Selesaikan masalah sulit langkah demi langkah.",
   gemma: "Kamu adalah Google Gemma. Berikan jawaban yang ringkas dan akurat."
 };
@@ -35,7 +44,7 @@ const GROQ_MODELS: Record<AITaskType, string> = {
 const OPENROUTER_MODELS: Record<AITaskType, string> = {
   counselor: "google/gemini-flash-1.5-exp:free",
   assistant: "meta-llama/llama-3.3-70b-instruct:free",
-  quiz: "tencent/hy3-preview:free",
+  quiz: "google/gemini-flash-1.5-exp:free",
   logic: "nvidia/nemotron-3-super-120b-a12b:free",
   gemma: "google/gemma-2-9b-it:free"
 };
@@ -54,7 +63,16 @@ export async function callAI(task: AITaskType, userPrompt: string, history: any[
   const openRouterKey = process.env.OPENROUTER_API_KEY;
   const geminiKey = process.env.GEMINI_API_KEY;
 
-  // 1. Groq
+  // 1. Coba Google AI Studio dulu (khusus kuis karena butuh JSON mode)
+  if (task === 'quiz' && geminiKey) {
+    try {
+      return await callGoogleDirect(task, userPrompt, history);
+    } catch (e) {
+      console.warn("Google Direct failed, falling back to other providers...");
+    }
+  }
+
+  // 2. Groq
   if (groqKey) {
     try {
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -220,8 +238,11 @@ export async function streamAI(
 async function callGoogleDirect(task: AITaskType, userPrompt: string, history: any[]): Promise<AIResponse> {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    const modelName = task === 'gemma' ? "gemma-2-27b-it" : "gemini-2.0-flash-exp";
-    const model = genAI.getGenerativeModel({ model: modelName });
+    const modelName = task === 'gemma' ? "gemma-2-27b-it" : "gemini-1.5-flash";
+    const isQuiz = task === 'quiz';
+    const generationConfig = isQuiz ? { responseMimeType: "application/json" } : {};
+    
+    const model = genAI.getGenerativeModel({ model: modelName, generationConfig });
 
     const contents = [
       { role: 'user', parts: [{ text: SYSTEM_PROMPTS[task] }] },
@@ -240,7 +261,7 @@ async function callGoogleDirect(task: AITaskType, userPrompt: string, history: a
       modelUsed: `GoogleAIStudio:${modelName}`
     };
   } catch (error) {
-    console.error("All providers failed:", error);
+    console.error("Google AI Studio failed:", error);
     throw new Error("AI services currently unavailable.");
   }
 }
