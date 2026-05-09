@@ -173,7 +173,7 @@ let connected = false;
 export async function connectMongo() {
   const mongoUri = process.env.MONGODB_URI;
   console.log('[mongo] Connecting... URI present:', !!mongoUri);
-  
+
   if (!mongoUri) {
     console.warn('[mongo] MONGODB_URI not found in environment');
     connected = false;

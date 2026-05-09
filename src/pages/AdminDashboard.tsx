@@ -21,7 +21,8 @@ export default function AdminDashboard() {
 
   // Submissions Data from Firestore
   const [submissions, setSubmissions] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [roadmaps, setRoadmaps] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchSubmissions = async () => {
     setIsLoading(true);
@@ -42,8 +43,19 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchRoadmaps = async () => {
+    try {
+      const snapshot = await getDocs(query(collection(db, 'roadmaps'), orderBy('updatedAt', 'desc')));
+      const firestoreData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setRoadmaps(firestoreData);
+    } catch (error) {
+      console.error('Error fetching roadmaps:', error);
+    }
+  };
+
   useEffect(() => {
     fetchSubmissions();
+    fetchRoadmaps();
   }, []);
 
   const stats = [
@@ -78,8 +90,44 @@ export default function AdminDashboard() {
       toast.info('Kontribusi ditolak');
       } else {
         // APPROVE / PUBLISH
+        const relatedProjectIds: string[] = [];
+
+        // Extract projects from phases/topics
+        if (data.phases) {
+          for (const phase of data.phases) {
+            for (const topic of phase.topics) {
+              if (topic.showProject && topic.project && topic.project.title) {
+                const projectSlug = topic.project.title.toLowerCase().replace(/\s+/g, '-');
+                const projectRef = doc(db, 'projects', projectSlug);
+                
+                // Map to Project model
+                const projectData = {
+                  id: projectSlug,
+                  title: topic.project.title,
+                  introduction: topic.project.background || '',
+                  background: topic.project.background || '',
+                  skills: topic.project.skillsLearned?.split(',').map((s: string) => s.trim()) || [],
+                  brief: topic.project.description || topic.project.title,
+                  steps: topic.project.interactiveSteps?.map((s: any) => s.title) || [],
+                  briefSections: topic.project.contentBlocks || [],
+                  interactiveSteps: topic.project.interactiveSteps || [],
+                  image: topic.project.image || '',
+                  category: data.idKategori || 'Lainnya',
+                  status: 'published',
+                  author: data.author || 'Contributor',
+                  createdAt: serverTimestamp()
+                };
+
+                await setDoc(projectRef, projectData, { merge: true });
+                relatedProjectIds.push(projectSlug);
+              }
+            }
+          }
+        }
+
         const roadmapData = {
           ...data,
+          proyekTerkait: [...(data.proyekTerkait || []), ...relatedProjectIds],
           status: 'published',
           publishedAt: serverTimestamp(),
           updatedAt: serverTimestamp()
@@ -96,18 +144,18 @@ export default function AdminDashboard() {
         }
 
         // Create or Update Public Roadmap
-        // If it has a slug, use it as ID, otherwise generate one
-        const slug = data?.slug || data?.title?.toLowerCase()?.replace(/\s+/g, '-');
+        const slug = data?.slug || data?.judul?.toLowerCase()?.replace(/\s+/g, '-') || data?.title?.toLowerCase()?.replace(/\s+/g, '-');
         const roadmapRef = doc(db, 'roadmaps', slug);
         await setDoc(roadmapRef, roadmapData, { merge: true });
         
-        toast.success('Roadmap Berhasil Di-publish!');
+        toast.success('Roadmap & Proyek Berhasil Di-publish!');
       }
 
       setReviewingSubmission(null);
       setIsCreatingNew(false);
       // Refresh list
       fetchSubmissions();
+      fetchRoadmaps();
     } catch (error) {
       console.error('Moderation failed:', error);
       toast.error('Gagal memproses aksi. Silakan cek konsol.');
@@ -289,14 +337,31 @@ export default function AdminDashboard() {
 
             {currentView === 'roadmaps' && (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                 <div className="rounded-3xl bg-white border border-slate-100 p-8 flex flex-col items-center justify-center text-center gap-4 hover:border-blue-200 transition-colors cursor-pointer group shadow-sm hover:shadow-md">
-                    <div className="h-16 w-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"><FileBadge size={28}/></div>
-                    <div><h3 className="font-black text-slate-900">Software Engineer</h3><p className="text-xs font-bold text-slate-400 mt-1">IT & Software • 6 Fase</p></div>
-                 </div>
-                 <div className="rounded-3xl bg-white border border-slate-100 p-8 flex flex-col items-center justify-center text-center gap-4 hover:border-blue-200 transition-colors cursor-pointer group shadow-sm hover:shadow-md">
-                    <div className="h-16 w-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"><FileBadge size={28}/></div>
-                    <div><h3 className="font-black text-slate-900">Digital Marketing</h3><p className="text-xs font-bold text-slate-400 mt-1">Business • 4 Fase</p></div>
-                 </div>
+                {roadmaps.map((roadmap) => (
+                  <div 
+                    key={roadmap.id} 
+                    onClick={() => {
+                      setReviewingSubmission(roadmap);
+                      setIsCreatingNew(true);
+                    }}
+                    className="rounded-3xl bg-white border border-slate-100 p-8 flex flex-col items-center justify-center text-center gap-4 hover:border-blue-200 transition-colors cursor-pointer group shadow-sm hover:shadow-md"
+                  >
+                    <div className="h-16 w-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <FileBadge size={28}/>
+                    </div>
+                    <div>
+                      <h3 className="font-black text-slate-900">{roadmap.judul || roadmap.title}</h3>
+                      <p className="text-xs font-bold text-slate-400 mt-1">
+                        {roadmap.idKategori || roadmap.category} • {(roadmap.roadmap || roadmap.phases || []).length} Fase
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {roadmaps.length === 0 && (
+                  <div className="col-span-full py-20 text-center">
+                    <p className="text-slate-400 font-bold">Belum ada roadmap di database Firestore.</p>
+                  </div>
+                )}
               </div>
             )}
 

@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ArrowRight } from 'lucide-react';
 import * as motion from 'motion/react-client';
-import { careerCatalog, CAREER_CATEGORIES, CareerCategory } from '../lib/careerCatalog';
+import { careerCatalog, CAREER_CATEGORIES, KategoriKarir } from '../lib/careerCatalog';
 import { RoadmapCardSkeleton } from '../components/Skeleton';
 import SEO from '../components/SEO';
 import { db } from '../lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 export default function Roadmap() {
-  const [activeCategory, setActiveCategory] = useState<CareerCategory | 'all'>('all');
+  const [activeCategory, setActiveCategory] = useState<KategoriKarir | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +25,7 @@ export default function Roadmap() {
         // Merge with local catalog, unique by slug
         const combined: any[] = [...firestoreRoadmaps];
         careerCatalog.forEach(local => {
-          if (!combined.some(c => c.slug === local.slug)) {
+          if (!combined.some(c => (c.slug || c.id) === local.slug)) {
             combined.push(local);
           }
         });
@@ -54,14 +54,18 @@ export default function Roadmap() {
   }, []);
 
   const filteredCareers = roadmaps.filter((career) => {
-    const matchesCategory = activeCategory === 'all' || career.categoryId === activeCategory;
-    const matchesSearch = career.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          career.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const title = career.judul || career.title || '';
+    const description = career.deskripsi || career.description || '';
+    const categoryId = career.idKategori || career.categoryId || '';
+
+    const matchesCategory = activeCategory === 'all' || categoryId === activeCategory;
+    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   const suggestions = searchQuery.length > 1 
-    ? roadmaps.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
+    ? roadmaps.filter(c => (c.judul || c.title || '').toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
     : [];
 
   return (
@@ -97,10 +101,10 @@ export default function Roadmap() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mx-auto max-w-5xl text-5xl sm:text-7xl font-black tracking-tighter leading-[1.02] text-slate-950"
+            className="mx-auto max-w-5xl text-4xl sm:text-7xl font-black tracking-tighter leading-[1.1] sm:leading-[1.02] text-slate-950"
           >
             Eksplorasi roadmap karir yang
-            <span className="block bg-linear-to-r from-blue-700 via-indigo-700 to-slate-900 bg-clip-text text-transparent">lebih konkret.</span>
+            <span className="block bg-linear-to-r from-blue-700 via-indigo-700 to-slate-900 bg-clip-text text-transparent"> lebih konkret.</span>
           </motion.h1>
           
           <motion.p 
@@ -129,7 +133,7 @@ export default function Roadmap() {
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-14 w-full rounded-full pl-14 pr-6 text-[15px] font-medium transition-all focus:ring-4 focus:ring-blue-600/10 focus:outline-none"
+                className="h-14 w-full rounded-full pl-14 pr-6 text-[15px] font-medium transition-all focus:ring-4 focus:ring-blue-600/10 focus:outline-none input-mobile-large"
                 style={{ 
                   backgroundColor: 'var(--card-bg)', 
                   border: '1px solid var(--border-color)',
@@ -165,11 +169,11 @@ export default function Roadmap() {
       </section>
 
       {/* ─── Category Filter ─── */}
-      <div className="px-6 -mt-8 relative z-20">
-        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-2">
+      <div className="px-5 sm:px-6 -mt-6 sm:-mt-8 relative z-20 overflow-x-auto no-scrollbar">
+        <div className="max-w-6xl mx-auto flex sm:flex-wrap items-center justify-start sm:justify-center gap-2 pb-2 sm:pb-0 min-w-max">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`click-feedback rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-widest uppercase transition-all ${
+            className={`click-feedback rounded-full px-5 py-3 text-[11px] font-semibold tracking-widest uppercase transition-all whitespace-nowrap ${
               activeCategory === 'all' 
               ? 'bg-slate-950 text-white shadow-lg' 
               : 'text-slate-600 bg-white/80 border border-slate-200/70 hover:text-slate-950'
@@ -181,7 +185,7 @@ export default function Roadmap() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`click-feedback rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-widest uppercase transition-all ${
+              className={`click-feedback rounded-full px-5 py-3 text-[11px] font-semibold tracking-widest uppercase transition-all whitespace-nowrap ${
                 activeCategory === cat.id 
                 ? 'bg-blue-700 text-white shadow-lg shadow-blue-700/15' 
                 : 'text-slate-600 bg-white/80 border border-slate-200/70 hover:text-slate-950'
@@ -193,11 +197,10 @@ export default function Roadmap() {
         </div>
       </div>
 
-      {/* ─── Career Grid ─── */}
-      <section className="py-20 px-6">
+      <section className="py-12 sm:py-20 px-5 sm:px-6">
         <motion.div 
           layout
-          className="max-w-6xl mx-auto grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
+          className="max-w-6xl mx-auto grid grid-cols-1 gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3"
         >
           {isLoading ? (
             [...Array(6)].map((_, i) => <RoadmapCardSkeleton key={i} />)
@@ -212,7 +215,7 @@ export default function Roadmap() {
                 transition={{ delay: idx * 0.03 }}
               >
                 <Link 
-                  to={`/roadmap/${career.slug}`}
+                  to={`/roadmap/${career.slug || career.id}`}
                   className="hover-lift hover-glow click-feedback group block h-full rounded-4xl p-8 transition-all surface-card-strong"
                   style={{ 
                     backgroundColor: 'rgba(255,255,255,0.78)', 
@@ -221,19 +224,19 @@ export default function Roadmap() {
                 >
                   <div className="flex items-center justify-between mb-6">
                     <span className="text-[10px] font-black tracking-widest uppercase text-blue-700">
-                      {career.categoryId}
+                      {career.idKategori || career.categoryId}
                     </span>
                   </div>
 
                   <h3 className="text-xl font-black leading-snug mb-3" style={{ color: 'var(--text-primary)' }}>
-                    {career.title}
+                    {career.judul || career.title}
                   </h3>
                   <p className="text-[13px] leading-relaxed line-clamp-2 mb-6" style={{ color: 'var(--text-secondary)' }}>
-                    {career.description}
+                    {career.deskripsi || career.description}
                   </p>
                   
                   <div className="flex items-center justify-between pt-5" style={{ borderTop: '1px solid var(--border-color)' }}>
-                    <span className="text-[12px] font-semibold text-slate-500">{career.roadmap.length} Tahap Belajar</span>
+                    <span className="text-[12px] font-semibold text-slate-500">{(career.roadmap || career.phases || []).length} Tahap Belajar</span>
                     <span className="text-[12px] font-semibold text-blue-700 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                       Lihat <ArrowRight size={12} />
                     </span>

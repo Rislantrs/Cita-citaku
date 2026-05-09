@@ -66,7 +66,39 @@ export const projectData: Record<string, ProjectDetailData> = {
       { type: 'web', title: 'Panduan Free Tier AWS Resmi', link: 'https://aws.amazon.com/free', priceInfo: 'Gratis' }
     ]
   },
-  // ... data lainnya
+  'logika-dasar': {
+    id: 'logika-dasar',
+    title: 'Logika Dasar & Algoritma',
+    description: 'Pelajari pondasi utama pemrograman melalui algoritma dan logika berpikir sistematis.',
+    difficulty: 'Easy Peasy',
+    estimatedTime: '45 Min',
+    refreshedDate: '9th May \'26',
+    keyConcepts: ['Algorithm', 'Pseudocode', 'Flowchart', 'Logic Gate'],
+    background: 'Logika adalah bahasa universal pemrograman. Sebelum menulis kode di bahasa apapun, Anda harus bisa merancang solusi dalam bentuk langkah-langkah logis. Tanpa logika yang kuat, kode Anda akan sulit dikelola dan penuh bug.',
+    skillsLearned: [
+      'Pemecahan Masalah (Problem Solving)',
+      'Perancangan Algoritma',
+      'Pembuatan Flowchart',
+      'Boolean Logic & Decision Making'
+    ],
+    summary: 'Misi ini akan melatih otak Anda untuk berpikir seperti komputer. Anda akan belajar cara memecahkan masalah kompleks menjadi langkah-langkah sederhana yang bisa dipahami oleh mesin.',
+    projects: [
+      {
+        title: 'Membangun Algoritma Robot Pembuat Kopi',
+        description: 'Tantangan pertama Anda: Rancang algoritma presisi untuk robot yang harus membuat kopi sempurna berdasarkan preferensi user.',
+        specifications: [
+          'Gunakan Pseudocode untuk menulis langkah-langkahnya.',
+          'Gunakan Flowchart untuk memvisualisasikan percabangan (jika gula habis, apa yang dilakukan?).',
+          'Pastikan robot menangani kondisi error (air habis, gelas tidak ada).'
+        ],
+        image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800'
+      }
+    ],
+    resources: [
+      { type: 'youtube', title: 'Belajar Logika Dasar Pemrograman', link: 'https://youtube.com/...', priceInfo: 'Gratis' },
+      { type: 'web', title: 'Introduction to Algorithms', link: 'https://khanacademy.org/...', priceInfo: 'Gratis' }
+    ]
+  }
 };
 
 export function getProjectById(id: string): ProjectDetailData | undefined {

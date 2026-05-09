@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -22,8 +22,58 @@ import ProjectChatSidebar from '../components/ProjectChatSidebar';
 
 export default function ProjectDetail() {
   const { id } = useParams();
-  const project = id ? getProjectById(id) : undefined;
+  const [project, setProject] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  useEffect(() => {
+    async function loadProject() {
+      if (!id) return;
+      setLoading(true);
+      try {
+        // 1. Try local data first for speed
+        const local = getProjectById(id);
+        if (local) {
+          setProject(local);
+        } else {
+          // 2. Try Firestore
+          const { doc, getDoc } = await import('firebase/firestore');
+          const { db } = await import('../lib/firebase');
+          const docRef = doc(db, 'projects', id);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const data = docSnap.id ? { id: docSnap.id, ...docSnap.data() } : docSnap.data();
+            // Map Firestore fields to local interface if necessary
+            setProject({
+              ...data,
+              summary: data.brief || data.summary,
+              description: data.introduction || data.description,
+              estimatedTime: data.estimatedTime || '30 Min',
+              difficulty: data.difficulty || 'Moderate',
+              keyConcepts: data.keyConcepts || data.skills || [],
+              resources: data.resources || [],
+              projects: data.projects || [{ title: data.title, description: data.brief || data.description, specifications: data.steps || [] }]
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error loading project:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProject();
+  }, [id]);
+
+  if (loading) return (
+    <div className="flex h-screen w-full items-center justify-center bg-white">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+        <p className="text-sm font-bold text-slate-500 animate-pulse">Memuat Lab Proyek...</p>
+      </div>
+    </div>
+  );
 
   if (!project) {
     return <Navigate to="/roadmap" replace />;
@@ -69,8 +119,8 @@ export default function ProjectDetail() {
             <div className="inline-flex items-center rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-700">
               • {project.difficulty}
             </div>
-            <h1 className="text-5xl font-black tracking-tighter text-slate-950 sm:text-6xl">{project.title}</h1>
-            <p className="text-xl leading-relaxed text-slate-600">{project.description}</p>
+            <h1 className="text-4xl font-black tracking-tighter text-slate-950 sm:text-5xl">{project.title}</h1>
+            <p className="text-lg leading-relaxed text-slate-600">{project.description}</p>
           </div>
 
           {/* Key Stats */}
@@ -97,9 +147,9 @@ export default function ProjectDetail() {
               <div className="relative z-10 space-y-6">
                 <div className="flex items-center gap-3 text-orange-400">
                   <Zap fill="currentColor" size={24} />
-                  <h2 className="text-xl font-black uppercase tracking-tighter">5 Minute Summary</h2>
+                  <h2 className="text-lg font-black uppercase tracking-tighter">5 Minute Summary</h2>
                 </div>
-                <p className="text-2xl font-medium leading-relaxed text-blue-50">
+                <p className="text-xl font-medium leading-relaxed text-blue-50">
                   {project.summary}
                 </p>
               </div>

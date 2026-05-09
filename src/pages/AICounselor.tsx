@@ -309,7 +309,7 @@ export default function AICounselor() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-120px)] max-w-[1600px] mx-auto px-6 pb-6 gap-6">
+    <div className="flex h-[calc(100vh-80px)] lg:h-[calc(100vh-120px)] max-w-[1600px] mx-auto px-4 sm:px-6 pb-4 sm:pb-6 gap-6">
       <SEO 
         title="Konselor AI | Chat dengan Kakak Tingkat AI" 
         description="Konsultasikan minat, bakat, dan jurusan kuliah kamu dengan AI Counselor kami yang empatik dan berwawasan luas."
@@ -380,9 +380,9 @@ export default function AICounselor() {
       </aside>
 
       {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col rounded-[3rem] bg-white border border-slate-100 shadow-sm overflow-hidden">
+      <main className="flex-1 flex flex-col rounded-[2rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm overflow-hidden">
         {/* Header */}
-        <header className="flex items-center justify-between px-10 py-6 border-b border-slate-50 bg-white/80 backdrop-blur-md relative z-10">
+        <header className="flex items-center justify-between px-6 sm:px-10 py-4 sm:py-6 border-b border-slate-50 bg-white/80 backdrop-blur-md relative z-10">
           <div className="flex items-center gap-4">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
             <h1 className="text-base font-black tracking-tight text-slate-900">Konselor AI</h1>
@@ -401,15 +401,15 @@ export default function AICounselor() {
         {/* Messages List */}
         <div 
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-10 space-y-10 scroll-smooth no-scrollbar"
+          className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-8 sm:space-y-10 scroll-smooth no-scrollbar"
         >
           {messages.length === 0 && !streamingText && (
             <div className="flex h-full flex-col items-center justify-center text-center max-w-xl mx-auto">
-              <div className="w-20 h-20 rounded-[2.5rem] bg-blue-50 flex items-center justify-center text-blue-600 mb-8">
-                <Bot size={40} />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[2rem] sm:rounded-[2.5rem] bg-blue-50 flex items-center justify-center text-blue-600 mb-6 sm:mb-8">
+                <Bot size={36} />
               </div>
-              <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Apa yang bisa saya bantu?</h2>
-              <p className="text-lg text-slate-500 font-medium leading-relaxed">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-3 sm:mb-4 tracking-tight">Apa yang bisa saya bantu?</h2>
+              <p className="text-base sm:text-lg text-slate-500 font-medium leading-relaxed px-4">
                 Tanyakan apa saja tentang karir, jurusan, atau hasil tes jati dirimu. Saya di sini untuk membantumu menemukan jalan.
               </p>
               
@@ -434,13 +434,13 @@ export default function AICounselor() {
               key={idx} 
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`flex max-w-[80%] items-start gap-5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-black shrink-0 ${
+              <div className={`flex max-w-[90%] sm:max-w-[80%] items-start gap-3 sm:gap-5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center text-[9px] sm:text-[10px] font-black shrink-0 ${
                   msg.role === 'user' ? 'bg-slate-100 text-slate-500' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                 }`}>
                   {msg.role === 'user' ? 'ME' : 'AI'}
                 </div>
-                <div className={`px-6 py-5 rounded-[2rem] text-base leading-relaxed ${
+                <div className={`px-5 sm:px-6 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] text-sm sm:text-base leading-relaxed ${
                   msg.role === 'user' 
                     ? 'bg-slate-900 text-white font-medium shadow-xl shadow-slate-900/10' 
                     : 'bg-slate-50 text-slate-800 font-medium prose prose-slate max-w-none'
@@ -464,11 +464,11 @@ export default function AICounselor() {
               animate={{ opacity: 1, y: 0 }}
               className="flex justify-start"
             >
-              <div className="flex max-w-[80%] items-start gap-5">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-black shrink-0 bg-blue-600 text-white shadow-lg shadow-blue-600/20">
+              <div className="flex max-w-[90%] sm:max-w-[80%] items-start gap-3 sm:gap-5">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center text-[9px] sm:text-[10px] font-black shrink-0 bg-blue-600 text-white shadow-lg shadow-blue-600/20">
                   AI
                 </div>
-                <div className="px-6 py-5 rounded-[2rem] text-base leading-relaxed bg-slate-50 text-slate-800 font-medium prose prose-slate max-w-none">
+                <div className="px-5 sm:px-6 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] text-sm sm:text-base leading-relaxed bg-slate-50 text-slate-800 font-medium prose prose-slate max-w-none">
                   <div className="markdown-content">
                     <ReactMarkdown>{streamingText}</ReactMarkdown>
                   </div>
@@ -490,18 +490,18 @@ export default function AICounselor() {
         </div>
 
         {/* Input Area */}
-        <footer className="p-10 bg-white">
+        <footer className="p-4 sm:p-10 bg-white">
           <div className="max-w-4xl mx-auto relative">
-            <div className="flex items-center gap-3 rounded-[2rem] bg-slate-50 border border-slate-100 p-2 focus-within:border-blue-200 focus-within:bg-white transition-all">
+            <div className="flex items-center gap-2 sm:gap-3 rounded-full sm:rounded-[2rem] bg-slate-50 border border-slate-100 p-1.5 sm:p-2 focus-within:border-blue-200 focus-within:bg-white transition-all">
               <button 
                 onClick={isRecording ? stopRecording : startRecording}
-                className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all ${
+                className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full sm:rounded-2xl transition-all ${
                   isRecording 
                     ? 'bg-rose-500 text-white animate-pulse shadow-lg shadow-rose-500/25' 
                     : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'
                 }`}
               >
-                <Mic size={22} />
+                <Mic size={20} />
               </button>
               
               <input 
@@ -510,15 +510,15 @@ export default function AICounselor() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                 placeholder="Tanyakan sesuatu..."
-                className="flex-1 bg-transparent border-none px-4 py-3 focus:ring-0 font-bold text-slate-800 placeholder:text-slate-400"
+                className="flex-1 bg-transparent border-none px-2 sm:px-4 py-2 sm:py-3 focus:ring-0 font-bold text-sm sm:text-base text-slate-800 placeholder:text-slate-400 input-mobile-large"
               />
               
               <button 
                 onClick={() => sendMessage()}
                 disabled={!input.trim() || isLoading}
-                className="w-12 h-12 flex items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 disabled:opacity-20 transition-all hover:bg-slate-900 active:scale-95"
+                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full sm:rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 disabled:opacity-20 transition-all hover:bg-slate-900 active:scale-95"
               >
-                <Send size={20} />
+                <Send size={18} />
               </button>
             </div>
           </div>

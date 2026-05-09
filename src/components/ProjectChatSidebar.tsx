@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, Bot, User as UserIcon, RefreshCcw, MessageSquare } from 'lucide-react';
 import * as motion from 'motion/react-client';
+import ReactMarkdown from 'react-markdown';
 
 interface ProjectChatSidebarProps {
   isOpen: boolean;
@@ -109,7 +110,22 @@ export default function ProjectChatSidebar({ isOpen, onClose, projectTitle }: Pr
                     ? 'bg-blue-600 text-white shadow-blue-600/10' 
                     : 'bg-slate-100 text-slate-800 border border-slate-200'
                 }`}>
-                  {msg.content}
+                  {msg.role === 'user' ? (
+                    msg.content
+                  ) : (
+                    <div className="prose prose-sm prose-slate max-w-none prose-p:leading-relaxed prose-li:my-0.5">
+                      <ReactMarkdown 
+                        components={{
+                          p: ({children}) => <p className="mb-2 last:mb-0">{children}</p>,
+                          strong: ({children}) => <strong className="font-bold text-blue-700">{children}</strong>,
+                          ul: ({children}) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
+                          li: ({children}) => <li className="text-slate-700">{children}</li>
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                 </div>
                 <span className="text-[8px] font-black uppercase tracking-widest opacity-30 px-1 text-slate-500">
                   {msg.role === 'user' ? 'You' : 'Assistant'}

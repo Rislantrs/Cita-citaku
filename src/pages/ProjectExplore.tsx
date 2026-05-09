@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Check,
+  BookOpen,
   ChevronLeft,
   Code2,
   Copy,
@@ -11,12 +12,14 @@ import {
   Search,
   Send,
   Share2,
+  RotateCcw,
   Sparkles,
   Trophy,
   BrainCircuit,
   X,
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
+import ReactMarkdown from 'react-markdown';
 import { auth } from '../lib/firebase';
 import { toast } from 'sonner';
 import SEO from '../components/SEO';
@@ -261,6 +264,66 @@ const DUMMY_PROJECTS: Project[] = [
     image: 'https://images.unsplash.com/photo-1531746790731-6c087fecd05a?w=800',
     category: 'Cloud & AI',
   },
+  {
+    id: '2',
+    title: 'Membangun Algoritma Robot Pembuat Kopi',
+    introduction: 'Rancang alur logika presisi untuk robot yang harus melayani pelanggan dengan sempurna.',
+    background: 'Dalam teknik robotika, logika adalah segalanya. Robot tidak punya intuisi; mereka hanya mengikuti instruksi. Jika Anda salah merancang urutan langkah, kopi bisa tumpah atau mesin bisa rusak. Di sini Anda akan belajar pentingnya "Sequential Thinking".',
+    skills: ['Computational Thinking', 'Pseudocode', 'Logic Design', 'Error Handling'],
+    brief: 'Buatlah alur kerja (workflow) robot mulai dari menerima pesanan, mengecek ketersediaan bahan, hingga menyajikan kopi panas.',
+    briefSections: [
+      {
+        number: 1,
+        title: 'Input & Variabel',
+        content: 'Identifikasi apa saja yang perlu dicek: Stok air, stok biji kopi, ketersediaan gelas, dan pilihan gula user.'
+      },
+      {
+        number: 2,
+        title: 'Algoritma Inti',
+        content: [
+          'Jika Gelas Ada -> Lanjut, Jika Tidak -> Berhenti & Alarm.',
+          'Jika Air Panas -> Tuang, Jika Tidak -> Panaskan Air.',
+          'Giling kopi selama 30 detik untuk aroma maksimal.'
+        ]
+      }
+    ],
+    steps: [
+      'Tentukan Input: Jenis Kopi & Level Gula.',
+      'Buat Decision Tree (Pohon Keputusan).',
+      'Tulis langkah dalam format Pseudocode.',
+      'Simulasikan skenario "Air Habis".'
+    ],
+    interactiveSteps: [
+      {
+        id: 'kopi-1',
+        stepNumber: 1,
+        title: 'Identifikasi Komponen',
+        description: 'Tentukan sensor apa saja yang dibutuhkan robot Anda.',
+        question: 'Sensor apa yang paling krusial untuk mencegah banjir di meja?',
+        choices: [
+          { id: 'c1', label: 'Sensor Berat Gelas', guidance: 'Tepat! Robot perlu tahu apakah gelas sudah diletakkan atau belum.', nextStepId: 'kopi-2' },
+          { id: 'c2', label: 'Sensor Warna Kopi', guidance: 'Kurang tepat untuk langkah awal. Fokus pada keamanan operasional dulu.', nextStepId: 'kopi-2' }
+        ]
+      },
+      {
+        id: 'kopi-2',
+        stepNumber: 2,
+        title: 'Menyusun Pseudocode',
+        description: 'Tulis urutan perintah dalam bahasa manusia yang semi-formal.',
+        guidance: 'Contoh: IF order == "Latte" THEN mix(milk, coffee)',
+        requiresExplanation: 'Tuliskan 3 baris logika IF-THEN untuk menangani pesanan gula.'
+      },
+      {
+        id: 'kopi-3',
+        stepNumber: 3,
+        title: 'Simulasi Error',
+        description: 'Apa yang terjadi jika biji kopi habis di tengah jalan?',
+        requiresExplanation: 'Jelaskan bagaimana robot Anda harus merespons situasi ini agar pelanggan tidak menunggu selamanya.'
+      }
+    ],
+    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
+    category: 'Dasar Logika'
+  }
 ];
 
 export default function ProjectExplore() {
@@ -275,6 +338,7 @@ export default function ProjectExplore() {
   const [stepProofs, setStepProofs] = useState<Record<string, string>>({});
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
   const [isAiOpen, setIsAiOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'guide' | 'ai'>('guide');
   const [aiMessages, setAiMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
   const [aiInput, setAiInput] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -370,7 +434,18 @@ export default function ProjectExplore() {
             role: m.role === 'assistant' ? 'assistant' : 'user',
             content: m.content,
           })),
-          context: `User sedang mengerjakan project: ${activeProject.title}. Brief: ${activeProject.introduction}`,
+          context: `Anda adalah "Asisten Ahli Cita-Citaku". Anda sedang membantu user mengerjakan proyek: "${activeProject.title}". 
+          
+          Konteks Proyek:
+          - Kategori: ${activeProject.category}
+          - Deskripsi: ${activeProject.introduction}
+          - Skills: ${activeProject.skills.join(', ')}
+          
+          Tugas Anda:
+          1. Berikan saran teknis yang praktis dan mendalam.
+          2. Gunakan gaya bahasa yang menyemangati namun tetap profesional.
+          3. Jika user bertanya tentang error, bantu debug langkah demi langkah.
+          4. Fokus pada membantu user menyelesaikan langkah yang sedang aktif.`,
         }),
       });
 
@@ -427,6 +502,24 @@ export default function ProjectExplore() {
     }
   };
 
+  const handleResetAi = () => {
+    toast('Hapus Riwayat Chat?', {
+      description: 'Seluruh percakapan dengan Mentor AI akan dihapus permanen.',
+      action: {
+        label: 'Hapus',
+        onClick: () => {
+          setAiMessages([]);
+          setAiStreamingText('');
+          toast.success('Percakapan telah direset');
+        },
+      },
+      cancel: {
+        label: 'Batal',
+        onClick: () => {},
+      },
+    });
+  };
+
 
   const handleStepChoice = (stepId: string, choiceId: string, nextStepId?: string | null) => {
     setStepChoices((prev) => ({ ...prev, [stepId]: choiceId }));
@@ -439,10 +532,10 @@ export default function ProjectExplore() {
     const steps = activeProject.interactiveSteps;
 
     return (
-      <div className="page-shell fixed inset-0 z-60 flex overflow-hidden bg-(--bg-primary) text-slate-800">
-        {/* Main Content Area */}
-        <div className={`relative flex h-full flex-1 flex-col overflow-y-auto transition-all duration-500 ease-in-out ${isAiOpen ? 'mr-120' : ''}`}>
-          <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/85 backdrop-blur">
+      <div className="fixed inset-0 z-[1000] flex h-[100dvh] w-screen overflow-hidden bg-[#fcfbfa] text-slate-800">
+        {/* Main Workspace Column - Guide View */}
+        <div className={`relative flex h-full flex-1 flex-col overflow-hidden transition-all duration-500 ease-in-out ${activeTab === 'ai' ? 'hidden sm:flex' : 'flex'}`}>
+          <header className="shrink-0 border-b border-slate-200 bg-white/85 backdrop-blur">
             <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
               <div className="flex items-center gap-3">
                 <button
@@ -451,11 +544,31 @@ export default function ProjectExplore() {
                 >
                   <ChevronLeft size={20} />
                 </button>
-                <div>
+                <div className="hidden sm:block">
                   <p className="text-[11px] font-black uppercase tracking-widest text-blue-700">Project Workspace</p>
-                  <h2 className="max-w-50 truncate text-sm font-black text-gray-900 sm:max-w-sm">{activeProject.title}</h2>
+                  <h2 className="max-w-40 truncate text-sm font-black text-gray-900 sm:max-w-sm">{activeProject.title}</h2>
                 </div>
               </div>
+
+              {/* Mobile Segmented Control - Integrated in Header */}
+              <div className="flex rounded-xl bg-slate-100 p-1 sm:hidden">
+                <button
+                  onClick={() => setActiveTab('guide')}
+                  className={`px-4 py-1.5 text-[10px] font-black rounded-lg transition-all ${activeTab === 'guide' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                >
+                  PANDUAN
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('ai');
+                    setIsAiOpen(true);
+                  }}
+                  className={`px-4 py-1.5 text-[10px] font-black rounded-lg transition-all ${activeTab === 'ai' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}
+                >
+                  MENTOR AI
+                </button>
+              </div>
+
               <div className="hidden items-center gap-3 sm:flex">
                 <button className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-gray-400 hover:text-gray-900">
                   <Share2 size={15} /> Pamerkan
@@ -464,16 +577,24 @@ export default function ProjectExplore() {
                   <Trophy size={15} /> SELESAI
                 </button>
                 <button
-                  onClick={() => setIsAiOpen(!isAiOpen)}
+                  onClick={() => {
+                    setIsAiOpen(!isAiOpen);
+                    if (!isAiOpen) setActiveTab('ai');
+                  }}
                   className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${isAiOpen ? 'bg-gray-900 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}`}
                 >
                   <Sparkles size={18} />
                 </button>
               </div>
+              {/* Mobile Menu Placeholder / Info */}
+              <div className="flex sm:hidden items-center text-blue-600 font-black text-[10px] tracking-widest">
+                STEP {completedSteps.length + 1}/{steps.length}
+              </div>
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-10 md:px-6 md:pt-14">
+          <div className="flex-1 overflow-y-auto scroll-smooth pb-24 sm:pb-0">
+            <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-10 md:px-6 md:pt-14">
             <section className="border-b border-gray-200 pb-8">
               <div className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800">
                 {activeProject.category}
@@ -840,92 +961,103 @@ export default function ProjectExplore() {
             </section>
           </main>
         </div>
+      </div>
 
-        {/* AI Assistant Side Panel */}
+        {/* AI Assistant Column - Mobile Adaptive */}
         <aside
-          className={`fixed right-0 top-0 z-60 h-screen border-l border-slate-200 bg-white transition-all duration-500 ease-in-out ${isAiOpen ? 'w-120 opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`}
+          className={`relative z-70 flex h-full flex-col border-l border-slate-200 bg-white transition-all duration-500 ease-in-out shrink-0 
+            ${isAiOpen ? 'w-full sm:w-110 lg:w-128 translate-x-0' : 'w-0 translate-x-full overflow-hidden border-none'}
+            ${activeTab === 'guide' ? 'hidden sm:flex' : 'flex'}
+          `}
         >
-          <div className="flex h-full flex-col">
-            {/* Sidebar Header */}
-            <div className="border-b border-gray-100 p-6 pt-10">
+          <div className="flex h-full w-full flex-col overflow-hidden">
+            {/* Sidebar Header - Pinned */}
+            <header className="shrink-0 border-b border-slate-100 p-6 pt-10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <img
-                      src="file:///C:/Users/Rislan/.gemini/antigravity/brain/6b2fba9b-7dae-4660-bdc2-a0c0f9762fa6/ai_assistant_avatar_1778074692948.png"
-                      alt="AI Rina"
-                      className="h-12 w-12 rounded-full object-cover shadow-sm"
-                    />
-                    <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-500" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200">
+                    <Sparkles size={24} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-black text-gray-900">AI Rina</h4>
+                    <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight">Mentor Proyek AI</h4>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Project Assistant</span>
-                      <span className="h-1 w-1 rounded-full bg-gray-300" />
-                      <span className="text-[10px] font-bold text-gray-400">Online</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Active Assistant</span>
+                      <span className="h-1 w-1 rounded-full bg-gray-300 sm:hidden" />
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest sm:hidden">Online</span>
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setIsAiOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-900"
-                >
-                  <X size={20} />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={handleResetAi}
+                    title="Reset Percakapan"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-400 transition hover:bg-slate-100 hover:text-blue-600"
+                  >
+                    <RotateCcw size={18} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsAiOpen(false);
+                      setActiveTab('guide');
+                    }}
+                    title="Kembali ke Panduan"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-400 transition hover:bg-slate-100 hover:text-slate-900"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
-            </div>
+            </header>
 
-            {/* Sidebar Content */}
-            <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+            {/* Sidebar Chat Content - Independently Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6 scroll-smooth pb-32 sm:pb-6">
               {aiMessages.length === 0 ? (
                 <div className="flex flex-col items-center pt-8 text-center">
                   <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 text-blue-700">
                     <Sparkles size={32} />
                   </div>
-                  <h3 className="mb-2 text-xl font-black tracking-tight text-gray-900">
-                    Chat about {activeProject.title}
+                  <h3 className="text-xl font-black tracking-tight text-gray-900">
+                    Mentor AI Cita-Citaku
                   </h3>
-                  <p className="mb-8 text-sm leading-6 text-gray-600">
-                    Mari mulai diskusi tentang <span className="font-bold text-blue-700">{activeProject.title}</span>.
-                    Saya siap membantu Anda dengan pertanyaan atau wawasan terkait brief ini.
+                  <p className="mb-8 px-4 text-sm leading-6 text-gray-600">
+                    Butuh petunjuk mengerjakan proyek ini? Tanyakan apa saja, saya siap membimbing Anda.
                   </p>
-
-                  <div className="flex flex-col gap-2 w-full">
-                    {['Jelaskan tentang brief ini', 'Apa yang harus difokuskan?', 'Berikan beberapa ide'].map((suggestion) => (
-                      <button
-                        key={suggestion}
-                        onClick={() => handleAiSend(suggestion)}
-                        className="w-full rounded-2xl border border-gray-100 bg-white p-4 text-left text-xs font-bold text-gray-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               ) : (
                 <div className="space-y-6">
                   {aiMessages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm font-medium whitespace-pre-wrap ${msg.role === 'user' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800'}`}>
-                        {msg.content}
+                      <div className={`max-w-[90%] rounded-3xl px-5 py-4 text-sm leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-slate-900 text-white shadow-slate-200' : 'bg-white border border-slate-100 text-slate-700'}`}>
+                        <div className="prose prose-sm prose-slate max-w-none">
+                          <ReactMarkdown 
+                            components={{
+                              p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
+                              strong: ({children}) => <strong className="font-black text-blue-600">{children}</strong>,
+                              ul: ({children}) => <ul className="list-disc pl-4 mb-3 space-y-1">{children}</ul>,
+                              li: ({children}) => <li className="text-slate-600">{children}</li>
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
                       </div>
                     </div>
                   ))}
-                  {/* Streaming text — muncul kata demi kata */}
                   {aiStreamingText && (
                     <div className="flex justify-start">
-                      <div className="max-w-[85%] rounded-2xl px-4 py-3 text-sm font-medium bg-slate-100 text-slate-800 whitespace-pre-wrap">
-                        {aiStreamingText}<span className="inline-block w-1.5 h-4 bg-blue-500 animate-pulse ml-0.5 rounded-sm" />
-                      </div>
-                    </div>
-                  )}
-                  {isAiLoading && !aiStreamingText && (
-                    <div className="flex justify-start">
-                      <div className="flex items-center gap-1.5 px-4 py-2 bg-slate-50 rounded-2xl">
-                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" />
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]" />
-                        <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:0.4s]" />
+                      <div className="max-w-[90%] rounded-3xl bg-white border border-slate-100 px-5 py-4 text-sm leading-relaxed text-slate-700 shadow-sm">
+                        <div className="prose prose-sm prose-slate max-w-none">
+                          <ReactMarkdown 
+                            components={{
+                              p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
+                              strong: ({children}) => <strong className="font-black text-blue-600">{children}</strong>,
+                              ul: ({children}) => <ul className="list-disc pl-4 mb-3 space-y-1">{children}</ul>,
+                            }}
+                          >
+                            {aiStreamingText}
+                          </ReactMarkdown>
+                        </div>
+                        <span className="inline-block w-1.5 h-4 bg-blue-500 animate-pulse ml-0.5 rounded-sm" />
                       </div>
                     </div>
                   )}
@@ -933,45 +1065,38 @@ export default function ProjectExplore() {
               )}
             </div>
 
-            {/* Sidebar Input */}
-            <div className="border-t border-gray-100 p-6 pb-10">
-              <div className="relative flex items-center">
-                <input
-                  type="text"
+            {/* Sidebar Input Footer - Adaptive Padding */}
+            <footer className="shrink-0 border-t border-slate-100 p-6 pb-28 sm:pb-10 bg-white">
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAiSend();
+                }}
+                className="relative"
+              >
+                <textarea
                   value={aiInput}
                   onChange={(e) => setAiInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAiSend()}
-                  placeholder="Ketik pesan Anda..."
-                  className="w-full rounded-2xl border border-gray-200 bg-gray-50/50 py-4 pl-5 pr-14 text-sm text-gray-800 outline-none transition focus:border-blue-400 focus:bg-white"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAiSend();
+                    }
+                  }}
+                  placeholder="Ketik pertanyaan teknis..."
+                  className="w-full min-h-[60px] max-h-32 rounded-3xl border border-slate-200 bg-white pl-5 pr-14 py-4 text-sm text-gray-800 outline-none transition focus:border-blue-500 shadow-sm resize-none"
                 />
                 <button
-                  onClick={() => handleAiSend()}
+                  type="submit"
                   disabled={!aiInput.trim() || isAiLoading}
-                  className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-xl bg-gray-900 text-white transition hover:bg-black disabled:opacity-30"
+                  className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white transition-all hover:scale-105 disabled:bg-slate-200"
                 >
                   <Send size={18} />
                 </button>
-              </div>
-            </div>
+              </form>
+            </footer>
           </div>
         </aside>
-
-        {/* Re-add floating toggle button if needed, but here it's integrated in header */}
-        {!isAiOpen && (
-          <div className="fixed bottom-8 right-8 z-60">
-            <button
-              onClick={() => setIsAiOpen(true)}
-              className="group relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-900 text-white shadow-2xl transition-all hover:scale-110 hover:bg-black active:scale-95"
-            >
-              <div className="absolute -top-12 right-0 hidden rounded-xl bg-gray-900 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-xl group-hover:block">
-                Tanya AI
-                <div className="absolute -bottom-1 right-6 h-2 w-2 rotate-45 bg-gray-900" />
-              </div>
-              <Sparkles size={24} className="transition-transform group-hover:rotate-12" />
-              <div className="absolute -right-1 -top-1 h-4 w-4 rounded-full border-2 border-[#fcfbfa] bg-blue-500" />
-            </button>
-          </div>
-        )}
       </div>
     );
   }

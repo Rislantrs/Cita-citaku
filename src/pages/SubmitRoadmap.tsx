@@ -16,6 +16,7 @@ import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../lib/AuthContext';
 import SEO from '../components/SEO';
+import { KategoriKarir, CAREER_CATEGORIES } from '../lib/careerCatalog';
 
 type ContributionMode = 'none' | 'new_roadmap' | 'edit_roadmap' | 'add_content';
 
@@ -128,21 +129,32 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
-    title: '',
-    category: 'IT & Software',
-    type: 'skill_based',
-    customCategory: '',
-    description: '',
-    salaryIndo: '',
-    salaryUSA: '',
+    judul: '',
+    idKategori: 'tech' as KategoriKarir,
+    tipe: 'skill_based' as 'skill_based' | 'education_based',
+    deskripsi: '',
+    infoGaji: {
+      rentangIDR: '',
+      rentangUSD: '',
+      penjelasan: ''
+    },
+    infoPendidikan: {
+      jurusan: [''],
+      durasi: '',
+      jalurAkademik: '',
+      gelar: ''
+    },
+    materiBelajar: [{ judul: '', tipe: 'video' as const, link: '' }],
+    daftarBuku: [{ judul: '', penulis: '', link: '' }],
+    referensiDigital: [{ judul: '', tipe: 'youtube' as const, link: '' }],
   });
 
-  const [faqs, setFaqs] = useState<{ q: string, a: string }[]>([{ q: '', a: '' }]);
+  const [faqs, setFaqs] = useState<{ tanya: string, jawab: string }[]>([{ tanya: '', jawab: '' }]);
   const [topUniversities, setTopUniversities] = useState<{ local: string[], global: string[] }>({ local: [''], global: [''] });
   const [universityWorld, setUniversityWorld] = useState({
-    overview: '',
-    requiredSkills: [''],
-    whyChoose: [{ title: '', desc: '' }]
+    ringkasan: '',
+    keahlianWajib: [''],
+    alasanMemilih: [{ judul: '', deskripsi: '' }]
   });
 
   const createEmptyTopic = (): RoadmapTopic => ({
@@ -165,18 +177,35 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
 
   const handleSelectRoadmap = (roadmap: any) => {
     setFormData({
-      title: roadmap.title,
-      category: roadmap.category,
-      type: roadmap.type || 'skill_based',
-      customCategory: '',
-      description: roadmap.description,
-      salaryIndo: roadmap.salaryIndo,
-      salaryUSA: roadmap.salaryUSA,
+      judul: roadmap.judul || roadmap.title,
+      idKategori: roadmap.idKategori || 'tech',
+      tipe: roadmap.tipe || 'skill_based',
+      deskripsi: roadmap.deskripsi || roadmap.description,
+      infoGaji: roadmap.infoGaji || {
+        rentangIDR: roadmap.salaryIndo || '',
+        rentangUSD: roadmap.salaryUSA || '',
+        penjelasan: ''
+      },
+      infoPendidikan: roadmap.infoPendidikan || {
+        jurusan: roadmap.recommendationMajors || [''],
+        durasi: '',
+        jalurAkademik: '',
+        gelar: ''
+      },
+      materiBelajar: roadmap.materiBelajar || [{ judul: '', tipe: 'video', link: '' }],
+      daftarBuku: roadmap.daftarBuku || roadmap.books?.map((b: any) => ({ judul: b.title, penulis: '', link: b.link })) || [{ judul: '', penulis: '', link: '' }],
+      referensiDigital: roadmap.referensiDigital || [{ judul: '', tipe: 'youtube', link: '' }],
     });
-    setFaqs(roadmap.faqs?.length ? roadmap.faqs : [{ q: '', a: '' }]);
-    setTopUniversities(roadmap.topUniversities || { local: [''], global: [''] });
-    setUniversityWorld(roadmap.universityWorld || { overview: '', requiredSkills: [''], whyChoose: [{ title: '', desc: '' }] });
-    setPhases(roadmap.phases?.length > 0 ? roadmap.phases : [{ title: '', description: '', stats: '', isSaved: false, topics: [createEmptyTopic()] }]);
+    setFaqs(roadmap.faqs?.map((f: any) => ({ tanya: f.tanya || f.q, jawab: f.jawab || f.a })) || [{ tanya: '', jawab: '' }]);
+    setTopUniversities(roadmap.topUniversities || roadmap.universitasTerbaik || { local: [''], global: [''] });
+    setUniversityWorld(roadmap.universityWorld || roadmap.duniaPerkuliahan || { ringkasan: '', keahlianWajib: [''], alasanMemilih: [{ judul: '', deskripsi: '' }] });
+    setPhases(roadmap.phases || roadmap.roadmap?.map((r: any) => ({
+      title: r.judul || r.title,
+      description: r.deskripsi || r.desc,
+      stats: r.meta,
+      isSaved: true,
+      topics: r.proyek?.map((p: any) => ({ ...createEmptyTopic(), title: p })) || [createEmptyTopic()]
+    })) || [{ title: '', description: '', stats: '', isSaved: false, topics: [createEmptyTopic()] }]);
     setSelectedRoadmapId(roadmap.id);
   };
 
@@ -553,7 +582,7 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
         <div className="mb-12 bg-white rounded-3xl p-8 border border-emerald-100 shadow-sm flex items-center gap-8">
           <div className="h-20 w-20 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg"><Trophy size={40} /></div>
           <div className="flex-1">
-            <h2 className="text-2xl font-black text-slate-900">{formData.title}</h2>
+            <h2 className="text-2xl font-black text-slate-900">{formData.judul}</h2>
             <p className="text-sm font-bold text-slate-400 uppercase tracking-tighter">Bantu komunitas dengan melengkapi detail materi di bawah ini!</p>
           </div>
         </div>
@@ -653,37 +682,64 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
           <div className="flex items-center gap-3 border-b pb-4"><Briefcase className="text-blue-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Informasi Dasar</h2></div>
           <div className="grid gap-6">
             <div className="grid gap-6 md:grid-cols-3">
-              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Judul Roadmap</label><input required placeholder="Misal: Software Engineer" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} /></div>
-              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Kategori</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}><option value="IT & Software">IT & Software</option><option value="Kesehatan">Kesehatan</option><option value="Seni & Desain">Seni & Desain</option><option value="Kedinasan">Kedinasan</option><option value="Lainnya">Lainnya (Kustom)</option></select></div>
-              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Tipe Profesi (Template)</label><select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })}><option value="skill_based">Skill & Project Based (Contoh: IT)</option><option value="education_based">Education Path (Contoh: Dokter)</option></select></div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500">Judul Roadmap</label>
+                <input required placeholder="Misal: Software Engineer" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.judul} onChange={(e) => setFormData({ ...formData, judul: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500">Kategori</label>
+                <select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.idKategori} onChange={(e) => setFormData({ ...formData, idKategori: e.target.value as KategoriKarir })}>
+                  {CAREER_CATEGORIES.map(cat => <option key={cat.id} value={cat.id}>{cat.label}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-500">Tipe Profesi (Template)</label>
+                <select className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.tipe} onChange={(e) => setFormData({ ...formData, tipe: e.target.value as any })}>
+                  <option value="skill_based">Skill & Project Based (Contoh: IT)</option>
+                  <option value="education_based">Education Path (Contoh: Dokter)</option>
+                </select>
+              </div>
             </div>
-            <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Deskripsi Utama</label><textarea placeholder="Gambarkan jalur karir ini..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} /></div>
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2"><label className="text-sm font-bold text-slate-500 flex items-center gap-2"><DollarSign size={14} /> Gaji Rata-rata (ID)</label><input placeholder="Rp 8jt - 20jt" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.salaryIndo} onChange={(e) => setFormData({ ...formData, salaryIndo: e.target.value })} /></div>
-              <div className="space-y-2"><label className="text-sm font-bold text-slate-500 flex items-center gap-2"><Globe size={14} /> Gaji Global (USA)</label><input placeholder="$80k - $150k" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.salaryUSA} onChange={(e) => setFormData({ ...formData, salaryUSA: e.target.value })} /></div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-500">Deskripsi Utama</label>
+              <textarea placeholder="Gambarkan jalur karir ini..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={formData.deskripsi} onChange={(e) => setFormData({ ...formData, deskripsi: e.target.value })} />
+            </div>
+            
+            <div className="space-y-6 pt-4 border-t border-slate-50">
+              <p className="text-xs font-black uppercase tracking-widest text-blue-600 flex items-center gap-2"><DollarSign size={14} /> Informasi Gaji</p>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Gaji Rata-rata (ID)</label><input placeholder="Rp 8jt - 20jt" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.infoGaji.rentangIDR} onChange={(e) => setFormData({ ...formData, infoGaji: { ...formData.infoGaji, rentangIDR: e.target.value } })} /></div>
+                <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Gaji Global (USA)</label><input placeholder="$80k - $150k" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.infoGaji.rentangUSD} onChange={(e) => setFormData({ ...formData, infoGaji: { ...formData.infoGaji, rentangUSD: e.target.value } })} /></div>
+              </div>
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Penjelasan Gaji</label><textarea placeholder="Mengapa gajinya sekian? Faktor apa yang mempengaruhi?" className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={2} value={formData.infoGaji.penjelasan} onChange={(e) => setFormData({ ...formData, infoGaji: { ...formData.infoGaji, penjelasan: e.target.value } })} /></div>
             </div>
           </div>
         </section>
 
-        {/* NEW SECTION: Dunia Perkuliahan (Berlaku untuk IT maupun Non-IT) */}
+        {/* SECTION: Dunia Perkuliahan & Karir */}
         <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
           <div className="flex items-center gap-3 border-b pb-4"><School className="text-blue-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Dunia Perkuliahan & Karir</h2></div>
           <div className="space-y-6">
-            <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Overview Jurusan</label><textarea placeholder="Gambaran perkuliahan..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={universityWorld.overview} onChange={(e) => setUniversityWorld({ ...universityWorld, overview: e.target.value })} /></div>
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Durasi Studi</label><input placeholder="Misal: 4 Tahun" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.infoPendidikan.durasi} onChange={(e) => setFormData({ ...formData, infoPendidikan: { ...formData.infoPendidikan, durasi: e.target.value } })} /></div>
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Jalur Akademik</label><input placeholder="Misal: Sarjana (S1)" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.infoPendidikan.jalurAkademik} onChange={(e) => setFormData({ ...formData, infoPendidikan: { ...formData.infoPendidikan, jalurAkademik: e.target.value } })} /></div>
+              <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Gelar</label><input placeholder="Misal: S.Kom" className="h-12 w-full rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={formData.infoPendidikan.gelar} onChange={(e) => setFormData({ ...formData, infoPendidikan: { ...formData.infoPendidikan, gelar: e.target.value } })} /></div>
+            </div>
+            <div className="space-y-2"><label className="text-sm font-bold text-slate-500">Overview Jurusan</label><textarea placeholder="Gambaran perkuliahan..." className="w-full rounded-xl bg-slate-50 border-none p-4 font-bold text-base" rows={3} value={universityWorld.ringkasan} onChange={(e) => setUniversityWorld({ ...universityWorld, ringkasan: e.target.value })} /></div>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-4">
-                <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Pengetahuan & Keahlian</label><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, requiredSkills: [...universityWorld.requiredSkills, ''] })} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
-                {universityWorld.requiredSkills.map((skill, i) => (
-                  <div key={i} className="flex gap-2"><input placeholder="Contoh: Observasi" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={skill} onChange={(e) => { const newSkills = [...universityWorld.requiredSkills]; newSkills[i] = e.target.value; setUniversityWorld({ ...universityWorld, requiredSkills: newSkills }); }} /><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, requiredSkills: universityWorld.requiredSkills.filter((_, idx) => idx !== i) })} className="text-slate-300 hover:text-red-500"><Trash2 size={18} /></button></div>
+                <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Pengetahuan & Keahlian</label><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, keahlianWajib: [...universityWorld.keahlianWajib, ''] })} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+                {universityWorld.keahlianWajib.map((skill, i) => (
+                  <div key={i} className="flex gap-2"><input placeholder="Contoh: Observasi" className="h-10 flex-1 rounded-xl bg-slate-50 border-none px-4 font-bold text-sm shadow-sm" value={skill} onChange={(e) => { const newSkills = [...universityWorld.keahlianWajib]; newSkills[i] = e.target.value; setUniversityWorld({ ...universityWorld, keahlianWajib: newSkills }); }} /><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, keahlianWajib: universityWorld.keahlianWajib.filter((_, idx) => idx !== i) })} className="text-slate-300 hover:text-red-500"><Trash2 size={18} /></button></div>
                 ))}
               </div>
               <div className="space-y-4">
-                <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Kenapa Memilih Jurusan Ini?</label><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, whyChoose: [...universityWorld.whyChoose, { title: '', desc: '' }] })} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
-                {universityWorld.whyChoose.map((reason, i) => (
+                <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Kenapa Memilih Jurusan Ini?</label><button type="button" onClick={() => setUniversityWorld({ ...universityWorld, alasanMemilih: [...universityWorld.alasanMemilih, { judul: '', deskripsi: '' }] })} className="text-xs font-bold text-blue-600">+ Tambah</button></div>
+                {universityWorld.alasanMemilih.map((reason, i) => (
                   <div key={i} className="flex flex-col gap-3 p-4 bg-slate-50 rounded-xl relative shadow-sm border border-slate-100">
-                    <button type="button" onClick={() => setUniversityWorld({ ...universityWorld, whyChoose: universityWorld.whyChoose.filter((_, idx) => idx !== i) })} className="absolute top-3 right-3 text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
-                    <input placeholder="Judul Alasan" className="h-10 w-11/12 rounded-lg bg-white border border-slate-100 px-3 font-bold text-sm" value={reason.title} onChange={(e) => { const newReasons = [...universityWorld.whyChoose]; newReasons[i].title = e.target.value; setUniversityWorld({ ...universityWorld, whyChoose: newReasons }); }} />
-                    <textarea placeholder="Penjelasan singkat" className="w-11/12 rounded-lg bg-white border border-slate-100 p-3 text-sm font-medium" rows={2} value={reason.desc} onChange={(e) => { const newReasons = [...universityWorld.whyChoose]; newReasons[i].desc = e.target.value; setUniversityWorld({ ...universityWorld, whyChoose: newReasons }); }} />
+                    <button type="button" onClick={() => setUniversityWorld({ ...universityWorld, alasanMemilih: universityWorld.alasanMemilih.filter((_, idx) => idx !== i) })} className="absolute top-3 right-3 text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
+                    <input placeholder="Judul Alasan" className="h-10 w-11/12 rounded-lg bg-white border border-slate-100 px-3 font-bold text-sm" value={reason.judul} onChange={(e) => { const newReasons = [...universityWorld.alasanMemilih]; newReasons[i].judul = e.target.value; setUniversityWorld({ ...universityWorld, alasanMemilih: newReasons }); }} />
+                    <textarea placeholder="Penjelasan singkat" className="w-11/12 rounded-lg bg-white border border-slate-100 p-3 text-sm font-medium" rows={2} value={reason.deskripsi} onChange={(e) => { const newReasons = [...universityWorld.alasanMemilih]; newReasons[i].deskripsi = e.target.value; setUniversityWorld({ ...universityWorld, alasanMemilih: newReasons }); }} />
                   </div>
                 ))}
               </div>
@@ -691,7 +747,68 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
           </div>
         </section>
 
-        {/* NEW SECTION: Top Universities */}
+        {/* SECTION: Materi & Referensi */}
+        <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
+          <div className="flex items-center gap-3 border-b pb-4"><BookOpen className="text-indigo-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Materi & Referensi Curated</h2></div>
+          
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Materi Belajar (Video/Artikel/Web)</label><button type="button" onClick={() => setFormData({ ...formData, materiBelajar: [...formData.materiBelajar, { judul: '', tipe: 'video', link: '' }] })} className="text-xs font-bold text-blue-600">+ Tambah Materi</button></div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {formData.materiBelajar.map((materi, i) => (
+                  <div key={i} className="p-4 bg-slate-50 rounded-2xl relative border border-slate-100">
+                    <button type="button" onClick={() => setFormData({ ...formData, materiBelajar: formData.materiBelajar.filter((_, idx) => idx !== i) })} className="absolute top-3 right-3 text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
+                    <div className="grid gap-3">
+                      <input placeholder="Judul Materi" className="h-9 rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={materi.judul} onChange={(e) => { const next = [...formData.materiBelajar]; next[i].judul = e.target.value; setFormData({ ...formData, materiBelajar: next }); }} />
+                      <div className="flex gap-2">
+                        <select className="h-9 flex-1 rounded-lg bg-white border border-slate-100 px-2 font-bold text-xs" value={materi.tipe} onChange={(e) => { const next = [...formData.materiBelajar]; next[i].tipe = e.target.value as any; setFormData({ ...formData, materiBelajar: next }); }}><option value="video">Video</option><option value="artikel">Artikel</option><option value="website">Website</option></select>
+                        <input placeholder="https://..." className="h-9 flex-[2] rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={materi.link} onChange={(e) => { const next = [...formData.materiBelajar]; next[i].link = e.target.value; setFormData({ ...formData, materiBelajar: next }); }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Daftar Buku Rekomendasi</label><button type="button" onClick={() => setFormData({ ...formData, daftarBuku: [...formData.daftarBuku, { judul: '', penulis: '', link: '' }] })} className="text-xs font-bold text-blue-600">+ Tambah Buku</button></div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {formData.daftarBuku.map((buku, i) => (
+                  <div key={i} className="p-4 bg-slate-50 rounded-2xl relative border border-slate-100">
+                    <button type="button" onClick={() => setFormData({ ...formData, daftarBuku: formData.daftarBuku.filter((_, idx) => idx !== i) })} className="absolute top-3 right-3 text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
+                    <div className="grid gap-3">
+                      <input placeholder="Judul Buku" className="h-9 rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={buku.judul} onChange={(e) => { const next = [...formData.daftarBuku]; next[i].judul = e.target.value; setFormData({ ...formData, daftarBuku: next }); }} />
+                      <div className="flex gap-2">
+                        <input placeholder="Penulis" className="h-9 flex-1 rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={buku.penulis} onChange={(e) => { const next = [...formData.daftarBuku]; next[i].penulis = e.target.value; setFormData({ ...formData, daftarBuku: next }); }} />
+                        <input placeholder="Link (Opsional)" className="h-9 flex-1 rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={buku.link} onChange={(e) => { const next = [...formData.daftarBuku]; next[i].link = e.target.value; setFormData({ ...formData, daftarBuku: next }); }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between"><label className="text-sm font-bold text-slate-500">Referensi Digital (Website/YouTube)</label><button type="button" onClick={() => setFormData({ ...formData, referensiDigital: [...formData.referensiDigital, { judul: '', tipe: 'youtube', link: '' }] })} className="text-xs font-bold text-blue-600">+ Tambah Referensi</button></div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {formData.referensiDigital.map((ref, i) => (
+                  <div key={i} className="p-4 bg-slate-50 rounded-2xl relative border border-slate-100">
+                    <button type="button" onClick={() => setFormData({ ...formData, referensiDigital: formData.referensiDigital.filter((_, idx) => idx !== i) })} className="absolute top-3 right-3 text-slate-300 hover:text-red-500"><Trash2 size={16} /></button>
+                    <div className="grid gap-3">
+                      <input placeholder="Judul Channel/Website" className="h-9 rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={ref.judul} onChange={(e) => { const next = [...formData.referensiDigital]; next[i].judul = e.target.value; setFormData({ ...formData, referensiDigital: next }); }} />
+                      <div className="flex gap-2">
+                        <select className="h-9 flex-1 rounded-lg bg-white border border-slate-100 px-2 font-bold text-xs" value={ref.tipe} onChange={(e) => { const next = [...formData.referensiDigital]; next[i].tipe = e.target.value as any; setFormData({ ...formData, referensiDigital: next }); }}><option value="youtube">YouTube</option><option value="website">Website</option></select>
+                        <input placeholder="https://..." className="h-9 flex-[2] rounded-lg bg-white border border-slate-100 px-3 font-bold text-xs" value={ref.link} onChange={(e) => { const next = [...formData.referensiDigital]; next[i].link = e.target.value; setFormData({ ...formData, referensiDigital: next }); }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION: Top Universities */}
         <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
           <div className="flex items-center gap-3 border-b pb-4"><Globe className="text-emerald-600" size={20} /><h2 className="text-xl font-bold text-slate-900">Top 5 Universitas</h2></div>
           <div className="grid gap-6 md:grid-cols-2">
@@ -710,19 +827,19 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
           </div>
         </section>
 
-        {/* NEW SECTION: FAQs */}
+        {/* SECTION: FAQs */}
         <section className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8">
           <div className="flex items-center justify-between border-b pb-4">
             <div className="flex items-center gap-3"><Info className="text-amber-500" size={20} /><h2 className="text-xl font-bold text-slate-900">Common Questions (FAQ)</h2></div>
-            <button type="button" onClick={() => setFaqs([...faqs, { q: '', a: '' }])} className="text-sm font-bold text-blue-600 hover:underline">+ Tambah Pertanyaan</button>
+            <button type="button" onClick={() => setFaqs([...faqs, { tanya: '', jawab: '' }])} className="text-sm font-bold text-blue-600 hover:underline">+ Tambah Pertanyaan</button>
           </div>
           <div className="grid gap-4">
             {faqs.map((faq, i) => (
               <div key={i} className="flex gap-4 p-5 bg-slate-50 rounded-2xl relative shadow-sm border border-slate-100">
                 <button type="button" onClick={() => setFaqs(faqs.filter((_, idx) => idx !== i))} className="absolute top-4 right-4 text-slate-300 hover:text-red-500"><Trash2 size={18} /></button>
                 <div className="flex-1 space-y-3 pr-8">
-                  <input placeholder="Pertanyaan..." className="h-11 w-full rounded-xl bg-white border border-slate-100 px-4 font-bold text-sm" value={faq.q} onChange={(e) => { const newFaqs = [...faqs]; newFaqs[i].q = e.target.value; setFaqs(newFaqs); }} />
-                  <textarea placeholder="Jawaban..." className="w-full rounded-xl bg-white border border-slate-100 p-4 text-sm font-medium" rows={2} value={faq.a} onChange={(e) => { const newFaqs = [...faqs]; newFaqs[i].a = e.target.value; setFaqs(newFaqs); }} />
+                  <input placeholder="Pertanyaan..." className="h-11 w-full rounded-xl bg-white border border-slate-100 px-4 font-bold text-sm" value={faq.tanya} onChange={(e) => { const newFaqs = [...faqs]; newFaqs[i].tanya = e.target.value; setFaqs(newFaqs); }} />
+                  <textarea placeholder="Jawaban..." className="w-full rounded-xl bg-white border border-slate-100 p-4 text-sm font-medium" rows={2} value={faq.jawab} onChange={(e) => { const newFaqs = [...faqs]; newFaqs[i].jawab = e.target.value; setFaqs(newFaqs); }} />
                 </div>
               </div>
             ))}

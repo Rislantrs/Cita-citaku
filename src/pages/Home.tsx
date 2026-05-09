@@ -70,7 +70,7 @@ export default function Home() {
           <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, var(--bg-secondary), transparent, var(--bg-secondary))` }} />
         </div>
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -80,19 +80,19 @@ export default function Home() {
               Platform Eksplorasi Karir Indonesia
             </div>
 
-            <h1 className="text-5xl sm:text-7xl font-black leading-[1.1] tracking-tight mb-8" style={{ color: 'var(--text-primary)' }}>
-              Arah Masa Depan, <br />
-              <span className="text-blue-600">Lebih Jelas.</span>
+            <h1 className="text-4xl sm:text-7xl font-black leading-[1.15] sm:leading-[1.1] tracking-tight mb-8" style={{ color: 'var(--text-primary)' }}>
+              Arah Masa Depan, <br className="hidden sm:block" />
+              <span className="text-blue-600"> Lebih Jelas.</span>
             </h1>
 
             <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>
               Temukan jati diri melalui kuis psikometrik profesional dan ikuti peta jalan belajar yang konkret hingga ke industri.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
               <Link
                 to="/test"
-                className="group flex items-center gap-3 rounded-full bg-blue-600 px-10 py-4.5 text-[15px] font-bold text-white shadow-xl shadow-blue-600/20 transition-all hover:-translate-y-1 hover:scale-105"
+                className="w-full sm:w-auto group flex items-center justify-center gap-3 rounded-full bg-blue-600 px-10 py-5 text-[15px] font-bold text-white shadow-xl shadow-blue-600/20 transition-all hover:-translate-y-1 hover:scale-105"
               >
                 Mulai Tes Sekarang
                 <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
@@ -100,7 +100,7 @@ export default function Home() {
 
               <Link
                 to="/roadmap"
-                className="flex items-center gap-3 rounded-full px-10 py-4.5 text-[15px] font-bold transition-all hover:-translate-y-1"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 rounded-full px-10 py-5 text-[15px] font-bold transition-all hover:-translate-y-1"
                 style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
               >
                 Cari Profesi
@@ -111,7 +111,7 @@ export default function Home() {
       </section>
 
       {/* FEATURES - Clean Grid, No Heavy Boxes */}
-      <section className="py-32 px-6 reveal-on-scroll" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <section className="py-20 sm:py-32 px-5 sm:px-6 reveal-on-scroll" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <div className="max-w-5xl mx-auto">
           <div className="grid gap-16 md:grid-cols-3">
             {FEATURE_POINTS.map((item, idx) => (
@@ -132,7 +132,7 @@ export default function Home() {
       </section>
 
       {/* WHY SECTION - High Contrast, Minimalist */}
-      <section className="py-32 px-6 reveal-on-scroll" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+      <section className="py-20 sm:py-32 px-5 sm:px-6 reveal-on-scroll" style={{ backgroundColor: 'var(--bg-secondary)' }}>
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-16 items-start">
             <div className="lg:w-1/2">
@@ -164,7 +164,7 @@ export default function Home() {
       </section>
 
       {/* CATEGORY SECTION — Premium 3-Column Grid */}
-      <section className="py-32 px-6" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <section className="py-20 sm:py-32 px-5 sm:px-6" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <div className="max-w-5xl mx-auto mb-20 text-center">
           <p className="text-[12px] font-bold tracking-[0.25em] uppercase text-blue-600 mb-3">Bidang Karir</p>
           <h2 className="text-3xl sm:text-6xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
@@ -183,7 +183,7 @@ export default function Home() {
               <Link
                 key={category.id}
                 to={`/roadmap`}
-                className="group relative overflow-hidden rounded-[2.5rem] aspect-[4/3] flex flex-col justify-end p-8 hover-lift shadow-xl transition-all duration-500"
+                className="group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] aspect-[4/3] flex flex-col justify-end p-6 sm:p-8 hover-lift shadow-xl transition-all duration-500"
               >
                 <img
                   src={`/images/cat-${category.id}.png`}
@@ -221,7 +221,7 @@ export default function Home() {
       </section>
 
       {/* STEPS SECTION - Clean & Simple */}
-      <section className="py-32 px-6 reveal-on-scroll" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+      <section className="py-20 sm:py-32 px-5 sm:px-6 reveal-on-scroll" style={{ backgroundColor: 'var(--bg-secondary)' }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-20">
             <p className="text-[12px] font-bold tracking-[0.25em] uppercase text-blue-600 mb-4">Cara Kerja</p>
@@ -253,7 +253,7 @@ export default function Home() {
       </section>
 
       {/* CTA SECTION */}
-      <section className="py-32 px-6 text-center overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <section className="py-20 sm:py-32 px-5 sm:px-6 text-center overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <div className="max-w-3xl mx-auto relative">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] opacity-50 -z-10" />
           <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-8" style={{ color: 'var(--text-primary)' }}>

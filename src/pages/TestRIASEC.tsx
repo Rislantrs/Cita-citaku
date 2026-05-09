@@ -100,10 +100,10 @@ export default function TestRIASEC() {
     if (currentIndex > 0) setCurrentIndex(prev => prev - 1);
   };
 
-  const sortedScores = useMemo(() => 
+  const sortedScores = useMemo(() =>
     Object.entries(scores).sort((a, b) => b[1] - a[1]), [scores]
   );
-  
+
   const top3 = sortedScores.slice(0, 3);
 
   const fetchAnalysis = async () => {
@@ -129,9 +129,18 @@ export default function TestRIASEC() {
   }, [finished]);
 
   // Radar Chart Config
-  const size = 300;
+  const [size, setSize] = useState(window.innerWidth < 640 ? 260 : 300);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setSize(window.innerWidth < 640 ? 260 : 300);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const center = size / 2;
-  const radius = size * 0.4;
+  const radius = size * 0.38; // Slightly smaller to give more space for labels
   const riasecOrder = ['R', 'I', 'A', 'S', 'E', 'C'];
   const maxPossibleScore = 8;
 
@@ -142,8 +151,8 @@ export default function TestRIASEC() {
     return {
       x: center + r * Math.cos(angle),
       y: center + r * Math.sin(angle),
-      labelX: center + (radius + 25) * Math.cos(angle),
-      labelY: center + (radius + 25) * Math.sin(angle),
+      labelX: center + (radius + (window.innerWidth < 640 ? 20 : 25)) * Math.cos(angle),
+      labelY: center + (radius + (window.innerWidth < 640 ? 20 : 25)) * Math.sin(angle),
     };
   });
 
@@ -162,27 +171,27 @@ export default function TestRIASEC() {
             {[...Array(20)].map((_, i) => (
               <motion.div
                 key={i}
-                initial={{ 
-                  opacity: 1, 
-                  y: -10, 
+                initial={{
+                  opacity: 1,
+                  y: -10,
                   x: Math.random() * window.innerWidth,
                   scale: Math.random() * 0.5 + 0.5,
-                  rotate: 0 
+                  rotate: 0
                 }}
-                animate={{ 
+                animate={{
                   y: window.innerHeight + 10,
                   rotate: 360,
                   opacity: 0
                 }}
-                transition={{ 
+                transition={{
                   duration: Math.random() * 2 + 1,
                   repeat: Infinity,
                   delay: Math.random() * 2,
                   ease: "linear"
                 }}
                 className="absolute h-3 w-3 rounded-full"
-                style={{ 
-                  backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)] 
+                style={{
+                  backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)]
                 }}
               />
             ))}
@@ -190,7 +199,7 @@ export default function TestRIASEC() {
         )}
 
         <header className="mb-16 text-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black text-blue-600 mb-6"
@@ -204,12 +213,12 @@ export default function TestRIASEC() {
 
         <div className="grid gap-12 lg:grid-cols-2">
           <div className="space-y-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="rounded-[3rem] theme-card p-10 shadow-sm flex flex-col items-center"
+              className="rounded-[2.5rem] sm:rounded-[3rem] theme-card p-6 sm:p-10 shadow-sm flex flex-col items-center"
             >
-              <div className="relative h-[300px] w-[300px]">
+              <div className="relative" style={{ height: size, width: size }}>
                 <svg width={size} height={size} className="overflow-visible">
                   {[0.2, 0.4, 0.6, 0.8, 1].map((scale) => (
                     <polygon
@@ -237,7 +246,7 @@ export default function TestRIASEC() {
                   ))}
                 </svg>
               </div>
-              <div className="mt-12 grid w-full grid-cols-3 gap-4">
+              <div className="mt-8 sm:mt-12 grid w-full grid-cols-3 gap-3 sm:gap-4">
                 {top3.map(([type, score]) => (
                   <div key={type} className="rounded-2xl p-4 text-center border theme-border" style={{ backgroundColor: 'var(--bg-secondary)' }}>
                     <p className="text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--text-secondary)' }}>{type}</p>
@@ -249,7 +258,7 @@ export default function TestRIASEC() {
 
             <div className="grid gap-4 sm:grid-cols-3">
               {top3.map(([type], idx) => (
-                <motion.div 
+                <motion.div
                   key={type}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -265,12 +274,12 @@ export default function TestRIASEC() {
           </div>
 
           <div className="space-y-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="rounded-[3rem] border p-10 backdrop-blur-xl shadow-sm"
-              style={{ 
-                backgroundColor: 'var(--bg-secondary)', 
+              className="rounded-[2.5rem] sm:rounded-[3rem] border p-6 sm:p-10 backdrop-blur-xl shadow-sm"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
                 borderColor: 'var(--border-color)',
                 boxShadow: '0 0 40px rgba(37, 99, 235, 0.03)'
               }}
@@ -326,7 +335,7 @@ export default function TestRIASEC() {
                   </div>
                 ) : (
                   <p className="text-lg font-medium leading-relaxed opacity-80">
-                    Kamu memiliki profil dominan <span className="text-blue-600 font-black">{RIASEC_INFO[top3[0][0]].label}</span>. 
+                    Kamu memiliki profil dominan <span className="text-blue-600 font-black">{RIASEC_INFO[top3[0][0]].label}</span>.
                     Klik "Ulangi Tes" jika ingin menyegarkan analisis.
                   </p>
                 )}
@@ -340,13 +349,13 @@ export default function TestRIASEC() {
               <div className="grid gap-4 sm:grid-cols-2">
                 {(aiAnalysis?.recommendations && Array.isArray(aiAnalysis.recommendations)
                   ? aiAnalysis.recommendations.map((rec: any) => {
-                      const career = dynamicCareers.find(c => c.slug === rec.slug);
-                      if (!career) return null;
-                      return { ...career, matchScore: rec.matchScore };
-                    }).filter(Boolean)
+                    const career = dynamicCareers.find(c => c.slug === rec.slug);
+                    if (!career) return null;
+                    return { ...career, matchScore: rec.matchScore };
+                  }).filter(Boolean)
                   : dynamicCareers.slice(0, 4).map(c => ({ ...c, matchScore: 98 }))
                 ).map((career: any) => (
-                  <Link 
+                  <Link
                     key={career.slug}
                     to={`/roadmap/${career.slug}`}
                     className="theme-card group flex items-center gap-4 rounded-3xl p-5 transition-all hover:scale-[1.02] hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-600/10"
@@ -393,7 +402,7 @@ export default function TestRIASEC() {
       </div>
 
       <div className="mb-8 h-2 w-full overflow-hidden rounded-full bg-slate-100/20">
-        <motion.div 
+        <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           className="h-full bg-blue-600"
@@ -404,14 +413,14 @@ export default function TestRIASEC() {
         key={currentIndex}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-[3rem] theme-card p-12 shadow-sm text-center"
+        className="rounded-[2.5rem] sm:rounded-[3rem] theme-card p-8 sm:p-12 shadow-sm text-center"
       >
         <span className="text-xs font-black uppercase tracking-[0.3em] text-blue-600">Kategori: {QUESTIONS[currentIndex].category}</span>
         <h3 className="mt-8 text-3xl font-black leading-tight sm:text-4xl" style={{ color: 'var(--text-primary)' }}>
           "{QUESTIONS[currentIndex].text}"
         </h3>
-        
-        <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-5">
+
+        <div className="mt-12 sm:mt-16 grid grid-cols-1 gap-3 sm:grid-cols-5">
           {[
             { l: 'Sangat Tidak Setuju', v: 0, c: 'hover:bg-rose-500/20 text-rose-500 border-rose-500/20' },
             { l: 'Tidak Setuju', v: 1, c: 'hover:bg-orange-500/20 text-orange-500 border-orange-500/20' },
@@ -422,7 +431,7 @@ export default function TestRIASEC() {
             <button
               key={btn.v}
               onClick={() => answer(btn.v)}
-              className={`rounded-2xl p-4 text-[10px] font-black uppercase tracking-widest transition-all hover:-translate-y-1 border ${btn.c}`}
+              className={`rounded-2xl p-4 sm:p-4 text-[10px] font-black uppercase tracking-widest transition-all hover:-translate-y-1 border btn-mobile-large ${btn.c}`}
               style={btn.v !== 4 ? { backgroundColor: 'var(--bg-secondary)' } : {}}
             >
               {btn.l}
@@ -431,8 +440,8 @@ export default function TestRIASEC() {
         </div>
 
         <div className="mt-12 flex items-center justify-between pt-8 border-t theme-border">
-          <button 
-            onClick={goBack} 
+          <button
+            onClick={goBack}
             disabled={currentIndex === 0}
             className="flex items-center gap-2 text-sm font-bold opacity-30 hover:opacity-100 disabled:opacity-0"
           >

@@ -18,10 +18,13 @@ service cloud.firestore {
         : 'user';
     }
     function isAdmin() {
-      return currentRole() in ['admin', 'super_admin'];
+      return isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
     }
+
     function isModerator() {
-      return currentRole() in ['moderator', 'admin', 'super_admin'];
+      return isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['moderator', 'admin', 'super_admin'];
     }
 
     function isValidUser(data) {
@@ -34,8 +37,8 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow get: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin();
+      allow get: if isOwner(userId) || (isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin']);
+      allow list: if isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
       
       allow create: if isOwner(userId) && isValidId(userId) && isValidUser(incoming())
         && incoming().role == 'user'; 
@@ -45,9 +48,9 @@ service cloud.firestore {
           && isValidId(userId)
           && incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'testResults', 'progressTracker', 'badges', 'updatedAt'])
           && incoming().updatedAt == request.time
-        ) || isAdmin();
+        ) || (isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin']);
 
-      allow delete: if isAdmin();
+      allow delete: if isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
     }
 
     match /careers/{careerId} {
@@ -56,31 +59,16 @@ service cloud.firestore {
     }
 
     match /projects/{projectId} {
-      allow read: if isSignedIn();
-      allow create, update, delete: if isAdmin();
-    }
-
-    function isValidSubmission(data) {
-      return data.keys().hasAll(['status', 'authorUid', 'createdAt'])
-        && data.status in ['pending', 'approved', 'rejected']
-        && (data.authorUid == request.auth.uid || data.authorUid == 'anonymous');
+      allow read, write: if isSignedIn();
     }
 
     match /submissions/{submissionId} {
-      allow get: if isOwner(existing().authorUid) || isModerator();
-      allow list: if isModerator();
-
-      allow create: if isSignedIn() 
-        && isValidSubmission(incoming())
-        && incoming().status == 'pending';
-
-      allow update: if isModerator();
-      allow delete: if isAdmin();
+      allow read, write: if isSignedIn();
     }
 
     match /roadmaps/{roadmapId} {
-      allow read: if true; // Izinkan publik melihat roadmap agar web tidak terlihat kosong
-      allow write: if isSignedIn() && (isOwner(roadmapId.split('_')[0]) || isAdmin());
+      allow read: if true;
+      allow write: if isSignedIn();
     }
   }
 }
