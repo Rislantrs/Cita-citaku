@@ -5,7 +5,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import path from 'path';
 import { GoogleGenAI } from '@google/genai';
 import { connectMongo, ensureCareerSeeded, ensureProjectSeeded, UserUsageModel, ChatSessionModel, isMongoReady } from './backend/mongo';
-import { registerApiRoutes } from './backend/routes';
+import { registerApiRoutes, registerUploadRoute, configureStaticFiles } from './backend/routes';
 import { callAI, streamAI, type AITaskType } from './backend/ai_service';
 
 const CAREER_COUNSELOR_SYSTEM_PROMPT = `
@@ -145,6 +145,8 @@ async function startServer() {
   app.use(mongoSanitize());
 
   registerApiRoutes(app);
+  registerUploadRoute(app);
+  configureStaticFiles(app);
 
   // AI Counselor / Assistant / Quiz API
   app.post('/api/chat', async (req, res) => {

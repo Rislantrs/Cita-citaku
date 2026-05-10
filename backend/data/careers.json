@@ -27,6 +27,26 @@
       "ISTJ",
       "ISTP"
     ],
+    "universityWorld": {
+      "overview": "Dunia Backend adalah tentang logika, efisiensi, dan keamanan. Di perkuliahan Informatika, kamu akan mendalami algoritma dan struktur data yang menjadi pondasi utama seorang Backend Engineer.",
+      "requiredSkills": [
+        "Algoritma & Struktur Data",
+        "Basis Data Relasional & NoSQL",
+        "Arsitektur Komputer & Jaringan",
+        "Sistem Terdistribusi",
+        "Cyber Security Dasar"
+      ],
+      "whyChoose": [
+        {
+          "title": "Problem Solver Sejati",
+          "desc": "Kamu akan menghadapi tantangan logika yang kompleks setiap hari."
+        },
+        {
+          "title": "Tulang Punggung Aplikasi",
+          "desc": "Tanpa Backend, aplikasi secantik apapun tidak akan bisa berfungsi."
+        }
+      ]
+    },
     "roadmap": [
       {
         "fase": "Fase 1",
@@ -176,10 +196,30 @@
     ],
     "mbtiTags": [
       "ENFP",
-      "INFP",
-      "ENFJ",
-      "INFJ"
+      "ENTP",
+      "INFJ",
+      "ISFP"
     ],
+    "universityWorld": {
+      "overview": "UI/UX adalah perpaduan antara teknologi dan psikologi. Kamu akan belajar bagaimana perilaku manusia mempengaruhi desain sebuah produk digital.",
+      "requiredSkills": [
+        "Psikologi Kognitif & Perilaku",
+        "Desain Grafis & Tipografi",
+        "Metodologi Riset Pengguna",
+        "Interaction Design (IxD)",
+        "Accessibility (A11y) Standards"
+      ],
+      "whyChoose": [
+        {
+          "title": "Dampak Langsung ke User",
+          "desc": "Kamu bisa langsung merasakan kepuasan saat user mudah menggunakan desainmu."
+        },
+        {
+          "title": "Kreativitas Tanpa Batas",
+          "desc": "Dunia desain selalu berubah, memberikan ruang untuk terus bereksperimen."
+        }
+      ]
+    },
     "roadmap": [
       {
         "fase": "Fase 1",
@@ -333,6 +373,26 @@
       "ENTP",
       "ISTJ"
     ],
+    "universityWorld": {
+      "overview": "Data Science adalah seni mengubah data menjadi kebijakan. Kamu akan belajar mengolah angka dan pola untuk memprediksi masa depan.",
+      "requiredSkills": [
+        "Statistika Inferensial",
+        "Pemrograman Python/R",
+        "Machine Learning Algorithms",
+        "Data Visualization",
+        "SQL & Database Management"
+      ],
+      "whyChoose": [
+        {
+          "title": "Peran Strategis",
+          "desc": "Hasil analisismu menjadi kunci utama pengambilan keputusan petinggi perusahaan."
+        },
+        {
+          "title": "Kecerdasan Masa Depan",
+          "desc": "Kamu berada di garis depan perkembangan teknologi AI dan otomatisasi."
+        }
+      ]
+    },
     "roadmap": [
       {
         "fase": "Fase 1",
@@ -479,14 +539,34 @@
     "riasecCategories": [
       "I",
       "R",
-      "E"
+      "C"
     ],
     "mbtiTags": [
       "ISTP",
       "INTJ",
-      "INTP",
-      "ESTJ"
+      "ISTJ",
+      "INTP"
     ],
+    "universityWorld": {
+      "overview": "Cyber Security adalah tentang perlindungan dan pertahanan. Kamu akan belajar cara berpikir seperti hacker untuk melindungi infrastruktur digital yang vital.",
+      "requiredSkills": [
+        "Network Security & Firewall",
+        "Ethical Hacking & Pen-Testing",
+        "Kriptografi (Enkripsi Data)",
+        "Digital Forensics",
+        "Governance, Risk & Compliance"
+      ],
+      "whyChoose": [
+        {
+          "title": "Pelindung Digital",
+          "desc": "Kamu adalah garda terdepan dalam melindungi privasi dan keamanan data masyarakat."
+        },
+        {
+          "title": "Tantangan Terus Menerus",
+          "desc": "Ancaman siber selalu berevolusi, membuat pekerjaanmu tidak pernah membosankan."
+        }
+      ]
+    },
     "roadmap": [
       {
         "fase": "Fase 1",
@@ -640,6 +720,26 @@
       "ESTJ",
       "ISTP"
     ],
+    "universityWorld": {
+      "overview": "DevOps adalah jembatan antara pengembangan dan operasional. Kamu akan belajar bagaimana mengotomatisasi siklus hidup software untuk pengiriman yang super cepat.",
+      "requiredSkills": [
+        "Cloud Computing (AWS/GCP/Azure)",
+        "Containerization (Docker & K8s)",
+        "Infrastructure as Code (Terraform)",
+        "CI/CD Pipeline Automation",
+        "Site Reliability Engineering (SRE)"
+      ],
+      "whyChoose": [
+        {
+          "title": "Efisiensi Maksimal",
+          "desc": "Kamu akan mengubah proses manual yang lambat menjadi sistem otomatis yang sangat efisien."
+        },
+        {
+          "title": "Dicari Banyak Startup",
+          "desc": "Kebutuhan akan DevOps sangat tinggi seiring dengan tren digitalisasi global."
+        }
+      ]
+    },
     "roadmap": [
       {
         "fase": "Fase 1",
@@ -762,6 +862,2039 @@
         "Massachusetts Institute of Technology (MIT)",
         "Stanford University",
         "University of Illinois at Urbana-Champaign"
+      ]
+    }
+  },
+  {
+    "slug": "dokter-umum",
+    "title": "Dokter Umum",
+    "categoryId": "health",
+    "description": "Profesi yang berdedikasi tinggi dalam mendiagnosis, merawat, dan mencegah penyakit untuk menjaga kesehatan pasien secara holistik. Menjadi dokter umum menuntut pemahaman medis yang komprehensif serta empati yang kuat terhadap kemanusiaan.",
+    "keyIkon": "Stethoscope",
+    "recommendationMajors": [
+      "Kedokteran",
+      "Pendidikan Dokter"
+    ],
+    "sertifikasi": [
+      "Surat Tanda Registrasi (STR)",
+      "Surat Izin Praktik (SIP)",
+      "Advanced Trauma Life Support (ATLS)"
+    ],
+    "riasecCategories": [
+      "I",
+      "S",
+      "R"
+    ],
+    "mbtiTags": [
+      "ISFJ",
+      "ESFJ",
+      "ISTJ",
+      "INFJ"
+    ],
+    "universityWorld": {
+      "overview": "Jurusan kedokteran adalah salah satu jurusan paling menantang sekaligus mulia. Kamu akan mempelajari tubuh manusia dari tingkat sel hingga sistem organ yang kompleks, serta cara menangani berbagai penyakit dengan dasar ilmiah yang kuat.",
+      "requiredSkills": [
+        "Biologi Sel & Molekuler",
+        "Anatomi & Fisiologi Manusia",
+        "Farmakologi (Ilmu Obat-obatan)",
+        "Etika Medis & Komunikasi Terapeutik",
+        "Diagnosis Klinis"
+      ],
+      "whyChoose": [
+        {
+          "title": "Pengabdian Kemanusiaan",
+          "desc": "Kesempatan nyata untuk menyelamatkan nyawa dan meningkatkan kualitas hidup orang lain secara langsung."
+        },
+        {
+          "title": "Ilmu yang Terus Berkembang",
+          "desc": "Dunia medis selalu dinamis dengan penemuan teknologi dan metode pengobatan baru yang menarik untuk dipelajari."
+        },
+        {
+          "title": "Status & Stabilitas Karir",
+          "desc": "Profesi dokter memiliki prestise tinggi dan permintaan yang selalu ada di setiap lapisan masyarakat."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Pendidikan Sarjana Kedokteran",
+        "deskripsi": "Menyelesaikan pendidikan dasar kedokteran untuk memahami ilmu dasar biomedis, anatomi, patologi, dan farmakologi.",
+        "proyek": [
+          "Praktikum anatomi dan fisiologi",
+          "Penelitian skripsi bidang medis",
+          "PBL (Problem Based Learning) kasus klinis"
+        ],
+        "meta": "4 Tahun"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Program Profesi Dokter (Koas)",
+        "deskripsi": "Rotasi di berbagai stase klinis di rumah sakit pendidikan untuk mengaplikasikan ilmu teoritis langsung kepada pasien di bawah supervisi dokter spesialis.",
+        "proyek": [
+          "Penyusunan rekam medis pasien",
+          "Asistensi operasi dasar",
+          "Jaga malam di IGD"
+        ],
+        "meta": "2 Tahun"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "UKMPPD & Uji Kompetensi",
+        "deskripsi": "Mengikuti Ujian Kompetensi Mahasiswa Program Profesi Dokter untuk mendapatkan gelar dokter (dr.) secara resmi.",
+        "proyek": [
+          "Tryout CBT Nasional",
+          "Latihan OSCE (Objective Structured Clinical Examination)"
+        ],
+        "meta": "3 - 6 Bulan"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Internship & Praktik Mandiri",
+        "deskripsi": "Menjalani program internsip dokter Indonesia (PIDI) di rumah sakit daerah dan puskesmas sebelum membuka praktik mandiri atau bekerja tetap.",
+        "proyek": [
+          "Manajemen wabah tingkat puskesmas",
+          "Penanganan kasus trauma dasar di RSUD",
+          "Penyuluhan kesehatan masyarakat"
+        ],
+        "meta": "1 Tahun"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 7.000.000 - Rp 25.000.000 / bulan",
+      "rentangUSD": "$500 - $1,700 / bulan",
+      "penjelasan": "Gaji dokter umum sangat bervariasi bergantung pada lokasi kerja (RS swasta, pemerintah, klinik) serta jam terbang dan jumlah tempat praktik."
+    },
+    "infoPendidikan": {
+      "jurusan": "Kedokteran",
+      "durasi": "6 - 7 Tahun (hingga selesai profesi)",
+      "jalurAkademik": "S1 + Profesi",
+      "gelar": "S.Ked & dr."
+    },
+    "materiBelajar": [
+      {
+        "title": "Clinical Anatomy",
+        "tipe": "Video Course",
+        "link": "https://www.coursera.org/"
+      },
+      {
+        "title": "Kumpulan Pedoman Klinis Kemenkes",
+        "tipe": "Dokumen",
+        "link": "https://kemkes.go.id/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Guyton and Hall Textbook of Medical Physiology",
+        "penulis": "John E. Hall",
+        "link": "https://example.com/guyton"
+      },
+      {
+        "title": "Buku Ajar Ilmu Penyakit Dalam",
+        "penulis": "PAPDI",
+        "link": "https://example.com/papdi"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "Medscape",
+        "tipe": "Artikel & Jurnal",
+        "link": "https://www.medscape.com/"
+      },
+      {
+        "title": "PubMed Central",
+        "tipe": "Jurnal Penelitian",
+        "link": "https://www.ncbi.nlm.nih.gov/pmc/"
+      }
+    ],
+    "proyekTerkait": [
+      "peneliti-medis",
+      "manajer-rumah-sakit"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah menjadi dokter umum harus memiliki nilai biologi yang sempurna?",
+        "jawab": "Walau pemahaman biologi penting, kemampuan analitis, daya hafal yang kuat, dan empati sosial jauh lebih krusial selama pendidikan dokter."
+      },
+      {
+        "tanya": "Berapa lama total waktu hingga bisa membuka praktik sendiri?",
+        "jawab": "Umumnya memakan waktu sekitar 7 tahun (4 tahun S1, 2 tahun profesi, 1 tahun internsip) ditambah proses administrasi STR dan SIP."
+      }
+    ],
+    "tipe": "education_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Universitas Indonesia (UI)",
+        "Universitas Gadjah Mada (UGM)",
+        "Universitas Airlangga (UNAIR)"
+      ],
+      "global": [
+        "Harvard University",
+        "Oxford University",
+        "Johns Hopkins University"
+      ]
+    }
+  },
+  {
+    "slug": "analis-keuangan",
+    "title": "Analis Keuangan",
+    "categoryId": "business",
+    "description": "Mengkaji kinerja ekonomi dan menavigasi risiko bisnis melalui analisis data keuangan yang akurat untuk mendukung pengambilan keputusan strategis. Profesi ini esensial dalam membantu perusahaan memaksimalkan keuntungan dan merencanakan investasi masa depan.",
+    "keyIkon": "TrendingUp",
+    "recommendationMajors": [
+      "Akuntansi",
+      "Manajemen Keuangan",
+      "Ilmu Ekonomi"
+    ],
+    "sertifikasi": [
+      "Chartered Financial Analyst (CFA)",
+      "Certified Financial Planner (CFP)",
+      "Financial Modeling & Valuation Analyst (FMVA)"
+    ],
+    "riasecCategories": [
+      "C",
+      "E",
+      "I"
+    ],
+    "mbtiTags": [
+      "ESTJ",
+      "ISTJ",
+      "ENTJ",
+      "INTJ"
+    ],
+    "universityWorld": {
+      "overview": "Dunia Keuangan menuntut ketelitian dan daya analisis tajam. Kamu akan belajar bagaimana angka-angka di laporan keuangan menceritakan kesehatan sebuah bisnis.",
+      "requiredSkills": [
+        "Analisis Laporan Keuangan",
+        "Ekonomi Makro & Mikro",
+        "Manajemen Risiko Investasi",
+        "Pemodelan Finansial (Excel/BI)",
+        "Pasar Modal & Valuasi Saham"
+      ],
+      "whyChoose": [
+        {
+          "title": "Navigasi Bisnis",
+          "desc": "Kamu adalah kompas bagi perusahaan untuk menentukan arah investasi yang tepat."
+        },
+        {
+          "title": "Penghasilan Menjanjikan",
+          "desc": "Sektor keuangan dikenal memiliki struktur remunerasi yang sangat kompetitif."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Fondasi Ekonomi dan Akuntansi",
+        "deskripsi": "Mempelajari dasar-dasar laporan keuangan, mikroekonomi, makroekonomi, dan prinsip-prinsip akuntansi dasar.",
+        "proyek": [
+          "Membuat balance sheet sederhana",
+          "Menganalisis laporan laba rugi perusahaan publik"
+        ],
+        "meta": "1 - 2 Tahun"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Pemodelan Keuangan (Financial Modeling)",
+        "deskripsi": "Menguasai Microsoft Excel tingkat lanjut dan perangkat lunak BI untuk membangun model valuasi dan proyeksi arus kas.",
+        "proyek": [
+          "Membangun model DCF (Discounted Cash Flow)",
+          "Melakukan analisis sensitivitas"
+        ],
+        "meta": "6 - 12 Bulan"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Entry-Level Financial Analyst",
+        "deskripsi": "Bekerja di bawah bimbingan analis senior, fokus pada pengumpulan data, analisis industri, dan penyusunan laporan keuangan internal.",
+        "proyek": [
+          "Menyusun presentasi pitch book",
+          "Melakukan riset kompetitor pasar"
+        ],
+        "meta": "1 - 3 Tahun"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Sertifikasi Profesional dan Spesialisasi",
+        "deskripsi": "Mengejar sertifikasi global seperti CFA and menentukan spesialisasi, seperti corporate finance, investment banking, atau risk management.",
+        "proyek": [
+          "Membuat portofolio investasi",
+          "Lulus ujian CFA Level 1 & 2"
+        ],
+        "meta": "2 - 4 Tahun"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 8.000.000 - Rp 35.000.000 / bulan",
+      "rentangUSD": "$600 - $2,500 / bulan",
+      "penjelasan": "Gaji dipengaruhi oleh sektor industri (perbankan investasi biasanya membayar paling tinggi) dan sertifikasi yang dimiliki seperti CFA."
+    },
+    "infoPendidikan": {
+      "jurusan": "Keuangan / Akuntansi",
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.E. / S.Ak."
+    },
+    "materiBelajar": [
+      {
+        "title": "Financial Markets by Yale University",
+        "tipe": "Course",
+        "link": "https://www.coursera.org/learn/financial-markets-global"
+      },
+      {
+        "title": "Excel for Finance",
+        "tipe": "Tutorial",
+        "link": "https://corporatefinanceinstitute.com/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "The Intelligent Investor",
+        "penulis": "Benjamin Graham",
+        "link": "https://example.com/intelligent-investor"
+      },
+      {
+        "title": "Financial Modeling",
+        "penulis": "Simon Benninga",
+        "link": "https://example.com/financial-modeling"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "Bloomberg",
+        "tipe": "Berita & Analisis",
+        "link": "https://www.bloomberg.com/"
+      },
+      {
+        "title": "Investopedia",
+        "tipe": "Ensiklopedia Finansial",
+        "link": "https://www.investopedia.com/"
+      }
+    ],
+    "proyekTerkait": [
+      "akuntan-publik",
+      "investment-banker"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah saya harus jago matematika untuk jadi analis keuangan?",
+        "jawab": "Kemampuan aritmetika dan logika yang baik sudah cukup. Analisis rasional dan pemahaman tren bisnis seringkali lebih krusial daripada kalkulus tingkat lanjut."
+      },
+      {
+        "tanya": "Apakah sertifikasi CFA wajib?",
+        "jawab": "Tidak wajib untuk memulai, namun sangat disarankan jika Anda ingin mencapai level manajerial atau bekerja di sekuritas global ternama."
+      }
+    ],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Universitas Indonesia (UI)",
+        "Universitas Prasetiya Mulya",
+        "Institut Teknologi Bandung (ITB) - SBM"
+      ],
+      "global": [
+        "Wharton School of the University of Pennsylvania",
+        "London School of Economics (LSE)",
+        "NYU Stern"
+      ]
+    }
+  },
+  {
+    "slug": "desainer-ui-ux",
+    "title": "Desainer UI/UX",
+    "categoryId": "art",
+    "description": "Merancang antarmuka digital yang intuitif sekaligus memastikan pengalaman pengguna yang optimal dan berpusat pada empati. Desainer UI/UX menjembatani tujuan bisnis dengan kebutuhan audiens melalui riset mendalam, prototipe fungsional, dan iterasi visual.",
+    "keyIkon": "Figma",
+    "recommendationMajors": [
+      "Desain Komunikasi Visual (DKV)",
+      "Sistem Informasi",
+      "Psikologi",
+      "Ilmu Komputer"
+    ],
+    "sertifikasi": [
+      "Google UX Design Professional Certificate",
+      "Nielsen Norman Group UX Certification"
+    ],
+    "riasecCategories": [
+      "A",
+      "I",
+      "E"
+    ],
+    "mbtiTags": [
+      "INFP",
+      "ENFP",
+      "ISFP",
+      "INFJ"
+    ],
+    "universityWorld": {
+      "overview": "Desain UI/UX adalah tentang memecahkan masalah pengguna lewat visual yang fungsional. Di sini kreativitasmu diuji untuk membuat teknologi terasa 'manusiawi'.",
+      "requiredSkills": [
+        "User Interface Design (Visual)",
+        "User Experience Design (Flow)",
+        "Prototyping & Wireframing",
+        "Usability Testing",
+        "Psikologi Desain"
+      ],
+      "whyChoose": [
+        {
+          "title": "Solusi Nyata",
+          "desc": "Desainmu bukan cuma pajangan, tapi alat yang benar-benar membantu orang setiap hari."
+        },
+        {
+          "title": "Kolaborasi Kreatif",
+          "desc": "Bekerja dengan tim produk dan engineer untuk menciptakan produk masa depan."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Pemahaman Konsep Design Thinking",
+        "deskripsi": "Mempelajari prinsip dasar empati pengguna, empati, arsitektur informasi, dan tahapan design thinking secara holistik.",
+        "proyek": [
+          "Membuat persona pengguna",
+          "Merancang customer journey map"
+        ],
+        "meta": "2 - 3 Bulan"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Penguasaan Tools Desain",
+        "deskripsi": "Fokus mengoperasikan perangkat lunak standar industri seperti Figma, Sketch, atau Adobe XD untuk menciptakan wireframe dan prototipe.",
+        "proyek": [
+          "Redesign aplikasi populer (wireframing)",
+          "Membuat high-fidelity mockup"
+        ],
+        "meta": "3 - 4 Bulan"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Riset Pengguna dan Usability Testing",
+        "deskripsi": "Melakukan validasi desain langsung kepada pengguna melalui metode seperti A/B testing dan wawancara kualitatif.",
+        "proyek": [
+          "Mewawancarai 5 target pengguna",
+          "Melakukan uji ketergunaan (usability testing) pada prototipe"
+        ],
+        "meta": "3 - 5 Bulan"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Penyusunan Portofolio & Kolaborasi",
+        "deskripsi": "Membangun portofolio berisi studi kasus lengkap (end-to-end process) dan berlatih berkolaborasi dengan developer menggunakan sistem hand-off.",
+        "proyek": [
+          "Menerbitkan 2-3 studi kasus di Behance/Medium",
+          "Membuat design system sederhana"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 6.000.000 - Rp 20.000.000 / bulan",
+      "rentangUSD": "$500 - $4,000 / bulan",
+      "penjelasan": "Gaji sangat dipengaruhi oleh kualitas portofolio, kompleksitas proyek yang pernah ditangani, dan apakah bekerja secara lokal atau remote internasional."
+    },
+    "infoPendidikan": {
+      "jurusan": "Terbuka (Seringkali DKV / IT)",
+      "durasi": "4 Tahun / Bootcamp 3-6 Bulan",
+      "jalurAkademik": "S1 atau Non-Gelar (Bootcamp)",
+      "gelar": "S.Ds. / S.Kom. (Opsional)"
+    },
+    "materiBelajar": [
+      {
+        "title": "Google UX Design",
+        "tipe": "Sertifikasi",
+        "link": "https://www.coursera.org/professional-certificates/google-ux-design"
+      },
+      {
+        "title": "Figma Crash Course",
+        "tipe": "Video",
+        "link": "https://www.youtube.com/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Don't Make Me Think",
+        "penulis": "Steve Krug",
+        "link": "https://example.com/dont-make-me-think"
+      },
+      {
+        "title": "The Design of Everyday Things",
+        "penulis": "Don Norman",
+        "link": "https://example.com/everyday-things"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "Nielsen Norman Group",
+        "tipe": "Artikel",
+        "link": "https://www.nngroup.com/"
+      },
+      {
+        "title": "Mobbin",
+        "tipe": "Inspirasi Desain",
+        "link": "https://mobbin.com/"
+      }
+    ],
+    "proyekTerkait": [
+      "product-manager",
+      "front-end-developer"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah saya harus bisa coding untuk jadi UI/UX Designer?",
+        "jawab": "Tidak wajib. Namun, memahami dasar HTML/CSS sangat membantu saat menyerahkan desain kepada developer agar desain lebih realistis dan mudah diimplementasikan."
+      },
+      {
+        "tanya": "Apa bedanya UI dan UX?",
+        "jawab": "UX (User Experience) fokus pada logika, riset, dan bagaimana perjalanan pengguna menyelesaikan masalah. UI (User Interface) berfokus pada elemen visual, tipografi, dan warna."
+      }
+    ],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Institut Teknologi Bandung (ITB)",
+        "Universitas Pelita Harapan (UPH)",
+        "Binus University"
+      ],
+      "global": [
+        "Rhode Island School of Design (RISD)",
+        "Carnegie Mellon University",
+        "Parsons School of Design"
+      ]
+    }
+  },
+  {
+    "slug": "desainer-instruksional",
+    "title": "Desainer Instruksional",
+    "categoryId": "education",
+    "description": "Merumuskan, mengembangkan, dan mengevaluasi materi pembelajaran untuk menciptakan pengalaman edukasi yang efektif dan menarik. Profesi ini menggabungkan prinsip pedagogi dengan teknologi informasi untuk memenuhi kebutuhan belajar yang dinamis di era digital.",
+    "keyIkon": "BookOpen",
+    "recommendationMajors": [
+      "Teknologi Pendidikan",
+      "Ilmu Pendidikan",
+      "Psikologi Pendidikan"
+    ],
+    "sertifikasi": [
+      "Certified Professional in Talent Development (CPTD)",
+      "Sertifikasi e-Learning Instructional Design"
+    ],
+    "riasecCategories": [
+      "S",
+      "I",
+      "A"
+    ],
+    "mbtiTags": [
+      "INFJ",
+      "ENFJ",
+      "INTJ",
+      "INTP"
+    ],
+    "universityWorld": {
+      "overview": "Teknologi Pendidikan adalah jantung dari inovasi belajar masa depan. Kamu akan belajar bagaimana merancang kurikulum yang efektif menggunakan alat digital dan teori belajar modern.",
+      "requiredSkills": [
+        "Teori Belajar & Kognisi",
+        "Authoring Tools (Articulate, Storyline)",
+        "Manajemen Proyek EdTech",
+        "Kurikulum & Desain Silabus",
+        "Analisis Data Pembelajaran"
+      ],
+      "whyChoose": [
+        {
+          "title": "Inovasi Masa Depan",
+          "desc": "Kamu berada di garis depan transformasi pendidikan digital yang sangat dibutuhkan dunia saat ini."
+        },
+        {
+          "title": "Fleksibilitas Karir",
+          "desc": "Bisa bekerja di sekolah, universitas, start-up edtech, hingga departemen training di perusahaan besar."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Teori Belajar dan Pedagogi Dasar",
+        "deskripsi": "Memahami cara kerja otak saat memproses informasi (kognitif), teori behaviorisme, konstruktivisme, dan andragogi (pembelajaran orang dewasa).",
+        "proyek": [
+          "Menyusun makalah analisis gaya belajar",
+          "Merancang RPP (Rencana Pelaksanaan Pembelajaran) dasar"
+        ],
+        "meta": "1 Tahun"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Kerangka Kerja Instruksional",
+        "deskripsi": "Menguasai model desain pembelajaran sistematis seperti ADDIE (Analysis, Design, Development, Implementation, Evaluation) atau SAM (Successive Approximation Model).",
+        "proyek": [
+          "Menerapkan model ADDIE pada studi kasus nyata",
+          "Membuat storyboard modul e-learning"
+        ],
+        "meta": "6 - 12 Bulan"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Eksplorasi Teknologi Pendidikan (EdTech)",
+        "deskripsi": "Mempelajari alat pembuat (authoring tools) seperti Articulate Storyline, Adobe Captivate, dan manajemen LMS (Learning Management System).",
+        "proyek": [
+          "Mengembangkan modul interaktif di Articulate",
+          "Mengunggah materi ke dalam platform Moodle"
+        ],
+        "meta": "6 - 12 Bulan"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Evaluasi dan Analisis Data Pembelajaran",
+        "deskripsi": "Menggunakan data analitik untuk menilai efektivitas kursus yang telah dirancang, dan menggunakan feedback untuk iterasi perbaikan modul.",
+        "proyek": [
+          "Melakukan evaluasi menggunakan model Kirkpatrick",
+          "Merevisi materi berdasarkan feedback pembelajar"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 6.000.000 - Rp 18.000.000 / bulan",
+      "rentangUSD": "$600 - $3,500 / bulan",
+      "penjelasan": "Perusahaan rintisan EdTech dan korporasi multinasional biasanya memberikan kompensasi yang lebih tinggi untuk manajer pelatihan / desainer instruksional senior."
+    },
+    "infoPendidikan": {
+      "jurusan": "Teknologi Pendidikan",
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.Pd."
+    },
+    "materiBelajar": [
+      {
+        "title": "Instructional Design Foundations",
+        "tipe": "Video Course",
+        "link": "https://www.linkedin.com/learning/"
+      },
+      {
+        "title": "E-Learning Ecologies",
+        "tipe": "Course",
+        "link": "https://www.coursera.org/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Design for How People Learn",
+        "penulis": "Julie Dirksen",
+        "link": "https://example.com/how-people-learn"
+      },
+      {
+        "title": "The Systematic Design of Instruction",
+        "penulis": "Walter Dick, Lou Carey",
+        "link": "https://example.com/dick-carey"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "E-Learning Heroes",
+        "tipe": "Komunitas",
+        "link": "https://community.articulate.com/"
+      },
+      {
+        "title": "Association for Talent Development",
+        "tipe": "Artikel",
+        "link": "https://www.td.org/"
+      }
+    ],
+    "proyekTerkait": [
+      "guru-sekolah",
+      "hr-training-specialist"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apa perbedaan Desainer Instruksional dengan Guru?",
+        "jawab": "Guru biasanya menyampaikan materi secara langsung kepada murid di kelas, sementara desainer instruksional adalah arsitek di balik layar yang merancang strategi, modul, dan media untuk memudahkan guru atau pembelajar mandiri."
+      },
+      {
+        "tanya": "Apakah profesi ini hanya untuk pendidikan sekolah?",
+        "jawab": "Tidak. Permintaan terbesarnya justru sering datang dari sektor korporat untuk merancang onboarding karyawan, pelatihan kepatuhan hukum, dan peningkatan skill (corporate training)."
+      }
+    ],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Universitas Negeri Jakarta (UNJ)",
+        "Universitas Negeri Malang (UM)",
+        "Universitas Pendidikan Indonesia (UPI)"
+      ],
+      "global": [
+        "Teachers College, Columbia University",
+        "Stanford Graduate School of Education",
+        "Indiana University Bloomington"
+      ]
+    }
+  },
+  {
+    "slug": "arsitek",
+    "title": "Arsitek",
+    "categoryId": "service",
+    "description": "Merancang ruang dan struktur bangunan yang harmonis, fungsional, serta berkelanjutan bagi masyarakat luas. Seorang arsitek dituntut mampu memadukan kreativitas estetika desain dengan pemahaman mendalam tentang teknik sipil, regulasi keselamatan perkotaan, dan kepedulian lingkungan.",
+    "keyIkon": "Building2",
+    "recommendationMajors": [
+      "Arsitektur",
+      "Teknik Arsitektur"
+    ],
+    "sertifikasi": [
+      "Surat Tanda Registrasi Arsitek (STRA)",
+      "Sertifikasi Keahlian (SKA) Arsitek dari IAI",
+      "LEED Green Associate"
+    ],
+    "riasecCategories": [
+      "A",
+      "I",
+      "R"
+    ],
+    "mbtiTags": [
+      "INTJ",
+      "INTP",
+      "INFJ",
+      "ENTJ"
+    ],
+    "universityWorld": {
+      "overview": "Arsitektur bukan sekadar menggambar gedung, melainkan seni menciptakan ruang yang hidup. Kamu akan belajar bagaimana menggabungkan kekuatan struktur, kenyamanan pengguna, dan keindahan visual dalam sebuah desain.",
+      "requiredSkills": [
+        "Desain Arsitektural & Estetika",
+        "Sistem Struktur & Konstruksi",
+        "Mekanika Fluida & Termal Bangunan",
+        "Perencanaan Wilayah & Kota",
+        "Digital Modeling (CAD, BIM, Rhino)"
+      ],
+      "whyChoose": [
+        {
+          "title": "Meninggalkan Jejak Sejarah",
+          "desc": "Karya yang kamu buat dalam bentuk fisik akan berdiri selama puluhan tahun dan dinikmati banyak orang."
+        },
+        {
+          "title": "Kombinasi Seni & Teknik",
+          "desc": "Cocok bagi kamu yang menyukai matematika/teknik sekaligus memiliki jiwa seni yang tinggi."
+        },
+        {
+          "title": "Membangun Masa Depan",
+          "desc": "Arsitek berperan besar dalam menciptakan lingkungan yang lebih hijau dan ramah lingkungan."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Pendidikan S1 Arsitektur",
+        "deskripsi": "Membangun pemahaman estetika ruang, fungsi bangunan, perhitungan struktur dasar, dan sejarah arsitektur dunia.",
+        "proyek": [
+          "Membuat maket bangunan sederhana",
+          "Merancang denah rumah tinggal 2 lantai",
+          "Proyek studio perancangan arsitektur"
+        ],
+        "meta": "4 Tahun"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Penguasaan Perangkat Lunak & Magang",
+        "deskripsi": "Mengoperasikan software esensial seperti AutoCAD, SketchUp, Revit, dan software rendering (Lumion/V-Ray), serta magang di biro konsultan.",
+        "proyek": [
+          "Membuat 3D rendering eksterior",
+          "Asistensi pembuatan Gambar Kerja (DED)"
+        ],
+        "meta": "1 - 2 Tahun"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Pendidikan Profesi Arsitek (PPAr)",
+        "deskripsi": "Melanjutkan program profesi arsitek (kurang lebih 1 tahun) agar memenuhi standar UU Arsitek untuk menjadi arsitek profesional.",
+        "proyek": [
+          "Studi kelayakan proyek",
+          "Manajemen konstruksi dan etika profesi"
+        ],
+        "meta": "1 Tahun"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Lisensi Profesional dan Praktik Arsitek",
+        "deskripsi": "Mendapatkan STRA melalui Ikatan Arsitek Indonesia (IAI) dan mengambil pengerjaan proyek berskala besar atau memimpin biro arsitektur secara mandiri.",
+        "proyek": [
+          "Merancang bangunan komersial / fasilitas umum",
+          "Koordinasi interdisipliner dengan insinyur MEP & Struktur"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 6.000.000 - Rp 25.000.000 / bulan",
+      "rentangUSD": "$600 - $3,000 / bulan",
+      "penjelasan": "Pendapatan arsitek dapat berupa gaji bulanan di sebuah biro, atau persentase dari Rencana Anggaran Biaya (RAB) proyek jika mengambil proyek mandiri (freelance/principal)."
+    },
+    "infoPendidikan": {
+      "jurusan": "Arsitektur",
+      "durasi": "5 Tahun (S1 + Profesi)",
+      "jalurAkademik": "S1 + PPAr",
+      "gelar": "S.Ars. / S.T. & Ar."
+    },
+    "materiBelajar": [
+      {
+        "title": "Architectural Imagination",
+        "tipe": "Course",
+        "link": "https://www.edx.org/"
+      },
+      {
+        "title": "BIM (Revit) for Beginners",
+        "tipe": "Video Tutorial",
+        "link": "https://www.youtube.com/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Architecture: Form, Space, and Order",
+        "penulis": "Francis D.K. Ching",
+        "link": "https://example.com/ching-architecture"
+      },
+      {
+        "title": "Data Arsitek",
+        "penulis": "Ernst Neufert",
+        "link": "https://example.com/neufert"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "ArchDaily",
+        "tipe": "Publikasi Web",
+        "link": "https://www.archdaily.com/"
+      },
+      {
+        "title": "Ikatan Arsitek Indonesia (IAI)",
+        "tipe": "Situs Resmi",
+        "link": "https://www.iai.or.id/"
+      }
+    ],
+    "proyekTerkait": [
+      "desainer-interior",
+      "insinyur-sipil"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah masuk jurusan arsitektur wajib jago menggambar tangan?",
+        "jawab": "Keterampilan sketsa tangan sangat membantu dalam mengomunikasikan ide secara cepat, namun di era modern, kemahiran mengoperasikan software CAD dan 3D modelling jauh lebih dominan di dunia kerja profesional."
+      },
+      {
+        "tanya": "Apa bedanya Arsitek dengan Teknik Sipil?",
+        "jawab": "Arsitek berfokus pada desain ruang, fungsionalitas, dan estetika visual bangunan. Sementara Teknik Sipil berfokus pada kekuatan struktur bangunan, material, dan kalkulasi keamanan agar desain tersebut bisa berdiri kokoh."
+      }
+    ],
+    "tipe": "education_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Institut Teknologi Bandung (ITB)",
+        "Universitas Indonesia (UI)",
+        "Institut Teknologi Sepuluh Nopember (ITS)"
+      ],
+      "global": [
+        "Massachusetts Institute of Technology (MIT)",
+        "Delft University of Technology",
+        "UCL (University College London)"
+      ]
+    }
+  },
+  {
+    "slug": "psikolog-klinis",
+    "title": "Psikolog Klinis",
+    "categoryId": "health",
+    "description": "Psikolog klinis mendedikasikan diri untuk mendiagnosis, merawat, dan mencegah gangguan mental serta masalah emosional pasien. Profesi ini menggunakan berbagai pendekatan terapi psikologis berbasis bukti untuk membantu individu mengatasi trauma dan meningkatkan kesejahteraan mental secara menyeluruh.",
+    "keyIkon": "Brain",
+    "recommendationMajors": [
+      "Psikologi"
+    ],
+    "sertifikasi": [
+      "SIPP (Surat Izin Praktik Psikologi)",
+      "Sertifikasi Psikoterapis (EMDR, CBT, dll)"
+    ],
+    "riasecCategories": [
+      "S",
+      "I",
+      "A"
+    ],
+    "mbtiTags": [
+      "INFJ",
+      "INFP",
+      "ENFJ",
+      "ISFJ"
+    ],
+    "universityWorld": {
+      "overview": "Psikologi adalah studi tentang jiwa dan perilaku. Kamu akan belajar bagaimana pikiran bekerja dan bagaimana membantu orang lain menemukan keseimbangan mental lewat pendekatan ilmiah.",
+      "requiredSkills": [
+        "Teori Kepribadian & Psikologi Kognitif",
+        "Psikologi Abnormal & Klinis",
+        "Teknik Asesmen & Diagnostik Psikologi",
+        "Psikoterapi (CBT, Gestalt, Humanistik)",
+        "Statistika & Metodologi Penelitian Psikologi"
+      ],
+      "whyChoose": [
+        {
+          "title": "Memahami Sisi Terdalam Manusia",
+          "desc": "Mempelajari psikologi memberikan perspektif mendalam tentang cara manusia berpikir, merasa, dan berperilaku."
+        },
+        {
+          "title": "Agen Perubahan Kesehatan Mental",
+          "desc": "Membantu menekan angka gangguan mental dan meningkatkan kualitas hidup masyarakat secara emosional."
+        },
+        {
+          "title": "Sangat Fleksibel",
+          "desc": "Ilmu psikologi bisa diterapkan di rumah sakit, perusahaan (HR), sekolah, hingga riset sosial."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Pendidikan Sarjana (S1) Psikologi",
+        "deskripsi": "Mempelajari dasar-dasar perilaku manusia, teori kognitif, biopsikologi, dan alat tes psikologi dasar.",
+        "proyek": [
+          "Melakukan observasi perilaku dasar",
+          "Menganalisis studi kasus psikologi klinis"
+        ],
+        "meta": "4 Tahun"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Pendidikan Magister (S2) Profesi Psikologi",
+        "deskripsi": "Melanjutkan studi ke jenjang magister profesi dengan peminatan klinis dewasa atau klinis anak untuk mendapatkan gelar Psikolog.",
+        "proyek": [
+          "Praktik Kerja Profesi Psikologi (PKPP)",
+          "Penyusunan laporan asesmen klinis komprehensif"
+        ],
+        "meta": "2 - 2.5 Tahun"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Lisensi dan Sumpah Profesi",
+        "deskripsi": "Mengikuti sidang profesi, mengucapkan sumpah psikolog, dan mengurus Surat Izin Praktik Psikologi (SIPP) dari HIMPSI.",
+        "proyek": [
+          "Ujian kompetensi HIMPSI",
+          "Pengurusan keanggotaan aktif profesi"
+        ],
+        "meta": "3 - 6 Bulan"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Praktik Profesional & Spesialisasi",
+        "deskripsi": "Bekerja di rumah sakit, biro psikologi, atau praktik mandiri, sembari memperdalam teknik terapi spesifik (misal: Cognitive Behavioral Therapy).",
+        "proyek": [
+          "Menangani klien dengan supervisi",
+          "Mengadakan psikoedukasi untuk masyarakat awam"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 6.000.000 - Rp 25.000.000 / bulan",
+      "rentangUSD": "$500 - $2,000 / bulan",
+      "penjelasan": "Gaji sangat bergantung pada tempat praktik (RS Pemerintah vs Swasta) dan tarif per sesi jika menjalankan praktik mandiri (private practice)."
+    },
+    "infoPendidikan": {
+      "jurusan": "Psikologi",
+      "durasi": "6 - 7 Tahun (S1 + S2 Profesi)",
+      "jalurAkademik": "S1 + S2 Magister Profesi",
+      "gelar": "S.Psi., M.Psi., Psikolog"
+    },
+    "materiBelajar": [
+      {
+        "title": "Positive Psychology",
+        "tipe": "Course",
+        "link": "https://www.coursera.org/learn/positive-psychology"
+      },
+      {
+        "title": "American Psychological Association (APA)",
+        "tipe": "Jurnal & Artikel",
+        "link": "https://www.apa.org/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Diagnostic and Statistical Manual of Mental Disorders (DSM-5-TR)",
+        "penulis": "American Psychiatric Association",
+        "link": "https://example.com/dsm-5"
+      },
+      {
+        "title": "Man's Search for Meaning",
+        "penulis": "Viktor E. Frankl",
+        "link": "https://example.com/mans-search"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "HIMPSI",
+        "tipe": "Situs Resmi",
+        "link": "https://himpsi.or.id/"
+      },
+      {
+        "title": "Psychology Today",
+        "tipe": "Artikel",
+        "link": "https://www.psychologytoday.com/"
+      }
+    ],
+    "proyekTerkait": [
+      "psikiater",
+      "konselor-pendidikan"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apa bedanya Psikolog dengan Psikiater?",
+        "jawab": "Psikolog berlatar belakang pendidikan psikologi dan memberikan intervensi berupa terapi bicara (psikoterapi). Psikiater adalah dokter spesialis kedokteran jiwa yang berhak meresepkan obat-obatan medis."
+      },
+      {
+        "tanya": "Apakah lulusan S1 Psikologi bisa langsung membuka praktik?",
+        "jawab": "Tidak. Lulusan S1 hanya bergelar Sarjana Psikologi. Untuk membuka praktik klinis, harus menyelesaikan S2 Magister Profesi Psikologi."
+      }
+    ],
+    "tipe": "education_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Universitas Indonesia (UI)",
+        "Universitas Gadjah Mada (UGM)",
+        "Universitas Padjadjaran (UNPAD)"
+      ],
+      "global": [
+        "Stanford University",
+        "University of Cambridge",
+        "Harvard University"
+      ]
+    }
+  },
+  {
+    "slug": "digital-marketer",
+    "title": "Digital Marketer",
+    "categoryId": "business",
+    "description": "Merancang dan mengeksekusi strategi pemasaran di ranah digital untuk meningkatkan kesadaran merek dan mendorong konversi penjualan. Peran ini menuntut kombinasi kemampuan analitik untuk membaca metrik data dan kreativitas untuk menghasilkan kampanye yang memikat audiens.",
+    "keyIkon": "Megaphone",
+    "recommendationMajors": [
+      "Ilmu Komunikasi",
+      "Pemasaran (Marketing)",
+      "Manajemen Bisnis",
+      "Sistem Informasi"
+    ],
+    "sertifikasi": [
+      "Google Ads Search Certification",
+      "Meta Certified Digital Marketing Associate",
+      "HubSpot Inbound Marketing"
+    ],
+    "riasecCategories": [
+      "E",
+      "C",
+      "A"
+    ],
+    "mbtiTags": [
+      "ENFP",
+      "ENTP",
+      "ESTP",
+      "ENTJ"
+    ],
+    "universityWorld": {
+      "overview": "Digital Marketing memadukan data analitik dengan kreativitas iklan. Kamu belajar bagaimana sebuah konten bisa dikonversi menjadi keuntungan bisnis secara masif.",
+      "requiredSkills": [
+        "Copywriting & Storytelling Pemasaran",
+        "Search Engine Optimization (SEO)",
+        "Strategi Media Sosial & Viralitas",
+        "Analisis Data (Google Analytics/GA4)",
+        "Media Buying (Meta/Google/TikTok Ads)"
+      ],
+      "whyChoose": [
+        {
+          "title": "Sektor yang Terus Tumbuh",
+          "desc": "Selama bisnis masih ada di internet, peran Digital Marketer akan selalu menjadi yang utama."
+        },
+        {
+          "title": "Kreativitas yang Terukur",
+          "desc": "Kreativitasmu tidak abstrak, kamu bisa membuktikan kehebatan ide lewat angka konversi."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Fondasi Marketing & Copywriting",
+        "deskripsi": "Memahami prinsip dasar pemasaran, consumer behavior, dan cara menulis teks pemasaran (copywriting) yang persuasif.",
+        "proyek": [
+          "Membuat buyer persona fiktif",
+          "Menulis 5 variasi caption media sosial untuk produk"
+        ],
+        "meta": "2 - 3 Bulan"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Penguasaan Kanal Organik (SEO & SMM)",
+        "deskripsi": "Mempelajari Search Engine Optimization (SEO) dasar dan pengelolaan konten organik di platform media sosial.",
+        "proyek": [
+          "Riset kata kunci (keyword research) menggunakan Ahrefs/Semrush",
+          "Menyusun content calendar bulanan"
+        ],
+        "meta": "3 - 6 Bulan"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Pemasaran Berbayar (Performance Marketing)",
+        "deskripsi": "Menguasai cara memasang dan mengoptimasi iklan berbayar seperti Meta Ads, Google Ads, dan TikTok Ads.",
+        "proyek": [
+          "Menjalankan kampanye iklan Meta Ads dengan budget kecil",
+          "Melakukan A/B testing pada materi iklan (creatives)"
+        ],
+        "meta": "3 - 6 Bulan"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Analisis Data & Optimasi CVR",
+        "deskripsi": "Menggunakan Google Analytics dan tools metrik lainnya untuk melacak Return on Investment (ROI) dan Conversion Rate (CVR).",
+        "proyek": [
+          "Membaca laporan traffic website di Google Analytics",
+          "Membuat dashboard laporan pemasaran"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 5.000.000 - Rp 25.000.000 / bulan",
+      "rentangUSD": "$400 - $3,000 / bulan",
+      "penjelasan": "Sebagai posisi berbasis skill, gaji berkembang sangat cepat seiring kemampuan mendatangkan profit (ROAS) bagi perusahaan. Posisi manajerial atau spesialis (Performance Marketer) digaji lebih tinggi."
+    },
+    "infoPendidikan": {
+      "jurusan": "Terbuka untuk semua jurusan",
+      "durasi": "Bootcamp 3-6 Bulan / S1 4 Tahun",
+      "jalurAkademik": "S1 atau Non-Gelar (Kursus/Bootcamp)",
+      "gelar": "S.I.Kom. / S.E. (Opsional)"
+    },
+    "materiBelajar": [
+      {
+        "title": "Google Digital Garage",
+        "tipe": "Sertifikasi",
+        "link": "https://learndigital.withgoogle.com/digitalgarage"
+      },
+      {
+        "title": "HubSpot Academy",
+        "tipe": "Video Course",
+        "link": "https://academy.hubspot.com/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "DotCom Secrets",
+        "penulis": "Russell Brunson",
+        "link": "https://example.com/dotcom-secrets"
+      },
+      {
+        "title": "Contagious: Why Things Catch On",
+        "penulis": "Jonah Berger",
+        "link": "https://example.com/contagious"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "Neil Patel Blog",
+        "tipe": "Artikel & SEO Tools",
+        "link": "https://neilpatel.com/"
+      },
+      {
+        "title": "Social Media Examiner",
+        "tipe": "Publikasi",
+        "link": "https://www.socialmediaexaminer.com/"
+      }
+    ],
+    "proyekTerkait": [
+      "e-commerce-manager",
+      "copywriter"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah profesi ini mewajibkan latar belakang pendidikan bisnis?",
+        "jawab": "Tidak. Digital marketing adalah bidang yang sangat berbasis pada keterampilan praktis (skill-based). Sertifikasi online dan rekam jejak kampanye seringkali lebih bernilai."
+      },
+      {
+        "tanya": "Apa tantangan terbesar sebagai Digital Marketer?",
+        "jawab": "Algoritma mesin pencari dan media sosial yang terus berubah sangat cepat, mengharuskan seorang marketer untuk terus belajar dan beradaptasi dengan tren baru setiap saat."
+      }
+    ],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Universitas Indonesia (UI)",
+        "Universitas Prasetiya Mulya",
+        "LSPR Communication & Business Institute"
+      ],
+      "global": [
+        "Northwestern University (Kellogg)",
+        "University of Pennsylvania (Wharton)",
+        "New York University (Stern)"
+      ]
+    }
+  },
+  {
+    "slug": "kreator-konten",
+    "title": "Kreator Konten (Content Creator)",
+    "categoryId": "art",
+    "description": "Mengonsep, memproduksi, dan mendistribusikan materi kreatif dalam bentuk video, audio, atau teks untuk platform digital. Profesi ini sangat dinamis karena terus beradaptasi dengan tren media sosial untuk membangun interaksi audiens, personal branding, dan komunitas yang loyal.",
+    "keyIkon": "Video",
+    "recommendationMajors": [
+      "Desain Komunikasi Visual (DKV)",
+      "Ilmu Komunikasi",
+      "Penyiaran (Broadcasting)",
+      "Film dan Televisi"
+    ],
+    "sertifikasi": [
+      "YouTube Content Ownership",
+      "Sertifikasi Adobe Premiere Pro"
+    ],
+    "riasecCategories": [
+      "A",
+      "E",
+      "S"
+    ],
+    "mbtiTags": [
+      "ENFP",
+      "ESFP",
+      "INFP",
+      "ISFP"
+    ],
+    "universityWorld": {
+      "overview": "Menjadi Kreator Konten adalah tentang membangun komunitas dan brand personal. Kamu belajar bagaimana sebuah ide visual bisa mempengaruhi ribuan orang dan menciptakan tren.",
+      "requiredSkills": [
+        "Storytelling & Scriptwriting (Creative Writing)",
+        "Video Editing Profesional (Premiere/CapCut)",
+        "Personal Branding & Public Relations",
+        "Platform Algorithm Literacy (SEO Video)",
+        "Public Speaking & Karisma Digital"
+      ],
+      "whyChoose": [
+        {
+          "title": "Kebebasan Berkreasi Sepenuhnya",
+          "desc": "Kamu menjadi sutradara, produser, sekaligus bos untuk karyamu sendiri tanpa batas."
+        },
+        {
+          "title": "Potensi Viral Global",
+          "desc": "Satu ide brilian bisa menjangkau jutaan orang di seluruh dunia hanya dalam waktu semalam."
+        },
+        {
+          "title": "Membangun Personal Asset",
+          "desc": "Audiens yang loyal adalah aset terbesar yang bisa kamu bawa ke bisnis apapun di masa depan."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Penemuan Niche dan Konseptualisasi",
+        "deskripsi": "Menentukan topik spesifik (niche) yang diminati (misal: teknologi, kecantikan, gaming) dan merancang gaya bercerita (storytelling).",
+        "proyek": [
+          "Menganalisis 5 kreator kompetitor di niche yang sama",
+          "Menulis naskah untuk 3 video pendek (Reels/TikTok)"
+        ],
+        "meta": "1 - 2 Bulan"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Penguasaan Produksi Dasar",
+        "deskripsi": "Mempelajari teknik pengambilan gambar dasar, pencahayaan (lighting), serta pengeditan video menggunakan CapCut, Premiere Pro, atau Final Cut.",
+        "proyek": [
+          "Merekam dan mengedit vlog mingguan",
+          "Membuat thumbnail video yang menarik"
+        ],
+        "meta": "3 - 6 Bulan"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Konsistensi Distribusi dan Analitik",
+        "deskripsi": "Mengunggah konten secara terjadwal dan membaca analitik platform untuk memahami pola retensi penonton dan interaksi (engagement).",
+        "proyek": [
+          "Menjalankan tantangan 'Upload 30 Hari Penuh'",
+          "Mengukur tingkat retensi penonton (Audience Retention)"
+        ],
+        "meta": "6 - 12 Bulan"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Monetisasi & Manajemen Komunitas",
+        "deskripsi": "Membangun aliran pendapatan melalui AdSense, endorsement (brand deals), merchandise, atau platform langganan (Patreon/KaryaKarsa).",
+        "proyek": [
+          "Menyusun media kit (portofolio) untuk ditawarkan ke brand",
+          "Membuat grup komunitas eksklusif bagi pengikut setia"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 3.000.000 - Rp 100.000.000+ / bulan",
+      "rentangUSD": "$200 - $10,000+ / bulan",
+      "penjelasan": "Sangat fluktuatif. Bergantung sepenuhnya pada jumlah views, kualitas audiens, monetisasi platform, dan nilai kontrak kerja sama dengan berbagai merek (endorsement)."
+    },
+    "infoPendidikan": {
+      "jurusan": "Terbuka / Autodidak",
+      "durasi": "Bervariasi",
+      "jalurAkademik": "Portofolio Base",
+      "gelar": "Tidak Wajib"
+    },
+    "materiBelajar": [
+      {
+        "title": "YouTube Creator Academy",
+        "tipe": "Video Course",
+        "link": "https://creatoracademy.youtube.com/"
+      },
+      {
+        "title": "Skillshare - Video Editing for Beginners",
+        "tipe": "Course",
+        "link": "https://www.skillshare.com/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Show Your Work!",
+        "penulis": "Austin Kleon",
+        "link": "https://example.com/show-your-work"
+      },
+      {
+        "title": "Superfans",
+        "penulis": "Pat Flynn",
+        "link": "https://example.com/superfans"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "Tubefilter",
+        "tipe": "Berita Kreator",
+        "link": "https://www.tubefilter.com/"
+      },
+      {
+        "title": "Colin and Samir",
+        "tipe": "Kanal YouTube Bisnis Kreator",
+        "link": "https://www.youtube.com/c/ColinandSamir"
+      }
+    ],
+    "proyekTerkait": [
+      "video-editor",
+      "copywriter"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah harus punya kamera mahal untuk mulai?",
+        "jawab": "Sama sekali tidak. Kebanyakan kreator sukses saat ini memulai hanya dengan kamera smartphone. Storytelling dan pencahayaan yang baik jauh lebih penting daripada kamera mahal."
+      },
+      {
+        "tanya": "Berapa lama sampai bisa menghasilkan uang dari konten?",
+        "jawab": "Ini bervariasi. Beberapa orang mendapatkan daya tarik viral dalam beberapa bulan, sementara yang lain butuh 1-2 tahun untuk membangun audiens yang cukup besar untuk dimonetisasi."
+      }
+    ],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Institut Kesenian Jakarta (IKJ)",
+        "Universitas Multimedia Nusantara (UMN)",
+        "Binus University"
+      ],
+      "global": [
+        "University of Southern California (USC)",
+        "New York University (Tisch)",
+        "Savannah College of Art and Design (SCAD)"
+      ]
+    }
+  },
+  {
+    "slug": "dosen",
+    "title": "Dosen Akademik",
+    "categoryId": "education",
+    "description": "Tenaga pendidik profesional dan ilmuwan yang bertugas mentransformasikan, mengembangkan, dan menyebarluaskan ilmu pengetahuan melalui pendidikan, penelitian, dan pengabdian kepada masyarakat (Tri Dharma Perguruan Tinggi). Menjadi dosen memerlukan dedikasi pada riset berkelanjutan dan kapabilitas dalam membimbing mahasiswa ke tingkat keahlian yang lebih tinggi.",
+    "keyIkon": "GraduationCap",
+    "recommendationMajors": [
+      "Semua Jurusan (Sesuai Bidang Keahlian dan Minat Riset)"
+    ],
+    "sertifikasi": [
+      "Sertifikasi Dosen (Serdos)",
+      "Sertifikat Pekerti & AA (Applied Approach)"
+    ],
+    "riasecCategories": [
+      "I",
+      "S",
+      "A"
+    ],
+    "mbtiTags": [
+      "INTJ",
+      "INTP",
+      "INFJ",
+      "ENTJ"
+    ],
+    "universityWorld": {
+      "overview": "Dunia akademik adalah tentang pencarian kebenaran lewat riset. Kamu tidak hanya mengajar di kelas, tapi juga menjadi penjaga gawang ilmu pengetahuan lewat Tri Dharma.",
+      "requiredSkills": [
+        "Metodologi Penelitian & Statistik",
+        "Penulisan Karya Ilmiah & Publikasi",
+        "Pedagogi & Public Speaking",
+        "Critical Thinking & Analisis Data",
+        "Grant Writing (Penulisan Hibah Riset)"
+      ],
+      "whyChoose": [
+        {
+          "title": "Investasi Intelektual Berkelanjutan",
+          "desc": "Bekerja di lingkungan yang selalu merangsang kecerdasan dan pengetahuan baru setiap harinya."
+        },
+        {
+          "title": "Membentuk Generasi Masa Depan",
+          "desc": "Kamu memiliki pengaruh langsung terhadap pola pikir dan karir para calon pemimpin masa depan."
+        },
+        {
+          "title": "Prestige & Kebebasan Akademik",
+          "desc": "Memiliki otoritas ilmiah untuk meneliti topik yang kamu cintai secara mendalam."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Pendidikan Magister (S2)",
+        "deskripsi": "Meraih gelar S2 secara linier dengan bidang studi S1 sebagai syarat mutlak undang-undang untuk mengajar di perguruan tinggi tingkat S1/D4.",
+        "proyek": [
+          "Publikasi tesis pada jurnal nasional terakreditasi (SINTA)",
+          "Menjadi asisten dosen atau asisten peneliti selama S2"
+        ],
+        "meta": "2 Tahun"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Rekrutmen dan Asisten Ahli",
+        "deskripsi": "Mendaftar formasi CPNS Dosen atau rekrutmen dosen perguruan tinggi swasta, dan memperoleh Jabatan Fungsional (Jafung) Asisten Ahli.",
+        "proyek": [
+          "Pelatihan Pekerti & Applied Approach",
+          "Menyusun Rencana Pembelajaran Semester (RPS)"
+        ],
+        "meta": "1 - 3 Tahun"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Sertifikasi Dosen dan Lektor",
+        "deskripsi": "Menjalankan Tri Dharma Perguruan Tinggi secara seimbang untuk mengumpulkan angka kredit agar lulus sertifikasi pendidik dan naik jabatan menjadi Lektor.",
+        "proyek": [
+          "Menerbitkan jurnal ilmiah internasional (Scopus)",
+          "Membuat program pengabdian masyarakat"
+        ],
+        "meta": "2 - 5 Tahun"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Studi Doktoral (S3) & Guru Besar",
+        "deskripsi": "Melanjutkan studi S3 untuk syarat menduduki jabatan Lektor Kepala hingga mencapai jenjang karier akademik tertinggi, yaitu Profesor (Guru Besar).",
+        "proyek": [
+          "Penelitian disertasi",
+          "Membangun jaringan akademik internasional"
+        ],
+        "meta": "3 - 5 Tahun"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 5.000.000 - Rp 30.000.000 / bulan",
+      "rentangUSD": "$500 - $3,000 / bulan",
+      "penjelasan": "Gaji dosen terdiri dari gaji pokok, tunjangan sertifikasi, honor mengajar, dan yang paling besar potensinya: hibah penelitian (grant) serta insentif publikasi atau jabatan manajerial rektorat."
+    },
+    "infoPendidikan": {
+      "jurusan": "Terbuka (Harus Linier S1 & S2)",
+      "durasi": "Minimal 6 Tahun (S1 + S2)",
+      "jalurAkademik": "S1 -> S2 -> S3",
+      "gelar": "Sesuai Bidang (M.Sc., M.A., M.T., Ph.D.)"
+    },
+    "materiBelajar": [
+      {
+        "title": "Academic Writing Made Easy",
+        "tipe": "Course",
+        "link": "https://www.edx.org/"
+      },
+      {
+        "title": "Elsevier Researcher Academy",
+        "tipe": "Platform Pembelajaran",
+        "link": "https://researcheracademy.elsevier.com/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Pedoman Penulisan Karya Ilmiah",
+        "penulis": "Dikti",
+        "link": "https://example.com/dikti"
+      },
+      {
+        "title": "How to Write a Lot: A Practical Guide to Productive Academic Writing",
+        "penulis": "Paul J. Silvia",
+        "link": "https://example.com/how-to-write-a-lot"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "SINTA (Science and Technology Index)",
+        "tipe": "Database Riset",
+        "link": "https://sinta.kemdikbud.go.id/"
+      },
+      {
+        "title": "Google Scholar",
+        "tipe": "Mesin Pencari Jurnal",
+        "link": "https://scholar.google.com/"
+      }
+    ],
+    "proyekTerkait": [
+      "peneliti-sains",
+      "desainer-instruksional"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah gelar S1 sudah cukup untuk menjadi dosen?",
+        "jawab": "Sesuai Undang-Undang Guru dan Dosen di Indonesia, syarat minimal untuk mengajar di program sarjana atau diploma adalah memiliki ijazah Magister (S2)."
+      },
+      {
+        "tanya": "Apakah pekerjaan dosen hanya mengajar?",
+        "jawab": "Tidak. Beban kerja dosen diukur dengan Tri Dharma: Pendidikan (Mengajar), Penelitian (Menulis jurnal), dan Pengabdian kepada Masyarakat. Seringkali penelitian memakan porsi waktu yang sangat besar."
+      }
+    ],
+    "tipe": "education_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Universitas Gadjah Mada (UGM)",
+        "Universitas Indonesia (UI)",
+        "Institut Teknologi Bandung (ITB)"
+      ],
+      "global": [
+        "Oxford University",
+        "Massachusetts Institute of Technology (MIT)",
+        "Stanford University"
+      ]
+    }
+  },
+  {
+    "slug": "pengacara",
+    "title": "Pengacara (Advokat)",
+    "categoryId": "service",
+    "description": "Memberikan nasihat, bantuan hukum, dan mewakili klien dalam berbagai proses peradilan maupun non-peradilan. Seorang pengacara harus memiliki ketajaman analitis dalam membedah kasus, keterampilan negosiasi, dan integritas tinggi dalam menegakkan keadilan berdasarkan hukum yang berlaku.",
+    "keyIkon": "Scale",
+    "recommendationMajors": [
+      "Ilmu Hukum"
+    ],
+    "sertifikasi": [
+      "Pendidikan Khusus Profesi Advokat (PKPA)",
+      "Ujian Profesi Advokat (UPA)",
+      "Lisensi PERADI"
+    ],
+    "riasecCategories": [
+      "E",
+      "I",
+      "S"
+    ],
+    "mbtiTags": [
+      "ENTJ",
+      "ESTJ",
+      "ENTP",
+      "INTJ"
+    ],
+    "universityWorld": {
+      "overview": "Ilmu Hukum melatih ketajaman logika, ketelitian bahasa, dan kemampuan argumentasi. Kamu akan belajar bagaimana aturan main di masyarakat dibentuk dan ditegakkan lewat peradilan.",
+      "requiredSkills": [
+        "Analisis Hukum & Perundang-undangan",
+        "Legal Drafting (Kontrak & Gugatan)",
+        "Public Speaking & Retorika Persidangan",
+        "Negosiasi & Mediasi Konflik",
+        "Etika Profesi & Kode Etik Advokat"
+      ],
+      "whyChoose": [
+        {
+          "title": "Penegak Keadilan Utama",
+          "desc": "Menjadi benteng pembela bagi masyarakat yang hak-hak hukumnya terancam atau dilanggar."
+        },
+        {
+          "title": "Membentuk Karakter Tangguh",
+          "desc": "Profesi ini menuntut mentalitas yang kuat, disiplin tinggi, dan daya analitis yang sangat tajam."
+        },
+        {
+          "title": "Wawasan Luas",
+          "desc": "Hukum ada di setiap aspek kehidupan, membuatmu memahami cara kerja dunia dari sisi regulasi."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Pendidikan Sarjana Hukum",
+        "deskripsi": "Menyelesaikan studi S1 Ilmu Hukum untuk memahami fondasi hukum perdata, pidana, tata negara, dan hukum internasional.",
+        "proyek": [
+          "Aktif di komunitas Peradilan Semu (Moot Court)",
+          "Magang di firma hukum atau LBH"
+        ],
+        "meta": "4 Tahun"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "PKPA dan Ujian Profesi",
+        "deskripsi": "Mengikuti Pendidikan Khusus Profesi Advokat yang diselenggarakan oleh organisasi advokat (misal: PERADI) dan lulus ujian tulis UPA.",
+        "proyek": [
+          "Mempelajari draf gugatan, pledoi, dan kontrak",
+          "Lulus Ujian Profesi Advokat"
+        ],
+        "meta": "3 - 6 Bulan"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Masa Magang Calon Advokat",
+        "deskripsi": "Menjalani masa magang wajib secara terus-menerus di kantor advokat selama minimal 2 tahun untuk membiasakan diri dengan atmosfer peradilan.",
+        "proyek": [
+          "Mendampingi advokat senior di pengadilan",
+          "Melakukan riset preseden hukum (Legal Research)"
+        ],
+        "meta": "2 Tahun"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Sumpah Advokat dan Praktik",
+        "deskripsi": "Setelah usia genap 25 tahun dan memenuhi syarat magang, calon akan disumpah di Pengadilan Tinggi untuk mendapatkan izin praktik penuh.",
+        "proyek": [
+          "Mengambil spesialisasi (Litigasi, Corporate Law, dll)",
+          "Menangani kasus klien secara mandiri"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 7.000.000 - Rp 50.000.000+ / bulan",
+      "rentangUSD": "$600 - $5,000+ / bulan",
+      "penjelasan": "Gaji sangat variatif. Corporate lawyer di firma hukum papan atas Jakarta dibayar sangat tinggi (dan sering dalam USD), sementara litigation lawyer seringkali mengandalkan success fee dari kasus yang dimenangkan."
+    },
+    "infoPendidikan": {
+      "jurusan": "Ilmu Hukum",
+      "durasi": "6 Tahun (Termasuk Magang)",
+      "jalurAkademik": "S1",
+      "gelar": "S.H."
+    },
+    "materiBelajar": [
+      {
+        "title": "Introduction to International Law",
+        "tipe": "Course",
+        "link": "https://www.coursera.org/learn/international-law"
+      },
+      {
+        "title": "Hukum Online",
+        "tipe": "Pusat Data Hukum Indonesia",
+        "link": "https://www.hukumonline.com/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "KUHP dan KUHPerdata",
+        "penulis": "Republik Indonesia",
+        "link": "https://example.com/kuhp"
+      },
+      {
+        "title": "Pengantar Ilmu Hukum",
+        "penulis": "Mochtar Kusumaatmadja",
+        "link": "https://example.com/pengantar-hukum"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "Direktori Putusan Mahkamah Agung",
+        "tipe": "Database Kasus",
+        "link": "https://putusan3.mahkamahagung.go.id/"
+      },
+      {
+        "title": "Peradi",
+        "tipe": "Situs Resmi",
+        "link": "https://www.peradi.or.id/"
+      }
+    ],
+    "proyekTerkait": [
+      "notaris",
+      "diplomat"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah pengacara sama dengan notaris?",
+        "jawab": "Berbeda. Pengacara mewakili dan membela kepentingan klien dalam atau luar pengadilan. Notaris adalah pejabat umum yang berwenang membuat akta autentik mengenai semua perbuatan, perjanjian, dan ketetapan."
+      },
+      {
+        "tanya": "Apakah sulit ujian masuk advokat (UPA)?",
+        "jawab": "UPA menuntut pemahaman hukum acara yang sangat kuat. Tingkat kelulusannya bisa menantang, karenanya persiapan lewat PKPA dan magang sangat menentukan."
+      }
+    ],
+    "tipe": "education_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Universitas Indonesia (UI)",
+        "Universitas Gadjah Mada (UGM)",
+        "Universitas Padjadjaran (UNPAD)"
+      ],
+      "global": [
+        "Harvard Law School",
+        "Yale Law School",
+        "University of Oxford"
+      ]
+    }
+  },
+  {
+    "slug": "ahli-konservasi-lingkungan",
+    "title": "Ahli Konservasi Lingkungan",
+    "categoryId": "science",
+    "description": "Mengelola dan melindungi sumber daya alam untuk memastikan keseimbangan ekosistem and mencegah degradasi lingkungan. Ahli konservasi berperan penting dalam merancang kebijakan pelestarian alam, melakukan penelitian lapangan, serta memberikan edukasi kepada masyarakat terkait keberlanjutan hayati.",
+    "keyIkon": "Leaf",
+    "recommendationMajors": [
+      "Kehutanan",
+      "Ilmu Lingkungan",
+      "Biologi",
+      "Manajemen Sumber Daya Lahan"
+    ],
+    "sertifikasi": [
+      "Sertifikasi AMDAL (Analisis Mengenai Dampak Lingkungan)",
+      "Sertifikasi Auditor Lingkungan Hidup",
+      "GIS Certification"
+    ],
+    "riasecCategories": [
+      "I",
+      "R",
+      "S"
+    ],
+    "mbtiTags": [
+      "INFJ",
+      "ISTJ",
+      "INFP",
+      "INTJ"
+    ],
+    "universityWorld": {
+      "overview": "Konservasi adalah upaya menyelamatkan rumah kita satu-satunya: Bumi. Kamu akan belajar bagaimana ekosistem bekerja dan cara memulihkannya dari kerusakan secara berkelanjutan.",
+      "requiredSkills": [
+        "Ekologi Lapangan & Inventarisasi Hayati",
+        "Sistem Informasi Geografis (GIS)",
+        "Manajemen Sumber Daya Alam & Lahan",
+        "Kebijakan Lingkungan & Hukum Agraria",
+        "Audit Lingkungan & AMDAL"
+      ],
+      "whyChoose": [
+        {
+          "title": "Misi Kritis Masa Depan",
+          "desc": "Krisis iklim menjadikan profesi ini salah satu yang paling krusial di abad ini."
+        },
+        {
+          "title": "Bekerja di Habitat Alami",
+          "desc": "Kesempatan unik untuk bekerja langsung di alam liar dan berkontribusi pada pelestarian spesies."
+        },
+        {
+          "title": "Dampak Jangka Panjang",
+          "desc": "Hasil kerjamu hari ini akan dinikmati oleh generasi mendatang dalam bentuk bumi yang lebih sehat."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Pendidikan Sains Lingkungan",
+        "deskripsi": "Mempelajari dasar biologi ekologi, klimatologi, kimia lingkungan, dan interaksi antara manusia dengan alam.",
+        "proyek": [
+          "Melakukan studi sampling kualitas air sungai",
+          "Survei keanekaragaman hayati flora/fauna"
+        ],
+        "meta": "4 Tahun"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Penguasaan Tools Pemetaan & Riset",
+        "deskripsi": "Menguasai perangkat lunak pemetaan seperti ArcGIS (Sistem Informasi Geografis) serta metode analisis statistik lingkungan.",
+        "proyek": [
+          "Membuat peta persebaran lahan kritis",
+          "Analisis data laju deforestasi"
+        ],
+        "meta": "6 - 12 Bulan"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "Sertifikasi dan Pengalaman Lapangan",
+        "deskripsi": "Mengambil lisensi spesifik seperti AMDAL dan bekerja di lapangan dengan Lembaga Swadaya Masyarakat (LSM) atau pemerintah.",
+        "proyek": [
+          "Penyusunan dokumen AMDAL untuk proyek pembangunan",
+          "Pendampingan masyarakat adat untuk rehabilitasi hutan"
+        ],
+        "meta": "1 - 2 Tahun"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "Kebijakan dan Manajemen Proyek",
+        "deskripsi": "Beralih ke peran manajerial, menyusun draf kebijakan publik terkait iklim, atau mengelola pendanaan proyek konservasi internasional.",
+        "proyek": [
+          "Negosiasi tata ruang hijau perkotaan",
+          "Menerbitkan laporan ESG (Environmental, Social, Governance) korporat"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 6.000.000 - Rp 25.000.000 / bulan",
+      "rentangUSD": "$500 - $3,000 / bulan",
+      "penjelasan": "Kompensasi sangat dipengaruhi oleh sektor pekerjaan (LSM lokal, NGO Internasional seperti WWF, pemerintah, atau Konsultan CSR/ESG di perusahaan swasta)."
+    },
+    "infoPendidikan": {
+      "jurusan": "Ilmu Lingkungan / Kehutanan",
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.Hut. / S.Si. / S.T."
+    },
+    "materiBelajar": [
+      {
+        "title": "Global Environmental Management",
+        "tipe": "Course",
+        "link": "https://www.coursera.org/learn/global-environmental-management"
+      },
+      {
+        "title": "QGIS / ArcGIS Tutorials",
+        "tipe": "Video",
+        "link": "https://www.youtube.com/"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Silent Spring",
+        "penulis": "Rachel Carson",
+        "link": "https://example.com/silent-spring"
+      },
+      {
+        "title": "The Sixth Extinction: An Unnatural History",
+        "penulis": "Elizabeth Kolbert",
+        "link": "https://example.com/sixth-extinction"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "UN Environment Programme (UNEP)",
+        "tipe": "Laporan Global",
+        "link": "https://www.unep.org/"
+      },
+      {
+        "title": "Mongabay Indonesia",
+        "tipe": "Berita Lingkungan",
+        "link": "https://www.mongabay.co.id/"
+      }
+    ],
+    "proyekTerkait": [
+      "ilmuwan-data-hayati",
+      "insinyur-energi-terbarukan"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apakah pekerjaan ini selalu berada di hutan atau alam liar?",
+        "jawab": "Tidak selalu. Meski ada posisi riset lapangan, banyak juga posisi di kantor yang berfokus pada advokasi kebijakan, pemetaan satelit, atau analisis data ESG perusahaan."
+      },
+      {
+        "tanya": "Apa sertifikasi yang paling penting untuk bekerja di sektor korporat?",
+        "jawab": "Sertifikasi penyusun AMDAL sangat vital di Indonesia untuk memastikan bahwa proyek konstruksi perusahaan sesuai dengan standar keselamatan lingkungan."
+      }
+    ],
+    "tipe": "education_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Institut Pertanian Bogor (IPB)",
+        "Universitas Gadjah Mada (UGM)",
+        "Universitas Indonesia (UI)"
+      ],
+      "global": [
+        "Wageningen University & Research",
+        "University of California, Berkeley",
+        "Stanford University"
+      ]
+    }
+  },
+  {
+    "slug": "ai-engineer",
+    "title": "AI Engineer",
+    "categoryId": "tech",
+    "description": "Arsitek kecerdasan buatan yang merancang, membangun, dan mengintegrasikan sistem AI berbasis Large Language Model (LLM) ke dalam produk nyata. Berbeda dengan ML Engineer yang melatih model dari nol, AI Engineer berfokus pada pemanfaatan model pra-latih (Pre-trained Models) seperti GPT, Claude, dan Gemini melalui API dan framework orkestrasi untuk menciptakan aplikasi cerdas berskala produksi — mulai dari chatbot, sistem RAG, hingga AI Agent otonom.",
+    "keyIkon": "Cpu",
+    "recommendationMajors": [
+      "Teknik Informatika",
+      "Ilmu Komputer",
+      "Sains Data & Kecerdasan Buatan",
+      "Matematika & Statistika"
+    ],
+    "sertifikasi": [
+      "Google Professional Machine Learning Engineer",
+      "AWS Certified Machine Learning - Specialty",
+      "Microsoft Azure AI Engineer Associate",
+      "DeepLearning.AI TensorFlow Developer Certificate"
+    ],
+    "riasecCategories": [
+      "I",
+      "R",
+      "C"
+    ],
+    "mbtiTags": [
+      "INTJ",
+      "INTP",
+      "ENTJ",
+      "ISTJ"
+    ],
+    "universityWorld": {
+      "overview": "Dunia AI Engineering adalah persilangan antara software engineering dan kecerdasan buatan. Di kampus, kamu akan mendalami fondasi matematika (Aljabar Linear, Kalkulus, Probabilitas) yang menjadi 'bahasa' di balik setiap model AI, lalu belajar mengaplikasikannya lewat proyek langsung menggunakan API dan framework modern.",
+      "requiredSkills": [
+        "Aljabar Linear & Kalkulus Multivariabel",
+        "Python & Ekosistem AI (NumPy, Pandas, PyTorch)",
+        "Arsitektur LLM & Transformer",
+        "Prompt Engineering & API Integration",
+        "MLOps & Deployment Pipeline"
+      ],
+      "whyChoose": [
+        {
+          "title": "Profesi Paling Dicari Dekade Ini",
+          "desc": "Permintaan AI Engineer melonjak drastis seiring adopsi LLM oleh perusahaan di seluruh dunia, menjadikannya salah satu karir dengan pertumbuhan tercepat."
+        },
+        {
+          "title": "Mengubah Cara Dunia Bekerja",
+          "desc": "Kamu akan membangun sistem yang mengotomatisasi keputusan bisnis, mempercepat riset ilmiah, dan menciptakan pengalaman pengguna yang belum pernah ada sebelumnya."
+        },
+        {
+          "title": "Kompensasi Sangat Kompetitif",
+          "desc": "AI Engineer termasuk profesi dengan gaji tertinggi di industri teknologi, bahkan untuk level entry-level sekalipun."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Foundation & OpenAI API Mastery",
+        "deskripsi": "Membangun fondasi kokoh dengan memahami ekosistem model pra-latih (Pre-trained Models) populer seperti GPT-4, Claude, dan Gemini. Fase ini difokuskan pada penguasaan OpenAI API, khususnya Chat Completions API, teknik penulisan prompt (Prompt Engineering), strategi pengelolaan token dan pricing, serta pemahaman mendalam tentang AI Safety dan responsible AI.",
+        "proyek": [
+          "smart-chatbot-openai-api",
+          "Eksplorasi OpenAI Playground untuk menguji parameter model (temperature, top_p, max_tokens)",
+          "Menghitung token counting dan pricing considerations untuk optimasi biaya"
+        ],
+        "meta": "2 - 3 Bulan"
+      },
+      {
+        "fase": "Fase 2",
+        "judul": "Open Source AI, Embeddings & Vector Databases",
+        "deskripsi": "Transisi menuju ekosistem Open Source AI dengan memanfaatkan platform Hugging Face untuk mengakses ribuan model gratis, serta Ollama untuk menjalankan LLM secara lokal tanpa ketergantungan cloud. Fase ini juga mendalami konsep Embeddings untuk Semantic Search dan Recommendation Systems, yang diintegrasikan ke dalam Vector Databases seperti ChromaDB, Pinecone, atau Weaviate.",
+        "proyek": [
+          "semantic-search-ollama-chromadb",
+          "Mengunduh dan menjalankan model LLM lokal menggunakan Ollama",
+          "Mengimplementasikan pencarian vektor dengan indexing embeddings"
+        ],
+        "meta": "3 - 4 Bulan"
+      },
+      {
+        "fase": "Fase 3",
+        "judul": "RAG Architecture & Orchestration Frameworks",
+        "deskripsi": "Menguasai arsitektur Retrieval-Augmented Generation (RAG) secara mendalam. Arsitektur ini melibatkan proses pemecahan dokumen (Chunking), pembuatan embedding dari chunks, proses pengambilan konteks (Retrieval Process), dan generasi jawaban berbasis konteks (Generation). Implementasi dilakukan menggunakan framework orkestrasi seperti LangChain atau LlamaIndex untuk membangun pipeline RAG berskala produksi.",
+        "proyek": [
+          "enterprise-rag-system-langchain",
+          "Membangun pipeline RAG langsung menggunakan SDK tanpa framework",
+          "Eksperimen alternatif RAG menggunakan OpenAI Assistant API"
+        ],
+        "meta": "3 - 5 Bulan"
+      },
+      {
+        "fase": "Fase 4",
+        "judul": "AI Agents, Multimodal & Production Deployment",
+        "deskripsi": "Membangun sistem AI otonom (AI Agents) menggunakan teknik ReAct Prompting dan OpenAI Functions/Tools. Tahap ini diperkaya dengan kapabilitas Multimodal AI untuk pemrosesan gambar (OpenAI Vision API), generasi gambar (DALL-E API), dan speech-to-text (Whisper API). Pengembangan juga dibantu oleh AI Code Editors modern seperti Cursor dan GitHub Copilot untuk produktivitas maksimal.",
+        "proyek": [
+          "multi-agent-research-assistant",
+          "Integrasi Speech-to-Text menggunakan Whisper API",
+          "Membangun AI Agent kustom dengan tool-calling dan function-calling"
+        ],
+        "meta": "Berkelanjutan"
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 15.000.000 - Rp 60.000.000 / bulan",
+      "rentangUSD": "$3,000 - $15,000 / bulan",
+      "penjelasan": "AI Engineer adalah salah satu profesi dengan kompensasi tertinggi di industri teknologi saat ini. Gaji sangat bergantung pada kemampuan membangun sistem RAG & AI Agents yang production-ready. Remote position untuk perusahaan luar negeri bisa menembus angka yang sangat tinggi."
+    },
+    "infoPendidikan": {
+      "jurusan": "Teknik Informatika / Ilmu Komputer / AI",
+      "durasi": "4 Tahun (S1) + Spesialisasi AI",
+      "jalurAkademik": "S1 atau Bootcamp Intensif + Sertifikasi",
+      "gelar": "S.Kom. / B.Sc. Computer Science"
+    },
+    "materiBelajar": [
+      {
+        "title": "Scrimba - Complete AI Engineer Path",
+        "tipe": "Interactive Course",
+        "link": "https://scrimba.com/"
+      },
+      {
+        "title": "DeepLearning.AI - ChatGPT Prompt Engineering for Developers",
+        "tipe": "Course",
+        "link": "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/"
+      },
+      {
+        "title": "Hugging Face NLP Course",
+        "tipe": "Course Gratis",
+        "link": "https://huggingface.co/learn/nlp-course"
+      },
+      {
+        "title": "LangChain AI Handbook",
+        "tipe": "Dokumentasi",
+        "link": "https://python.langchain.com/docs/get_started/introduction"
+      }
+    ],
+    "daftarBuku": [
+      {
+        "title": "Designing Machine Learning Systems",
+        "penulis": "Chip Huyen",
+        "link": "https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/"
+      },
+      {
+        "title": "Build a Large Language Model (From Scratch)",
+        "penulis": "Sebastian Raschka",
+        "link": "https://www.manning.com/books/build-a-large-language-model-from-scratch"
+      },
+      {
+        "title": "Prompt Engineering Guide",
+        "penulis": "DAIR.AI",
+        "link": "https://www.promptingguide.ai/"
+      }
+    ],
+    "referensiDigital": [
+      {
+        "title": "Roadmap.sh - AI Engineer Roadmap",
+        "tipe": "Curriculum Reference",
+        "link": "https://roadmap.sh/ai-engineer"
+      },
+      {
+        "title": "OpenAI Platform Documentation",
+        "tipe": "API Docs",
+        "link": "https://platform.openai.com/docs"
+      },
+      {
+        "title": "Andrej Karpathy (YouTube)",
+        "tipe": "YouTube Channel",
+        "link": "https://www.youtube.com/@AndrejKarpathy"
+      },
+      {
+        "title": "3Blue1Brown - Neural Networks",
+        "tipe": "YouTube Series",
+        "link": "https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi"
+      }
+    ],
+    "proyekTerkait": [
+      "data-scientist",
+      "backend-engineer",
+      "devops-engineer"
+    ],
+    "faqs": [
+      {
+        "tanya": "Apa perbedaan AI Engineer dan ML Engineer?",
+        "jawab": "AI Engineer lebih berfokus pada integrasi model pra-latih (seperti GPT, Claude) dan membangun produk aplikasi AI menggunakan API dan framework orkestrasi. ML Engineer lebih terfokus pada infrastruktur matematis, melatih model dari awal (training), dan optimasi algoritma machine learning dasar."
+      },
+      {
+        "tanya": "Apakah harus jago matematika untuk menjadi AI Engineer?",
+        "jawab": "Tidak harus level PhD. Dengan ketersediaan API seperti OpenAI dan framework seperti LangChain, kamu bisa membangun aplikasi AI yang sangat canggih dengan kemampuan software engineering yang solid. Namun, pemahaman dasar statistik dan aljabar linear akan sangat membantumu memahami 'mengapa' model berperilaku tertentu."
+      },
+      {
+        "tanya": "Bisakah saya belajar AI Engineering tanpa kuliah S1?",
+        "jawab": "Bisa. Banyak AI Engineer sukses yang berasal dari jalur bootcamp atau self-taught. Yang paling penting adalah portofolio proyek nyata (RAG systems, AI Agents) dan pemahaman solid tentang API integration. Namun, gelar S1 tetap menjadi nilai tambah di mata HR perusahaan besar."
+      }
+    ],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [
+        "Institut Teknologi Bandung (ITB)",
+        "Universitas Indonesia (UI)",
+        "Universitas Gadjah Mada (UGM)",
+        "Binus University"
+      ],
+      "global": [
+        "Stanford University",
+        "Massachusetts Institute of Technology (MIT)",
+        "Carnegie Mellon University",
+        "University of California, Berkeley"
       ]
     }
   }

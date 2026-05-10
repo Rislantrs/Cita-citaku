@@ -618,40 +618,120 @@ export function registerApiRoutes(app: Express) {
   });
 
   app.post('/api/careers', async (req, res) => {
-    if (!isMongoReady()) {
-      res.status(503).json({ error: 'Database belum siap.' });
-      return;
-    }
-
     try {
       const data = req.body;
-      const slug = data.slug || data.judul?.toLowerCase()?.replace(/\s+/g, '-') || data.title?.toLowerCase()?.replace(/\s+/g, '-');
+      const slug = data.slug || data.judul?.toLowerCase()?.replace(/[^a-z0-9\s-]/g, '')?.replace(/\s+/g, '-') || data.title?.toLowerCase()?.replace(/[^a-z0-9\s-]/g, '')?.replace(/\s+/g, '-');
 
       if (!slug) {
         res.status(400).json({ error: 'Slug atau Judul wajib ada.' });
         return;
       }
 
-      // Map frontend fields to backend schema if necessary
-      const careerUpdate = {
-        ...data,
+      // === FULL FIELD NORMALIZATION ===
+      const careerUpdate: any = {
         slug,
-        title: data.judul || data.title,
+        title: data.judul || data.title || '',
         categoryId: data.idKategori || data.categoryId || 'tech',
+        description: data.deskripsi || data.description || '',
+        type: data.tipe || data.type || 'skill_based',
+        keyIkon: data.keyIkon || 'code',
+        recommendationMajors: data.recommendationMajors || data.rekomendasiJurusan || [],
+        certifications: data.certifications || data.sertifikasi || [],
+        riasecCategories: data.riasecCategories || data.kategoriRIASEC || [],
+        mbtiTags: data.mbtiTags || data.tagMBTI || [],
+        featured: data.featured || data.unggulan || false,
+
+        // Gaji
+        infoGaji: data.infoGaji || { rentangIDR: '', rentangUSD: '', penjelasan: '' },
+
+        // Pendidikan
+        infoPendidikan: {
+          jurusan: data.infoPendidikan?.jurusan || [],
+          durasi: data.infoPendidikan?.durasi || '',
+          jalurAkademik: data.infoPendidikan?.jalurAkademik || '',
+          gelar: data.infoPendidikan?.gelar || '',
+        },
+
+        // Materi Belajar
+        materiBelajar: (data.materiBelajar || []).map((m: any) => ({
+          judul: m.judul || m.title || '',
+          tipe: m.tipe || m.type || 'video',
+          link: m.link || '',
+        })).filter((m: any) => m.judul || m.link),
+
+        // Buku
+        daftarBuku: (data.daftarBuku || []).map((b: any) => ({
+          judul: b.judul || b.title || '',
+          penulis: b.penulis || b.author || '',
+          link: b.link || '',
+        })).filter((b: any) => b.judul),
+
+        // Referensi Digital
+        referensiDigital: (data.referensiDigital || []).map((r: any) => ({
+          judul: r.judul || r.title || '',
+          tipe: r.tipe || r.type || 'website',
+          link: r.link || '',
+        })).filter((r: any) => r.judul || r.link),
+
+        // FAQ
+        faqs: (data.faqs || []).map((f: any) => ({
+          tanya: f.tanya || f.q || '',
+          jawab: f.jawab || f.a || '',
+        })).filter((f: any) => f.tanya || f.jawab),
+
+        // Universitas Terbaik (normalize from either field name)
+        universitasTerbaik: {
+          lokal: data.universitasTerbaik?.lokal || data.topUniversities?.local || [],
+          global: data.universitasTerbaik?.global || data.topUniversities?.global || [],
+        },
+
+        // Dunia Perkuliahan (normalize from either field name)
+        duniaPerkuliahan: {
+          ringkasan: data.duniaPerkuliahan?.ringkasan || data.universityWorld?.ringkasan || data.universityWorld?.overview || '',
+          keahlianWajib: data.duniaPerkuliahan?.keahlianWajib || data.universityWorld?.keahlianWajib || data.universityWorld?.requiredSkills || [],
+          alasanMemilih: (data.duniaPerkuliahan?.alasanMemilih || data.universityWorld?.alasanMemilih || data.universityWorld?.whyChoose || []).map((a: any) => ({
+            judul: a.judul || a.title || '',
+            deskripsi: a.deskripsi || a.desc || '',
+          })).filter((a: any) => a.judul || a.deskripsi),
+        },
+
+        // Roadmap (normalize from either field name, preserve nested topics/projects)
+        roadmap: (data.roadmap || data.phases || []).map((phase: any, idx: number) => ({
+          fase: phase.fase || `Fase ${idx + 1}`,
+          judul: phase.judul || phase.title || '',
+          deskripsi: phase.deskripsi || phase.description || '',
+          meta: phase.meta || phase.stats || '',
+          proyek: phase.proyek || (phase.topics || []).map((t: any) => t.title || t).filter(Boolean),
+          // Store detailed topic data too
+          topics: phase.topics || [],
+          buku: phase.buku || [],
+        })),
       };
 
-      const career = await CareerModel.findOneAndUpdate(
-        { slug } as any,
-        careerUpdate,
-        { upsert: true, new: true }
-      );
-
-      res.json({ ok: true, item: career });
+      // Save to MongoDB if ready
+      if (isMongoReady()) {
+        const career = await CareerModel.findOneAndUpdate(
+          { slug } as any,
+          careerUpdate,
+          { upsert: true, new: true }
+        );
+        res.json({ ok: true, item: career });
+      } else {
+        // Save to memoryStore
+        const existingIdx = memoryStore.careers.findIndex((c: any) => c.slug === slug);
+        if (existingIdx >= 0) {
+          memoryStore.careers[existingIdx] = careerUpdate as any;
+        } else {
+          memoryStore.careers.push(careerUpdate as any);
+        }
+        res.json({ ok: true, item: careerUpdate });
+      }
     } catch (err) {
       console.error('[api] Failed to save career:', err);
       res.status(500).json({ error: 'Gagal menyimpan data karir ke database.' });
     }
   });
+
 
   // Global Error Handler Middleware
   app.use((err: any, _req: any, res: any, _next: any) => {
@@ -661,5 +741,39 @@ export function registerApiRoutes(app: Express) {
       message: err.message,
       stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
+  });
+}
+
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
+
+export function configureStaticFiles(app: Express) {
+  const uploadsPath = path.join(process.cwd(), 'backend', 'uploads');
+  if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+  }
+  app.use('/uploads', express.static(uploadsPath));
+}
+
+// Add this to registerApiRoutes at the top after multer config
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, path.join(process.cwd(), 'backend', 'uploads'));
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const uploadDisk = multer({ storage });
+
+export function registerUploadRoute(app: Express) {
+  app.post('/api/upload', uploadDisk.single('file'), (req: any, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    const fileUrl = `/uploads/${req.file.filename}`;
+    res.json({ url: fileUrl });
   });
 }

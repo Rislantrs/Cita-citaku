@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, X, Bot, User as UserIcon, RefreshCcw, MessageSquare } from 'lucide-react';
+import { Send, X, Bot, Sparkles, Mic, RotateCcw } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import ReactMarkdown from 'react-markdown';
 
@@ -10,16 +10,24 @@ interface ProjectChatSidebarProps {
 }
 
 export default function ProjectChatSidebar({ isOpen, onClose, projectTitle }: ProjectChatSidebarProps) {
-  const [messages, setMessages] = useState<{role: 'user' | 'model', content: string}[]>([]);
+  const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isLoading]);
+  }, [messages, streamingText, isLoading]);
+
+  const handleResetChat = () => {
+    if (window.confirm('Hapus riwayat percakapan?')) {
+      setMessages([]);
+      setStreamingText('');
+    }
+  };
 
   const sendMessage = async (overrideInput?: string) => {
     const textToSend = overrideInput || input;
@@ -29,27 +37,58 @@ export default function ProjectChatSidebar({ isOpen, onClose, projectTitle }: Pr
     setMessages(newMessages);
     setInput('');
     setIsLoading(true);
+    setStreamingText('');
 
     try {
-      const systemContext = { 
-        role: 'user' as const, 
-        content: `Kamu adalah Technical Assistant profesional di platform Cita-citaku. Saat ini kamu membantu user mengerjakan proyek: "${projectTitle}". Jawablah pertanyaan teknis mereka dengan ramah, jelas, dan fokus pada materi proyek ini.` 
-      };
-
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [systemContext, ...newMessages].map(m => ({
-            role: m.role,
-            parts: [{ text: m.content }]
-          }))
+          messages: [
+            { 
+              role: 'user', 
+              parts: [{ text: `Kamu adalah Mentor AI di platform Cita-citaku. Kamu sedang membimbing user mempelajari materi: "${projectTitle}". Jawablah pertanyaan mereka dengan cara yang edukatif, profesional, dan mudah dipahami. Gunakan format markdown.` }] 
+            },
+            ...newMessages.map(m => ({
+              role: m.role === 'user' ? 'user' : 'model',
+              parts: [{ text: m.content }]
+            }))
+          ],
+          stream: true
         })
       });
-      const data = await response.json();
-      setMessages([...newMessages, { role: 'model', content: data.text }]);
+
+      if (!response.ok) throw new Error('Network response was not ok');
+      
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data: ')) continue;
+            try {
+              const event = JSON.parse(trimmed.slice(6));
+              if (event.type === 'chunk') {
+                fullText += event.content;
+                setStreamingText(fullText);
+              }
+            } catch (e) { /* ignore */ }
+          }
+        }
+        setMessages(prev => [...prev, { role: 'assistant', content: fullText }]);
+        setStreamingText('');
+      }
     } catch (err) {
-      setMessages([...newMessages, { role: 'model', content: 'Waduh, koneksi ke otak AI terputus. Coba lagi ya!' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Maaf, saya sedang mengalami kendala teknis. Coba lagi ya!' }]);
     } finally {
       setIsLoading(false);
     }
@@ -59,115 +98,136 @@ export default function ProjectChatSidebar({ isOpen, onClose, projectTitle }: Pr
     <motion.aside
       initial={{ x: '100%' }}
       animate={{ x: isOpen ? 0 : '100%' }}
-      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="fixed right-0 top-0 z-100 h-full w-full border-l border-slate-100 bg-white shadow-2xl sm:w-112.5"
+      transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+      className="fixed right-0 top-0 z-[9999] h-full w-full border-l border-slate-100 bg-white shadow-2xl sm:w-[450px] overflow-hidden flex flex-col"
     >
-      <div className="flex h-full flex-col">
-        {/* Header */}
-        <header className="flex items-center justify-between border-b border-slate-100 px-6 py-5 bg-white">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
-              <Bot size={20} />
-            </div>
-            <div>
-              <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Asisten Proyek</h2>
-              <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Online & Ready</p>
-            </div>
+      {/* Header - Fixed Height */}
+      <header className="shrink-0 flex items-center justify-between border-b border-slate-50 px-6 py-5 bg-white z-20">
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
+            <Sparkles size={22} className="text-white" />
           </div>
-          <button 
-            onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-50 transition-colors"
-          >
-            <X size={20} className="text-slate-400" />
-          </button>
-        </header>
-
-        {/* Chat Content */}
-        <div 
-          ref={scrollRef}
-          className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide bg-white"
-        >
-          {messages.length === 0 && (
-            <div className="flex h-full flex-col items-center justify-center text-center p-4">
-              <div className="mb-6 rounded-3xl bg-blue-50 p-6 text-blue-600">
-                <MessageSquare size={32} />
-              </div>
-              <h3 className="text-xl font-black text-slate-900">Ada kesulitan di proyek ini?</h3>
-              <p className="mt-2 text-sm text-slate-500 leading-relaxed px-4">
-                Tanyakan apa saja tentang <b>{projectTitle}</b>. Saya siap membantu menjelaskan konsep atau memberikan petunjuk teknis.
-              </p>
-            </div>
-          )}
-
-          {messages.map((msg, idx) => (
-            <div 
-              key={idx} 
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={`flex max-w-[90%] flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                <div className={`rounded-2xl px-4 py-3 text-sm font-medium leading-relaxed shadow-sm ${
-                  msg.role === 'user' 
-                    ? 'bg-blue-600 text-white shadow-blue-600/10' 
-                    : 'bg-slate-100 text-slate-800 border border-slate-200'
-                }`}>
-                  {msg.role === 'user' ? (
-                    msg.content
-                  ) : (
-                    <div className="prose prose-sm prose-slate max-w-none prose-p:leading-relaxed prose-li:my-0.5">
-                      <ReactMarkdown 
-                        components={{
-                          p: ({children}) => <p className="mb-2 last:mb-0">{children}</p>,
-                          strong: ({children}) => <strong className="font-bold text-blue-700">{children}</strong>,
-                          ul: ({children}) => <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>,
-                          li: ({children}) => <li className="text-slate-700">{children}</li>
-                        }}
-                      >
-                        {msg.content}
-                      </ReactMarkdown>
-                    </div>
-                  )}
-                </div>
-                <span className="text-[8px] font-black uppercase tracking-widest opacity-30 px-1 text-slate-500">
-                  {msg.role === 'user' ? 'You' : 'Assistant'}
-                </span>
-              </div>
-            </div>
-          ))}
-
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 border border-slate-200">
-                <RefreshCcw size={12} className="animate-spin text-blue-600" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">AI sedang mengetik...</span>
-              </div>
-            </div>
-          )}
+          <div className="flex flex-col">
+            <h1 className="text-[11px] font-black tracking-widest text-slate-900 uppercase leading-none mb-1">Mentor Proyek AI</h1>
+            <span className="text-[9px] font-black uppercase tracking-widest text-blue-600">Active Assistant</span>
+          </div>
         </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleResetChat}
+            className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all"
+            title="Reset Chat"
+          >
+            <RotateCcw size={18} />
+          </button>
+          <button
+            onClick={onClose}
+            className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      </header>
 
-        {/* Input Area */}
-        <footer className="border-t border-slate-100 p-6 bg-slate-50">
-          <div className="relative flex items-center gap-2">
-            <input 
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder="Tanya asisten teknismu..."
-              className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-bold text-slate-900 shadow-sm transition-all focus:ring-4 focus:ring-blue-600/10 outline-none"
-            />
-            <button 
-              onClick={() => sendMessage()}
-              disabled={!input.trim() || isLoading}
-              className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 disabled:opacity-30 transition-all hover:bg-blue-700"
-            >
-              <Send size={18} />
-            </button>
+      {/* Chat Area - Flexible Height */}
+      <div 
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-6 scrollbar-hide bg-[#fcfbfa]"
+      >
+        {messages.length === 0 ? (
+          <div className="min-h-full flex flex-col items-center justify-center text-center py-12">
+            <div className="w-20 h-20 rounded-3xl bg-blue-50 flex items-center justify-center text-blue-600 mb-8 shadow-inner">
+              <Sparkles size={36} />
+            </div>
+            <h2 className="text-xl font-black text-slate-900 mb-3 tracking-tight">Mentor AI Cita-Citaku</h2>
+            <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-[280px] mx-auto mb-10">
+              Butuh petunjuk materi <span className="text-blue-600 font-black">{projectTitle}</span>? Tanyakan apa saja, saya siap membimbing Anda.
+            </p>
+            
+            <div className="flex flex-wrap justify-center gap-2">
+              {["Langkah awal", "Konsep utama", "Bantuan kode"].map((hint, i) => (
+                <button
+                  key={i}
+                  onClick={() => sendMessage(hint)}
+                  className="bg-white border border-slate-200 rounded-xl px-5 py-2.5 text-xs font-bold text-slate-600 shadow-sm transition-all hover:border-blue-300 hover:text-blue-700 active:scale-95"
+                >
+                  {hint}
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="mt-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            AI dapat melakukan kesalahan. Tetap verifikasi langkah teknismu.
-          </p>
-        </footer>
+        ) : (
+          <div className="py-8 space-y-8">
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex max-w-[85%] items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[10px] font-black shrink-0 ${
+                    msg.role === 'user' ? 'bg-slate-200 text-slate-600' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                  }`}>
+                    {msg.role === 'user' ? 'ME' : 'AI'}
+                  </div>
+                  <div className={`px-5 py-4 rounded-[1.5rem] text-sm leading-relaxed ${
+                    msg.role === 'user' 
+                      ? 'bg-slate-900 text-white font-medium' 
+                      : 'bg-white border border-slate-100 text-slate-800 font-medium shadow-sm prose prose-slate max-w-none'
+                  }`}>
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {streamingText && (
+              <div className="flex justify-start">
+                <div className="flex max-w-[85%] items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-lg shadow-blue-600/20">
+                    AI
+                  </div>
+                  <div className="px-5 py-4 rounded-[1.5rem] text-sm leading-relaxed bg-white border border-slate-100 text-slate-800 font-medium shadow-sm prose prose-slate max-w-none">
+                    <ReactMarkdown>{streamingText}</ReactMarkdown>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isLoading && !streamingText && (
+              <div className="flex justify-start">
+                <div className="ml-11 flex items-center gap-1.5 p-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce [animation-delay:0.2s]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce [animation-delay:0.4s]" />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Input Area - Fixed Height */}
+      <footer className="shrink-0 p-6 bg-white border-t border-slate-50">
+        <div className="flex items-center gap-2 rounded-full bg-slate-50 border border-slate-100 p-1.5 focus-within:border-blue-200 focus-within:bg-white transition-all shadow-inner">
+          <button className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
+            <Mic size={18} />
+          </button>
+          
+          <input 
+            type="text" 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Tanyakan sesuatu..."
+            className="flex-1 bg-transparent border-none px-3 py-2 focus:ring-0 font-bold text-sm text-slate-800 placeholder:text-slate-400"
+          />
+          
+          <button 
+            onClick={() => sendMessage()}
+            disabled={!input.trim() || isLoading}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/20 disabled:opacity-20 transition-all hover:bg-slate-900 active:scale-95"
+          >
+            <Send size={16} />
+          </button>
+        </div>
+      </footer>
     </motion.aside>
   );
 }

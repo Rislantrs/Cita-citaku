@@ -45,7 +45,8 @@ export default function App() {
                 <Route path="/roadmap" element={<Roadmap />} />
                 <Route path="/roadmap/:slug" element={<RoadmapDetail />} />
                 <Route path="/explore-projects" element={<ProjectExplore />} />
-                <Route path="/project/:id" element={<ProjectDetail />} />
+                <Route path="/module/:id" element={<ProjectDetail />} />
+                <Route path="/project/:id" element={<ProjectExplore />} />
                 <Route path="/admin-rahasia" element={<AdminDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

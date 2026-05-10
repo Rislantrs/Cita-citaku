@@ -128,3 +128,15 @@ export async function recordRoadmapVisit(payload: { uid: string; name?: string |
 
   return parseJsonResponse<{ ok: true; progress: unknown }>(response);
 }
+
+export async function uploadFile(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  return parseJsonResponse<{ url: string }>(response);
+}

@@ -74,18 +74,18 @@ export interface ItemKatalogKarir {
 }
 
 export const careerCatalog: ItemKatalogKarir[] = [
-  { 
-    slug: 'software-engineer', 
-    judul: 'Software Engineer', 
-    idKategori: 'tech', 
-    deskripsi: 'Membangun aplikasi web, mobile, dan sistem pintar yang skalabel.', 
+  {
+    slug: 'software-engineer',
+    judul: 'Software Engineer',
+    idKategori: 'tech',
+    deskripsi: 'Membangun aplikasi web, mobile, dan sistem pintar yang skalabel.',
     tipe: 'skill_based',
-    keyIkon: 'code', 
-    rekomendasiJurusan: ['Teknik Informatika', 'Rekayasa Perangkat Lunak'], 
-    sertifikasi: ['AWS Cloud Practitioner', 'Google Associate Cloud Engineer'], 
-    kategoriRIASEC: ['I', 'R', 'C'], 
-    tagMBTI: ['INTJ', 'ISTJ', 'ENTP'], 
-    unggulan: true, 
+    keyIkon: 'code',
+    rekomendasiJurusan: ['Teknik Informatika', 'Rekayasa Perangkat Lunak'],
+    sertifikasi: ['AWS Cloud Practitioner', 'Google Associate Cloud Engineer'],
+    kategoriRIASEC: ['I', 'R', 'C'],
+    tagMBTI: ['INTJ', 'ISTJ', 'ENTP'],
+    unggulan: true,
     infoGaji: {
       rentangIDR: 'Rp 8.000.000 - Rp 35.000.000',
       rentangUSD: '$85,000 - $160,000',
@@ -113,10 +113,10 @@ export const careerCatalog: ItemKatalogKarir[] = [
       alasanMemilih: [{ judul: 'Gaji Tinggi', deskripsi: 'Prospek kerja sangat luas.' }]
     },
     roadmap: [
-      { 
-        fase: 'Fase 1', 
-        meta: 'Fundamental', 
-        judul: 'Pondasi Logika', 
+      {
+        fase: 'Fase 1',
+        meta: 'Fundamental',
+        judul: 'Pondasi Logika',
         deskripsi: 'Membangun cara berpikir sistematis.',
         proyek: ['Logika Dasar']
       },

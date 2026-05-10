@@ -15,7 +15,27 @@ const FEATURE_POINTS = [
 export default function Home() {
   const { t } = useTranslation();
   const [parallaxY, setParallaxY] = useState(0);
+  const [roadmaps, setRoadmaps] = useState<any[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Fetch roadmaps to get accurate counts
+  useEffect(() => {
+    async function fetchRoadmaps() {
+      try {
+        const response = await fetch('/api/careers');
+        const data = await response.json();
+        if (data.items) {
+          setRoadmaps(data.items);
+        } else {
+          setRoadmaps(careerCatalog);
+        }
+      } catch (error) {
+        console.error("Error fetching roadmaps for Home:", error);
+        setRoadmaps(careerCatalog);
+      }
+    }
+    fetchRoadmaps();
+  }, []);
 
   // Parallax on scroll
   useEffect(() => {
@@ -177,7 +197,11 @@ export default function Home() {
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {CAREER_CATEGORIES.slice(0, 9).map((category) => {
-            const count = careerCatalog.filter(c => c.categoryId === category.id).length;
+            const displayRoadmaps = roadmaps.length > 0 ? roadmaps : careerCatalog;
+            const count = displayRoadmaps.filter(c => {
+              const catId = c.idKategori || c.categoryId;
+              return catId === category.id;
+            }).length;
             
             return (
               <Link

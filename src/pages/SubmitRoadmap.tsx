@@ -17,6 +17,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../lib/AuthContext';
 import SEO from '../components/SEO';
 import { KategoriKarir, CAREER_CATEGORIES } from '../lib/careerCatalog';
+import { uploadFile } from '../lib/api';
 
 type ContributionMode = 'none' | 'new_roadmap' | 'edit_roadmap' | 'add_content';
 
@@ -516,17 +517,104 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
     e.preventDefault();
     setIsSubmitting(true);
 
+    // === 1. UPLOAD ANY LOCAL FILES FIRST ===
+    const updatedPhases = [...phases];
+    try {
+      for (let pi = 0; pi < updatedPhases.length; pi++) {
+        for (let ti = 0; ti < updatedPhases[pi].topics.length; ti++) {
+          const topic = updatedPhases[pi].topics[ti];
+          if (topic.showProject && topic.project.localFile) {
+            toast.info(`Mengunggah gambar untuk ${topic.project.title || 'proyek'}...`);
+            const uploadRes = await uploadFile(topic.project.localFile);
+            if (uploadRes.url) {
+              updatedPhases[pi].topics[ti].project.image = uploadRes.url;
+              // Clear localFile after successful upload
+              updatedPhases[pi].topics[ti].project.localFile = null;
+            }
+          }
+        }
+      }
+    } catch (uploadErr) {
+      console.error("Upload failed:", uploadErr);
+      setError("Gagal mengunggah gambar. Silakan coba lagi.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // === 2. NORMALIZE ALL DATA TO BACKEND SCHEMA ===
+    const slug = formData.judul.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+
+    // Map phases → roadmap (backend field name)
+    const roadmap = updatedPhases.map((phase, phaseIdx) => ({
+      fase: `Fase ${phaseIdx + 1}`,
+      judul: phase.title,
+      deskripsi: phase.description,
+      meta: phase.stats,
+      proyek: (phase.topics || []).map(t => t.title).filter(Boolean),
+      // Detailed topic/project data stored separately
+      topics: (phase.topics || []).map(topic => ({
+        title: topic.title,
+        description: topic.description,
+        timeEstimate: topic.timeEstimate,
+        difficulty: topic.difficulty,
+        keyConcepts: topic.keyConcepts,
+        summary: topic.summary,
+        costNote: topic.costNote,
+        resources: (topic.resources || []).filter(r => r.title || r.link),
+        showProject: topic.showProject,
+        project: topic.showProject ? {
+          title: topic.project.title,
+          background: topic.project.background,
+          skillsLearned: topic.project.skillsLearned,
+          mode: topic.project.mode,
+          specifications: (topic.project.specifications || []).filter(Boolean),
+          image: topic.project.image,
+          contentBlocks: topic.project.contentBlocks || [],
+          interactiveSteps: topic.project.interactiveSteps || [],
+        } : undefined,
+      })),
+    }));
+
+    // Map universityWorld → duniaPerkuliahan (backend field name)
+    const duniaPerkuliahan = {
+      ringkasan: universityWorld.ringkasan,
+      keahlianWajib: (universityWorld.keahlianWajib || []).filter(Boolean),
+      alasanMemilih: (universityWorld.alasanMemilih || []).filter(a => a.judul || a.deskripsi),
+    };
+
+    // Map topUniversities → universitasTerbaik (backend field name)
+    const universitasTerbaik = {
+      lokal: (topUniversities?.local || []).filter(Boolean),
+      global: (topUniversities?.global || []).filter(Boolean),
+    };
+
+    // Clean FAQs
+    const cleanFaqs = (faqs || []).filter(f => f.tanya || f.jawab);
+
     const payload = {
-      ...formData,
-      phases,
-      faqs,
-      topUniversities,
-      universityWorld,
-      updatedAt: new Date().toISOString()
+      slug,
+      title: formData.judul,
+      judul: formData.judul,
+      categoryId: formData.idKategori,
+      idKategori: formData.idKategori,
+      tipe: formData.tipe,
+      type: formData.tipe,
+      description: formData.deskripsi,
+      deskripsi: formData.deskripsi,
+      infoGaji: formData.infoGaji,
+      infoPendidikan: formData.infoPendidikan,
+      materiBelajar: (formData.materiBelajar || []).filter(m => m.judul || m.link),
+      daftarBuku: (formData.daftarBuku || []).filter(b => b.judul),
+      referensiDigital: (formData.referensiDigital || []).filter(r => r.judul || r.link),
+      roadmap,
+      duniaPerkuliahan,
+      universitasTerbaik,
+      faqs: cleanFaqs,
+      updatedAt: new Date().toISOString(),
     };
 
     if (isAdmin && onAction) {
-      // For Admin, we pass the data back to AdminDashboard to handle Firestore
+      // For Admin, pass the normalized data to AdminDashboard
       await onAction('approve', payload);
       setIsSubmitting(false);
       return;
@@ -559,6 +647,7 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
       setIsSubmitting(false);
     }
   };
+
 
   // SUCCESS SCREEN
   if (isSuccess) {
@@ -922,37 +1011,39 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
           <div className="space-y-8">{(phases || []).map((phase, pi) => (<div key={pi} className="relative"><div className="absolute -left-3 -top-3 z-10 h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-base font-bold shadow-xl">{pi + 1}</div>{!phase.isSaved ? (<motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-white p-8 border border-slate-100 shadow-sm space-y-8"><div className="grid gap-6 md:grid-cols-2"><input placeholder="Judul Fase" className="h-12 rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={phase.title} onChange={(e) => updatePhase(pi, 'title', e.target.value)} /><input placeholder="Stats" className="h-12 rounded-xl bg-slate-50 border-none px-4 font-bold text-base" value={phase.stats} onChange={(e) => updatePhase(pi, 'stats', e.target.value)} /></div><div className="space-y-6 pt-6 border-t border-slate-50"><div className="flex items-center justify-between"><label className="text-sm font-bold text-indigo-500 uppercase tracking-wider">Materi Pembelajaran</label><button type="button" onClick={() => addTopic(pi)} className="text-xs font-bold text-blue-600 hover:underline">+ TAMBAH MATERI</button></div><div className="space-y-4">{(phase.topics || []).map((topic, ti) => (<div key={ti} className="flex flex-col gap-3"><div className="flex gap-3 items-center"><input placeholder="Judul Materi..." className="h-12 flex-1 rounded-xl bg-slate-100 border-none px-4 font-bold text-base" value={topic.title} onChange={(e) => updateTopicData(pi, ti, 'title', e.target.value)} /><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', !topic.isDetailed)} className={`flex items-center gap-2 px-6 h-12 rounded-xl font-bold text-xs transition-all shadow-sm ${topic.isDetailed ? 'bg-slate-900 text-white' : 'bg-white text-blue-600 border border-slate-100 hover:bg-blue-50'}`}>{topic.isDetailed ? 'Tutup Konten' : 'Lengkapi Konten'}</button><button type="button" onClick={() => { const n = [...phases]; n[pi].topics = n[pi].topics.filter((_, i) => i !== ti); setPhases(n); }} className="text-slate-200 hover:text-red-500"><Trash2 size={18} /></button></div>{topic.isDetailed && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="ml-4 rounded-2xl bg-emerald-50/20 border border-emerald-100 p-8 space-y-8 shadow-inner overflow-hidden"><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Waktu</label><input placeholder="10 Min" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.timeEstimate} onChange={(e) => updateTopicData(pi, ti, 'timeEstimate', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Level</label><select className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.difficulty} onChange={(e) => updateTopicData(pi, ti, 'difficulty', e.target.value)}><option value="Easy Peasy">Easy Peasy</option><option value="Intermediate">Intermediate</option></select></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-500 uppercase">Key Concept</label><input placeholder="Misal: IAM" className="h-10 w-full rounded-lg bg-white border border-emerald-100 px-3 font-bold text-sm" value={topic.keyConcepts} onChange={(e) => updateTopicData(pi, ti, 'keyConcepts', e.target.value)} /></div></div><textarea placeholder="Deskripsi materi..." className="w-full rounded-xl bg-white border border-emerald-100 p-4 font-bold text-sm" rows={2} value={topic.description} onChange={(e) => updateTopicData(pi, ti, 'description', e.target.value)} /><textarea placeholder="5 Minute Summary..." className="w-full rounded-xl p-4 font-bold text-base ring-1 ring-emerald-50 bg-white" rows={3} value={topic.summary} onChange={(e) => updateTopicData(pi, ti, 'summary', e.target.value)} /><div className="space-y-4 pt-6 border-t border-emerald-100"><div className="flex items-center justify-between"><label className="text-xs font-bold text-indigo-600 uppercase flex items-center gap-2"><BookOpen size={14} /> Materi Referensi</label><button type="button" onClick={() => addResource(pi, ti)} className="text-[11px] font-bold text-blue-600 hover:underline">+ Tambah Sumber</button></div><div className="grid gap-4">{(topic.resources || []).map((res, ri) => (<div key={ri} className="bg-white p-5 rounded-2xl border border-emerald-50 shadow-sm space-y-4 relative"><button type="button" onClick={() => { const n = [...phases]; n[pi].topics[ti].resources = n[pi].topics[ti].resources.filter((_, i) => i !== ri); setPhases(n); }} className="absolute top-4 right-4 text-slate-200 hover:text-red-500"><Trash2 size={16} /></button><div className="grid gap-4 md:grid-cols-3"><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Tipe</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.type} onChange={(e) => updateResource(pi, ti, ri, 'type', e.target.value as any)}><option value="web">Web</option><option value="book">Buku</option><option value="documentation">Dokumentasi</option><option value="youtube">YouTube</option><option value="course">Course</option></select></div><div className="space-y-1 md:col-span-1"><label className="text-[10px] font-bold text-slate-400">Judul</label><input placeholder="Judul" className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs" value={res.title} onChange={(e) => updateResource(pi, ti, ri, 'title', e.target.value)} /></div><div className="space-y-1"><label className="text-[10px] font-bold text-slate-400">Status</label><select className="h-9 w-full rounded-lg bg-slate-50 border-none px-2 font-bold text-xs" value={res.priceType} onChange={(e) => updateResource(pi, ti, ri, 'priceType', e.target.value as any)}><option value="Gratis">Gratis</option><option value="Berbayar">Berbayar</option></select></div></div><textarea placeholder="Deskripsi..." rows={2} className="w-full p-3 rounded-lg bg-slate-50 border-none font-bold text-xs" value={res.description} onChange={(e) => updateResource(pi, ti, ri, 'description', e.target.value)} /><input placeholder="https://..." className="h-9 w-full rounded-lg bg-slate-50 border-none px-3 font-bold text-xs text-blue-600 underline" value={res.link} onChange={(e) => updateResource(pi, ti, ri, 'link', e.target.value)} /></div>))}</div></div><div className="space-y-3 pt-6 border-t border-emerald-100"><label className="text-xs font-bold text-blue-600 flex items-center gap-2"><Info size={14} /> Cost Note / FAQ</label><textarea placeholder="Apakah butuh biaya?..." className="w-full rounded-xl p-4 font-bold text-sm bg-blue-50/50 border border-blue-100" rows={2} value={topic.costNote} onChange={(e) => updateTopicData(pi, ti, 'costNote', e.target.value)} /></div><div className="space-y-4 pt-6 border-t border-emerald-100">
             {renderProjectForm(pi, ti, topic)}
           </div><div className="flex justify-center pt-6 border-t border-emerald-100"><button type="button" onClick={() => updateTopicData(pi, ti, 'isDetailed', false)} className="flex items-center gap-2 rounded-xl bg-emerald-600 px-10 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"><Check size={18} /> Simpan Materi Ini</button></div></motion.div>)}</div>))}</div></div><div className="flex justify-end pt-6 items-center gap-3">{mode === 'edit_roadmap' && <button type="button" onClick={() => setPhases(phases.filter((_, i) => i !== pi))} className="flex items-center gap-2 rounded-xl bg-red-50 px-6 py-3 text-sm font-bold text-red-600 hover:bg-red-100 transition-all"><Trash2 size={18} /> Hapus Fase</button>}<button type="button" onClick={() => toggleSavePhase(pi)} className="flex items-center gap-2 rounded-xl bg-slate-900 px-8 py-3 text-sm font-bold text-white transition-all"><Save size={18} /> Simpan Struktur Fase</button></div></motion.div>) : (<div className="rounded-3xl bg-slate-50 border border-slate-200 p-8 flex items-center justify-between shadow-sm hover:bg-white transition-all group"><div><h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{phase.title}</h3><p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-tighter">{phase.stats}</p></div><button type="button" onClick={() => toggleSavePhase(pi)} className="h-12 w-12 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 shadow-sm transition-all"><Edit3 size={18} /></button></div>)}</div>))}</div></section>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-          {isAdmin && initialData ? (
+        <div className="mt-20 flex flex-wrap items-center justify-center gap-4 py-10 border-t border-slate-100">
+          {isAdmin ? (
             <>
               <button
                 type="button"
                 onClick={() => onAction && onAction('reject')}
-                className="w-full sm:w-auto rounded-2xl px-12 py-5 text-xl font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition-all active:scale-95 flex items-center justify-center gap-3"
+                className="px-10 py-4 rounded-2xl bg-red-50 text-red-600 font-black text-sm hover:bg-red-100 transition-all"
               >
-                Tolak Kontribusi
+                {initialData?.slug ? 'Batal Edit' : 'Tolak Kontribusi'}
               </button>
               <button
-                type="submit"
+                type="button"
+                onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="w-full sm:w-auto rounded-2xl px-12 py-5 text-xl font-bold text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed bg-emerald-600 hover:bg-emerald-700"
+                className="flex items-center gap-3 px-10 py-4 rounded-2xl bg-emerald-600 text-white font-black text-sm shadow-xl shadow-emerald-600/20 hover:scale-105 transition-all disabled:opacity-50"
               >
-                {isSubmitting ? <Loader2 className="animate-spin" size={24} /> : <CheckCircle2 size={24} />}
-                ACC & Publish
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} />
+                    Memproses...
+                  </>
+                ) : (
+                  <>
+                    <Check size={18} />
+                    {initialData?.slug ? 'Perbarui Database' : 'ACC & Publish'}
+                  </>
+                )}
               </button>
             </>
-          ) : isAdmin && !initialData ? (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full sm:w-auto rounded-2xl px-12 py-5 text-xl font-bold text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700"
-            >
-              {isSubmitting ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} />}
-              Publish Roadmap Baru
-            </button>
           ) : (
             <button
               type="submit"
+              onClick={handleSubmit}
               disabled={isSubmitting}
               className={`rounded-2xl px-12 py-5 text-xl font-bold text-white shadow-xl transition-all active:scale-95 flex items-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed ${mode === 'edit_roadmap' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}
             >

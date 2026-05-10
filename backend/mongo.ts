@@ -194,6 +194,7 @@ const careerSchema = new Schema(
         judul: { type: String, default: '' },
         deskripsi: { type: String, default: '' },
         proyek: { type: [String], default: [] },
+        topics: { type: Schema.Types.Mixed, default: [] },
         buku: [
           {
             judul: { type: String, default: '' },

@@ -16,7 +16,8 @@ import {
   Bookmark,
   ChevronRight,
   ChevronDown,
-  HelpCircle
+  HelpCircle,
+  Target
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import { useAuth } from '../lib/AuthContext';
@@ -47,7 +48,7 @@ export default function RoadmapDetail() {
         const response = await fetch(`/api/careers/${slug}`);
         if (!response.ok) throw new Error('Failed to fetch from API');
         const data = await response.json();
-        
+
         if (data.item) {
           setCareer(data.item);
         } else {
@@ -107,7 +108,25 @@ export default function RoadmapDetail() {
     </div>
   );
 
-  if (!career) return <Navigate to="/roadmap" replace />;
+  if (!career) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-white px-6 text-center">
+        <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-4xl bg-orange-50 text-orange-600">
+          <Target size={48} />
+        </div>
+        <h1 className="mb-4 text-3xl font-black tracking-tighter text-slate-950 sm:text-4xl">Roadmap Belum Tersedia</h1>
+        <p className="mb-10 max-w-md text-lg font-medium text-slate-500">
+          Tim kami sedang merancang peta jalan terbaik untuk karir ini. Silakan eksplorasi karir lainnya!
+        </p>
+        <Link
+          to="/roadmap"
+          className="rounded-full bg-slate-950 px-8 py-4 text-sm font-black text-white transition-all hover:scale-105 hover:bg-orange-600 shadow-xl shadow-slate-900/10"
+        >
+          Kembali ke Katalog
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-8 sm:py-12 lg:px-8">
@@ -203,7 +222,7 @@ export default function RoadmapDetail() {
                     <div className="space-y-4">
                       {(career.duniaPerkuliahan?.alasanMemilih || career.universityWorld?.whyChoose || []).map((reason: any, i: number) => (
                         <div key={i} className="flex gap-4">
-                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-500">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-500">
                             {i + 1}
                           </div>
                           <div>
@@ -236,7 +255,7 @@ export default function RoadmapDetail() {
                 const isActive = activeStepKey === stepKey;
 
                 return (
-                    <div key={stepKey} className="relative flex flex-col sm:flex-row gap-8">
+                  <div key={stepKey} className="relative flex flex-col sm:flex-row gap-8">
                     {/* Step Indicator */}
                     <div className="relative z-10 flex h-12 w-12 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-white/80 border border-slate-200 text-base sm:text-xl font-black text-slate-300 shadow-sm transition-all group-hover:border-blue-700">
                       {stepIndex + 1}
@@ -261,12 +280,17 @@ export default function RoadmapDetail() {
                             <Bookmark size={14} /> {career.type === 'skill_based' ? 'Modul Pelajaran & Proyek' : 'Topik Studi Utama'}
                           </h4>
                           <div className="grid gap-3 sm:grid-cols-2">
-                            {(step.proyek || step.projects || []).map((proj: any) => {
-                              const projectSlug = getProjectSlug(proj);
+                            {(step.topics || step.proyek || step.projects || []).map((topicOrProj: any, topicIndex: number) => {
+                              const isObject = typeof topicOrProj === 'object';
+                              const title = isObject ? topicOrProj.title : topicOrProj;
+                              const projectUrlId = isObject 
+                                ? `roadmap-${career.slug || career.id}-${stepIndex}-${topicIndex}`
+                                : getProjectSlug(title);
+
                               return (
                                 <Link
-                                  key={proj}
-                                  to={`/project/${projectSlug}`}
+                                  key={title}
+                                  to={`/module/${projectUrlId}`}
                                   className="group flex items-center justify-between gap-4 rounded-2xl p-5 border transition-all bg-white/80 border-slate-200 hover:border-blue-700 hover:shadow-md"
                                 >
                                   <div className="flex items-center gap-3">
@@ -274,7 +298,7 @@ export default function RoadmapDetail() {
                                       <BookOpen size={18} />
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-sm font-bold text-slate-700">{proj}</span>
+                                      <span className="text-sm font-bold text-slate-700">{title}</span>
                                       <span className="text-[10px] font-black uppercase tracking-widest text-blue-700 opacity-0 group-hover:opacity-100">Buka Misi</span>
                                     </div>
                                   </div>
@@ -339,7 +363,7 @@ export default function RoadmapDetail() {
                     <div className="space-y-3">
                       {career.referensiDigital.map((ref: any, i: number) => (
                         <a key={i} href={ref.link} target="_blank" rel="noopener noreferrer" className="block p-4 rounded-2xl bg-white border border-slate-100 hover:border-emerald-600 transition-all shadow-sm hover:shadow-md group">
-                           <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-2">
                             <span className={`inline-block px-2 py-0.5 rounded-md text-[9px] font-black uppercase transition-colors ${ref.tipe === 'youtube' ? 'bg-rose-50 text-rose-600 group-hover:bg-rose-600 group-hover:text-white' : 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>{ref.tipe}</span>
                           </div>
                           <p className="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{ref.judul}</p>
@@ -415,7 +439,7 @@ export default function RoadmapDetail() {
                 </div>
               </div>
 
-                <div className="h-px bg-white/10"></div>
+              <div className="h-px bg-white/10"></div>
 
               {/* Global */}
               <div className="space-y-4">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import {
   ArrowRight,
   Check,
@@ -60,15 +60,19 @@ interface Project {
   brief: string;
   steps: string[];
   briefSections: BriefSection[];
-  interactiveSteps: InteractiveStep[];
+  interactiveSteps: any[]; // Changed to any to handle both formats
   image: string;
   category: string;
+  contentBlocks?: any[];
+  specifications?: string[];
+  isRoadmap?: boolean;
 }
 
 const DUMMY_PROJECTS: Project[] = [];
 
 export default function ProjectExplore() {
   const [searchParams] = useSearchParams();
+  const { id } = useParams();
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [viewMode, setViewMode] = useState<'guided' | 'pure'>('guided');
   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
@@ -84,7 +88,7 @@ export default function ProjectExplore() {
   const [aiInput, setAiInput] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiStreamingText, setAiStreamingText] = useState('');
-  const [projects, setProjects] = useState<Project[]>(DUMMY_PROJECTS);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
   const [projectError, setProjectError] = useState<string | null>(null);
 
@@ -100,17 +104,56 @@ export default function ProjectExplore() {
         setIsLoadingProjects(true);
         setProjectError(null);
 
+        // Fetch standard projects
         const result = await fetchProjects();
-        const items = result.items as Project[];
+        let items = (result.items as Project[]) || [];
 
-        if (!cancelled && Array.isArray(items) && items.length > 0) {
+        // Also fetch careers to extract roadmap projects
+        try {
+          const careerRes = await fetch('/api/careers');
+          if (careerRes.ok) {
+            const careerData = await careerRes.json();
+            const careers = careerData.items || [];
+            
+            careers.forEach((career: any) => {
+              const roadmap = career.roadmap || career.phases || [];
+              roadmap.forEach((phase: any, pIdx: number) => {
+                if (phase.topics) {
+                  phase.topics.forEach((topic: any, tIdx: number) => {
+                    if (topic.showProject && topic.project) {
+                      const rawSkills = topic.project.skillsLearned || [];
+                      items.push({
+                        id: `roadmap-${career.slug}-${pIdx}-${tIdx}`,
+                        title: topic.project.title || topic.title,
+                        introduction: topic.project.background || topic.summary || topic.description,
+                        background: topic.project.background || topic.description,
+                        skills: Array.isArray(rawSkills) ? rawSkills : (typeof rawSkills === 'string' ? rawSkills.split(',').map(s => s.trim()).filter(Boolean) : []),
+                        brief: topic.project.background || '',
+                        steps: topic.project.specifications || [],
+                        briefSections: [],
+                        interactiveSteps: topic.project.interactiveSteps || [],
+                        image: topic.project.image || '',
+                        category: career.category || 'Career Roadmap',
+                        isRoadmap: true,
+                        contentBlocks: topic.project.contentBlocks || []
+                      });
+                    }
+                  });
+                }
+              });
+            });
+          }
+        } catch (e) {
+          console.error("Failed to load roadmap projects:", e);
+        }
+
+        if (!cancelled && items.length > 0) {
           setProjects(items);
         }
       } catch (error) {
         console.error('Failed to load projects:', error);
         if (!cancelled) {
-          setProjectError('Data project dari server belum tersedia. Menampilkan project contoh.');
-          setProjects(DUMMY_PROJECTS);
+          setProjectError('Data project dari server belum tersedia.');
         }
       } finally {
         if (!cancelled) {
@@ -127,14 +170,58 @@ export default function ProjectExplore() {
   }, []);
 
   useEffect(() => {
-    const projectTitle = searchParams.get('title');
-    if (projectTitle) {
-      const found = projects.find(p => p.title.toLowerCase() === projectTitle.toLowerCase());
+    if (id) {
+      const found = projects.find(p => p.id === id);
       if (found) {
         setActiveProject(found);
+        return;
+      }
+
+      // If not found in loaded projects and it's a roadmap ID, fetch specifically
+      if (id.startsWith('roadmap-')) {
+        const parts = id.split('-');
+        const tIdx = parseInt(parts.pop() || '0');
+        const pIdx = parseInt(parts.pop() || '0');
+        const slug = parts.slice(1).join('-');
+
+        fetch(`/api/careers/${slug}`)
+          .then(res => res.json())
+          .then(data => {
+            const career = data.item;
+            if (career) {
+              const roadmap = career.roadmap || career.phases || [];
+              const topic = roadmap[pIdx]?.topics?.[tIdx];
+              if (topic && topic.project) {
+                const rawSkills = topic.project.skillsLearned || [];
+                setActiveProject({
+                  id,
+                  title: topic.project.title || topic.title,
+                  introduction: topic.project.background || topic.summary || topic.description,
+                  background: topic.project.background || topic.description,
+                  skills: Array.isArray(rawSkills) ? rawSkills : (typeof rawSkills === 'string' ? rawSkills.split(',').map(s => s.trim()).filter(Boolean) : []),
+                  brief: topic.project.background || '',
+                  steps: topic.project.specifications || [],
+                  briefSections: [],
+                  interactiveSteps: topic.project.interactiveSteps || [],
+                  image: topic.project.image || '',
+                  category: career.category || 'Career Roadmap',
+                  isRoadmap: true,
+                  contentBlocks: topic.project.contentBlocks || []
+                });
+              }
+            }
+          });
+      }
+    } else {
+      const projectTitle = searchParams.get('title');
+      if (projectTitle) {
+        const found = projects.find(p => p.title.toLowerCase() === projectTitle.toLowerCase());
+        if (found) {
+          setActiveProject(found);
+        }
       }
     }
-  }, [searchParams, projects]);
+  }, [id, searchParams, projects]);
 
   const categories = ['Semua', ...Array.from(new Set(projects.map(p => p.category)))];
 
@@ -355,9 +442,9 @@ export default function ProjectExplore() {
               <article className="rounded-3xl border border-gray-200 bg-white/70 p-6 lg:col-span-2">
                 <p className="mb-4 text-xs font-black uppercase tracking-widest text-slate-500">Skill yang akan dipelajari</p>
                 <div className="flex flex-wrap gap-2.5">
-                  {activeProject.skills.map((skill, idx) => (
+                  {(Array.isArray(activeProject.skills) ? activeProject.skills : []).map((skill: string, idx: number) => (
                     <span
-                      key={skill}
+                      key={skill + idx}
                       className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/70 px-3 py-1.5 text-xs font-semibold text-blue-900"
                     >
                       {idx % 3 === 0 ? <BrainCircuit size={14} /> : idx % 3 === 1 ? <Cloud size={14} /> : <Code2 size={14} />}
@@ -439,207 +526,150 @@ export default function ProjectExplore() {
                   <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 md:block" />
                   <div className="space-y-16 md:space-y-20">
                     {steps.map((step, index) => {
-                      const selectedChoiceId = stepChoices[step.id];
-                      const selectedChoice = step.choices?.find((choice) => choice.id === selectedChoiceId);
-                      const proofValue = stepProofs[step.id] || '';
-                      const isStepCompleted = completedSteps.includes(step.id);
+                      const selectedChoiceId = stepChoices[step.id || `step-${index}`];
+                      const selectedChoice = step.choices?.find((choice: any) => choice.id === selectedChoiceId);
+                      const proofValue = stepProofs[step.id || `step-${index}`] || '';
+                      const isStepCompleted = completedSteps.includes(step.id || `step-${index}`);
                       const isFirst = index === 0;
-                      const isSecond = step.stepNumber === 2;
-                      const isThird = step.stepNumber === 3;
+                      
+                      // Roadmap project specific flags
+                      const stepId = step.id || `step-${index}`;
 
                       return (
-                        <article key={step.id} className="relative scroll-mt-24">
+                        <article key={stepId} className="relative scroll-mt-24">
                           {!isFirst && <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 md:block" />}
                           <div className="grid gap-5 md:grid-cols-[40px_minmax(0,1fr)] md:gap-8">
                             <div className="relative z-10 flex md:justify-center">
-                              <div className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-black transition ${isStepCompleted ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 bg-(--bg-primary) text-slate-900'}`}>
-                                {isStepCompleted ? <Check size={16} /> : step.stepNumber}
+                              <div className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-black transition ${isStepCompleted ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 bg-white text-slate-900 shadow-sm'}`}>
+                                {isStepCompleted ? <Check size={16} /> : (index + 1)}
                               </div>
                             </div>
 
                             <div className="space-y-6">
                               <div className="space-y-3">
                                 <div className="inline-flex items-center rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                                  Step {step.stepNumber} of {steps.length}
+                                  Step {index + 1} of {steps.length}
                                 </div>
-                                <h3 className="max-w-3xl text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">{step.title}</h3>
-                                <p className="max-w-3xl text-base leading-8 text-gray-700 sm:text-[17px]">{step.description}</p>
+                                <h3 className="max-w-3xl text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">{step.title || `Langkah ${index + 1}`}</h3>
+                                {step.description && <p className="max-w-3xl text-base leading-8 text-gray-700 sm:text-[17px]">{step.description}</p>}
+                                {step.config && <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">{step.config}</p>}
                               </div>
 
-                              {isFirst && (
+                              {/* Media (New Roadmap Format) */}
+                              {step.mediaUrl && (
+                                <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-sm max-w-2xl bg-white p-2">
+                                  {step.mediaUrl.includes('youtube') || step.mediaUrl.includes('youtu.be') ? (
+                                    <iframe
+                                      src={step.mediaUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                                      className="w-full aspect-video rounded-2xl"
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                      allowFullScreen
+                                    />
+                                  ) : (
+                                    <img src={step.mediaUrl} alt={step.title} className="w-full object-cover rounded-2xl" />
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Content Blocks (New Roadmap Format) */}
+                              {step.contentBlocks?.map((block: any, bi: number) => (
+                                <div key={bi} className="space-y-4 max-w-2xl">
+                                  {block.type === 'text' && block.content && (
+                                    <div className="prose prose-slate max-w-none prose-p:leading-8 prose-p:text-gray-700">
+                                      <div>
+                                        <ReactMarkdown>{block.content}</ReactMarkdown>
+                                      </div>
+                                    </div>
+                                  )}
+                                  {block.type === 'image' && block.url && (
+                                    <div className="rounded-2xl overflow-hidden border border-slate-200">
+                                      <img src={block.url} alt="Step content" className="w-full object-cover" />
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+
+                              {/* Legacy Rendering for Hardcoded Demo Steps */}
+                              {!activeProject.isRoadmap && isFirst && (
                                 <div className="space-y-6">
                                   <ul className="space-y-4 text-base leading-8 text-gray-700">
                                     <li className="flex gap-3">
                                       <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-400" />Pastikan Node.js sudah terpasang di perangkat Anda.
                                     </li>
-                                    <li className="flex gap-3">
-                                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-400" />Buka terminal lalu cek versi dengan <span className="mx-1 rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-xs font-medium text-gray-800">node -v</span>.
-                                    </li>
-                                    <li className="flex gap-3">
-                                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-400" />Jika belum ada, unduh versi LTS dari situs resmi dan lanjutkan setelah instalasi selesai.
-                                    </li>
                                   </ul>
-
-                                  <div className="flex flex-wrap items-center gap-8 border-b border-gray-200 pb-1 text-sm font-semibold">
-                                    {step.choices?.map((choice) => {
-                                      const isSelected = selectedChoiceId === choice.id;
-                                      return (
-                                        <button
-                                          key={choice.id}
-                                          type="button"
-                                          onClick={() => handleStepChoice(step.id, choice.id, choice.nextStepId)}
-                                          className={`pb-3 transition ${isSelected ? 'border-b-2 border-gray-900 text-gray-900' : 'border-b-2 border-transparent text-gray-400 hover:text-gray-700'}`}
-                                        >
-                                          {choice.label}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-
-                                  {selectedChoice?.guidance && <p className="max-w-2xl text-sm leading-7 text-gray-600">{selectedChoice.guidance}</p>}
                                 </div>
                               )}
 
-                              {isSecond && (
-                                <div className="space-y-8">
-                                  <p className="max-w-2xl text-base leading-8 text-gray-700">Buka project folder Anda menggunakan editor pilihan.</p>
-
-                                  <div className="rounded-2xl bg-stone-100 p-8">
-                                    <div className="space-y-6">
-                                      <div className="aspect-video rounded-xl bg-stone-200/80 shadow-sm flex items-center justify-center text-stone-400">
-                                        <div className="flex flex-col items-center gap-2 text-sm font-semibold">
-                                          <ImageIcon size={28} />
-                                          Screenshot editor Anda
-                                        </div>
-                                      </div>
-                                      <div className="aspect-video rounded-xl bg-stone-200/80 shadow-sm flex items-center justify-center text-stone-400">
-                                        <div className="flex flex-col items-center gap-2 text-sm font-semibold">
-                                          <ImageIcon size={28} />
-                                          Screenshot workspace / project folder
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <p className="text-xs font-medium text-gray-500">Dua area di atas disediakan untuk screenshot langkah Anda dan bukti setup editor.</p>
-
-                                  <div className="rounded-2xl border-2 border-dashed border-gray-300 px-5 py-7 text-sm text-gray-500">Upload bukti screenshot Editor Anda di sini</div>
-                                </div>
-                              )}
-
-                              {isThird && (
-                                <div className="space-y-8">
-                                  <div className="rounded-2xl border border-gray-200 bg-white p-5">
-                                    <div className="flex items-center justify-between gap-4 border-b border-gray-200 pb-3">
-                                      <div className="flex items-center gap-2 text-sm font-semibold text-gray-600">
-                                        <Code2 size={15} className="text-blue-700" />
-                                        npm install
-                                      </div>
-                                      <button type="button" className="text-gray-400 transition hover:text-gray-700" aria-label="Copy code">
-                                        <Copy size={15} />
-                                      </button>
-                                    </div>
-                                    <pre className="overflow-x-auto pt-4 text-sm leading-7 text-gray-800"><code>{`npm install\nnpm run dev\n`}</code></pre>
-                                  </div>
-
-                                  <div className="space-y-3">
-                                    <label className="block text-sm font-semibold text-gray-700">Paste log error Anda di sini</label>
-                                    <textarea
-                                      value={proofValue}
-                                      onChange={(event) => setStepProofs((prev) => ({ ...prev, [step.id]: event.target.value }))}
-                                      placeholder="Tempel log terminal, error, atau catatan singkat Anda di sini..."
-                                      className="min-h-36 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm leading-7 text-gray-800 outline-none transition focus:border-gray-400 focus:ring-0"
-                                    />
-                                  </div>
-
+                              {/* Branching / Choices */}
+                              {step.choices && step.choices.length > 0 && (
+                                <div className="space-y-4">
+                                  <p className="text-xs font-black uppercase tracking-widest text-slate-400">Pilih Kondisi Anda:</p>
                                   <div className="flex flex-wrap items-center gap-3">
-                                    {step.choices?.map((choice) => {
+                                    {step.choices.map((choice: any) => {
                                       const isSelected = selectedChoiceId === choice.id;
                                       return (
                                         <button
                                           key={choice.id}
                                           type="button"
-                                          onClick={() => handleStepChoice(step.id, choice.id, choice.nextStepId)}
-                                          className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${isSelected ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-800'}`}
+                                          onClick={() => handleStepChoice(stepId, choice.id, choice.nextStepId)}
+                                          className={`rounded-full border px-5 py-2.5 text-sm font-bold transition-all ${isSelected ? 'border-gray-900 bg-gray-900 text-white shadow-lg' : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900'}`}
                                         >
                                           {choice.label}
                                         </button>
                                       );
                                     })}
                                   </div>
-
                                   {selectedChoice?.guidance && (
-                                    <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm leading-7 text-gray-700">
+                                    <div className="rounded-2xl bg-blue-50 border border-blue-100 p-6 text-sm leading-relaxed text-blue-800">
+                                      <p className="font-bold mb-1">💡 Petunjuk Path ini:</p>
                                       {selectedChoice.guidance}
                                     </div>
                                   )}
                                 </div>
                               )}
 
-                              {!isFirst && !isSecond && !isThird && (
-                                <div className="space-y-6">
-                                  {step.guidance && <p className="max-w-3xl text-base leading-8 text-gray-700 whitespace-pre-wrap">{step.guidance}</p>}
-
-                                  {step.choices && step.choices.length > 0 && (
-                                    <div className="space-y-3">
-                                      <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Pilihan kondisi</p>
-                                      <div className="flex flex-wrap gap-3">
-                                        {step.choices.map((choice) => {
-                                          const isSelected = selectedChoiceId === choice.id;
-                                          return (
-                                            <button
-                                              key={choice.id}
-                                              type="button"
-                                              onClick={() => handleStepChoice(step.id, choice.id, choice.nextStepId)}
-                                              className={`rounded-full border px-4 py-2 text-sm font-medium transition ${isSelected ? 'border-gray-900 text-gray-900' : 'border-gray-300 text-gray-500 hover:border-gray-500 hover:text-gray-800'}`}
-                                            >
-                                              {choice.label}
-                                            </button>
-                                          );
-                                        })}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {(step.requiresExplanation || selectedChoice?.requiresProof || selectedChoice?.requiresExplanation) && (
-                                    <div className="space-y-3 border-l-2 border-blue-100 pl-4">
-                                      {step.requiresExplanation && (
-                                        <textarea
-                                          value={proofValue}
-                                          onChange={(event) => setStepProofs((prev) => ({ ...prev, [step.id]: event.target.value }))}
-                                          placeholder="Tulis penjelasan singkat di sini..."
-                                          className="min-h-28 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm leading-7 text-gray-800 outline-none transition focus:border-gray-400 focus:ring-0"
-                                        />
-                                      )}
-                                      {selectedChoice?.requiresProof && <p className="text-sm leading-7 text-gray-600">Upload screenshot atau tempel link bukti pada bagian akhir halaman.</p>}
-                                      {selectedChoice?.requiresExplanation && !step.requiresExplanation && <p className="text-sm leading-7 text-gray-700">{selectedChoice.requiresExplanation}</p>}
-                                    </div>
-                                  )}
-
-                                  {selectedChoice?.guidance && (
-                                    <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm leading-7 text-gray-700">
-                                      <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">If you picked this path</p>
-                                      <p className="whitespace-pre-wrap">{selectedChoice.guidance}</p>
-                                    </div>
-                                  )}
+                              {/* Branching Question (Roadmap Format) */}
+                              {step.branchQuestion && (
+                                <div className="rounded-2xl bg-amber-50 border border-amber-100 p-6 max-w-2xl">
+                                  <p className="text-sm font-bold text-amber-900 italic">
+                                    ❓ {step.branchQuestion}
+                                  </p>
                                 </div>
                               )}
 
+                              {/* Proof / Requirements */}
+                              <div className="space-y-4">
+                                {(step.requireExplanation || step.requiresExplanation || selectedChoice?.requiresExplanation) && (
+                                  <div className="space-y-3">
+                                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">Penjelasan Singkat:</label>
+                                    <textarea
+                                      value={proofValue}
+                                      onChange={(event) => setStepProofs((prev) => ({ ...prev, [stepId]: event.target.value }))}
+                                      placeholder="Tulis hasil atau kendala Anda di sini..."
+                                      className="min-h-28 w-full max-w-2xl rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm leading-7 text-gray-800 outline-none transition focus:border-gray-400 focus:shadow-sm"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+
                               <div className="flex flex-wrap items-center gap-3 pt-2">
                                 <button
-                                  onClick={() => toggleStepCompletion(step.id)}
-                                  className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-bold transition-all duration-300 ${isStepCompleted ? 'border-emerald-700 bg-emerald-700 text-white shadow-lg shadow-emerald-200' : 'border-gray-300 bg-transparent text-gray-700 hover:border-gray-900 hover:text-gray-900 hover:bg-gray-50'}`}
+                                  onClick={() => toggleStepCompletion(stepId)}
+                                  className={`inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-black transition-all duration-300 ${isStepCompleted ? 'border-emerald-700 bg-emerald-700 text-white shadow-lg shadow-emerald-200' : 'border-gray-300 bg-transparent text-gray-700 hover:border-gray-900 hover:text-gray-900 hover:bg-gray-50'}`}
                                 >
                                   <Check size={16} />
                                   {isStepCompleted ? 'Selesai' : 'Tandai Selesai'}
                                 </button>
 
                                 <button
-                                  onClick={() => setIsAiOpen(true)}
-                                  className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-5 py-2.5 text-sm font-bold text-blue-700 transition-all hover:bg-blue-100/80"
+                                  onClick={() => {
+                                    setIsAiOpen(true);
+                                    setActiveTab('ai');
+                                  }}
+                                  className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-6 py-3 text-sm font-black text-blue-700 transition-all hover:bg-blue-100/80"
                                 >
                                   <Sparkles size={16} />
-                                  Tanya AI
+                                  Tanya Mentor AI
                                 </button>
                               </div>
                             </div>
@@ -788,15 +818,17 @@ export default function ProjectExplore() {
                     <div className="flex justify-start">
                       <div className="max-w-[90%] rounded-3xl bg-white border border-slate-100 px-5 py-4 text-sm leading-relaxed text-slate-700 shadow-sm">
                         <div className="prose prose-sm prose-slate max-w-none">
-                          <ReactMarkdown 
-                            components={{
-                              p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
-                              strong: ({children}) => <strong className="font-black text-blue-600">{children}</strong>,
-                              ul: ({children}) => <ul className="list-disc pl-4 mb-3 space-y-1">{children}</ul>,
-                            }}
-                          >
-                            {aiStreamingText}
-                          </ReactMarkdown>
+                          <div>
+                            <ReactMarkdown 
+                              components={{
+                                p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
+                                strong: ({children}) => <strong className="font-black text-blue-600">{children}</strong>,
+                                ul: ({children}) => <ul className="list-disc pl-4 mb-3 space-y-1">{children}</ul>,
+                              }}
+                            >
+                              {aiStreamingText}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                         <span className="inline-block w-1.5 h-4 bg-blue-500 animate-pulse ml-0.5 rounded-sm" />
                       </div>
@@ -913,11 +945,13 @@ export default function ProjectExplore() {
               className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-100 bg-white p-2.5 shadow-sm transition-all hover:border-blue-100 hover:shadow-xl hover:shadow-blue-500/5"
             >
               <div className="relative mb-4 aspect-[4/3] overflow-hidden rounded-xl bg-slate-50">
-                <img 
-                  src={project.image || "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=1200"} 
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                  alt={project.title} 
-                />
+                {project.image && (
+                  <img 
+                    src={project.image} 
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                    alt={project.title} 
+                  />
+                )}
                 <div className="absolute left-3 top-3">
                   <span className="rounded-md bg-white/95 backdrop-blur-sm px-2.5 py-1 text-[8px] font-black uppercase tracking-widest text-slate-900 shadow-sm border border-slate-100/50">
                     {project.category}
