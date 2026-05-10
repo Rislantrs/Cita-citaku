@@ -1,8 +1,10 @@
 import type { Express } from 'express';
-import { CareerModel, ProjectModel, QuizResultModel, SubmissionModel, UserModel, ensureCareerSeeded, isMongoReady, memoryStore } from './mongo';
+import { CareerModel, ProjectModel, QuizResultModel, SubmissionModel, UserModel, UserProjectModel, ensureCareerSeeded, isMongoReady, memoryStore } from './mongo';
 import multer from 'multer';
 import * as pdfLib from 'pdf-parse';
 import { callAI } from './ai_service';
+import { optionalAuth, requireAuth, requireAdmin, type AuthenticatedRequest } from './auth';
+import sharp from 'sharp';
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -405,17 +407,13 @@ export function registerApiRoutes(app: Express) {
     res.status(201).json({ ok: true, submission: toPlain(created) });
   });
 
-  app.patch('/api/submissions/:id/review', async (req, res) => {
+  app.patch('/api/submissions/:id/review', requireAuth, requireAdmin, async (req: AuthenticatedRequest, res) => {
     const { id } = req.params;
-    const { status, reviewedBy, reviewerRole, notes } = req.body ?? {};
+    const { status, notes } = req.body ?? {};
+    const reviewedBy = req.user?.email || req.user?.uid || 'admin';
 
     if (!['approved', 'rejected'].includes(status)) {
       res.status(400).json({ error: 'status must be approved or rejected' });
-      return;
-    }
-
-    if (!isAdminLike(reviewerRole)) {
-      res.status(403).json({ error: 'Admin access required' });
       return;
     }
 
@@ -606,7 +604,7 @@ export function registerApiRoutes(app: Express) {
     res.json({ item });
   });
 
-  app.delete('/api/careers/:slug', async (req, res) => {
+  app.delete('/api/careers/:slug', requireAuth, requireAdmin, async (req: AuthenticatedRequest, res) => {
     const { slug } = req.params;
 
     if (!isMongoReady()) {
@@ -633,7 +631,7 @@ export function registerApiRoutes(app: Express) {
     }
   });
 
-  app.post('/api/careers', async (req, res) => {
+  app.post('/api/careers', requireAuth, requireAdmin, async (req: AuthenticatedRequest, res) => {
     try {
       const data = req.body;
       const slug = data.slug || data.judul?.toLowerCase()?.replace(/[^a-z0-9\s-]/g, '')?.replace(/\s+/g, '-') || data.title?.toLowerCase()?.replace(/[^a-z0-9\s-]/g, '')?.replace(/\s+/g, '-');
@@ -748,6 +746,84 @@ export function registerApiRoutes(app: Express) {
     }
   });
 
+  // ─── USER PROJECT PROGRESS (Item 8: Project Submission System) ─────────
+  app.post('/api/user-projects', requireAuth, async (req: AuthenticatedRequest, res) => {
+    const uid = req.user!.uid;
+    const { projectId, completedSteps, stepChoices, stepProofs, driveLink, githubLink, status } = req.body;
+
+    if (!projectId) {
+      res.status(400).json({ error: 'projectId is required' });
+      return;
+    }
+
+    const payload = {
+      userId: uid,
+      projectId,
+      completedSteps: completedSteps || [],
+      stepChoices: stepChoices || {},
+      stepProofs: stepProofs || {},
+      driveLink: driveLink || '',
+      githubLink: githubLink || '',
+      status: status || 'in_progress',
+    };
+
+    if (!isMongoReady()) {
+      res.json({ ok: true, project: payload, message: 'Saved to memory (DB not available)' });
+      return;
+    }
+
+    try {
+      const result = await UserProjectModel.findOneAndUpdate(
+        { userId: uid, projectId } as any,
+        { $set: payload },
+        { upsert: true, new: true }
+      );
+      res.json({ ok: true, project: toPlain(result) });
+    } catch (err) {
+      console.error('[api] Failed to save user project:', err);
+      res.status(500).json({ error: 'Gagal menyimpan progres project' });
+    }
+  });
+
+  app.get('/api/user-projects/:uid', async (req, res) => {
+    const { uid } = req.params;
+    if (!isMongoReady()) {
+      res.json({ projects: [] });
+      return;
+    }
+    try {
+      const projects = await UserProjectModel.find({ userId: uid } as any).lean();
+      res.json({ projects });
+    } catch (err) {
+      res.json({ projects: [] });
+    }
+  });
+
+  // ─── USER SUMMARY (Item 9: Dynamic Dashboard) ─────────────────────────
+  app.get('/api/users/:uid/summary', async (req, res) => {
+    const { uid } = req.params;
+
+    try {
+      let user = null;
+      let quizResult = null;
+      let userProjects: any[] = [];
+
+      if (isMongoReady()) {
+        user = await UserModel.findOne({ uid } as any).lean();
+        quizResult = await QuizResultModel.findOne({ userUid: uid } as any).lean();
+        userProjects = await UserProjectModel.find({ userId: uid } as any).lean();
+      }
+
+      res.json({
+        user: user || null,
+        quizResult: quizResult || null,
+        userProjects: userProjects || [],
+      });
+    } catch (err) {
+      console.error('[api] Failed to fetch user summary:', err);
+      res.json({ user: null, quizResult: null, userProjects: [] });
+    }
+  });
 
   // Global Error Handler Middleware
   app.use((err: any, _req: any, res: any, _next: any) => {
@@ -785,10 +861,34 @@ const storage = multer.diskStorage({
 const uploadDisk = multer({ storage });
 
 export function registerUploadRoute(app: Express) {
-  app.post('/api/upload', uploadDisk.single('file'), (req: any, res) => {
+  app.post('/api/upload', uploadDisk.single('file'), async (req: any, res) => {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
+
+    const originalPath = req.file.path;
+    const isImage = /\.(jpe?g|png|gif|bmp|tiff?|webp)$/i.test(req.file.originalname);
+
+    if (isImage) {
+      try {
+        const webpFilename = req.file.filename.replace(/\.[^.]+$/, '') + '.webp';
+        const webpPath = path.join(path.dirname(originalPath), webpFilename);
+
+        await sharp(originalPath)
+          .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 80 })
+          .toFile(webpPath);
+
+        // Remove original file after conversion
+        try { fs.unlinkSync(originalPath); } catch {}
+
+        console.log(`[upload] Compressed & converted to WebP: ${webpFilename}`);
+        return res.json({ url: `/uploads/${webpFilename}` });
+      } catch (compressErr) {
+        console.warn('[upload] WebP compression failed, serving original:', compressErr);
+      }
+    }
+
     const fileUrl = `/uploads/${req.file.filename}`;
     res.json({ url: fileUrl });
   });

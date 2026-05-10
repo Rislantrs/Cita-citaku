@@ -7,6 +7,7 @@ import { GoogleGenAI } from '@google/genai';
 import { connectMongo, ensureCareerSeeded, ensureProjectSeeded, UserUsageModel, ChatSessionModel, isMongoReady } from './backend/mongo';
 import { registerApiRoutes, registerUploadRoute, configureStaticFiles } from './backend/routes';
 import { callAI, streamAI, type AITaskType } from './backend/ai_service';
+import { optionalAuth } from './backend/auth';
 
 const CAREER_COUNSELOR_SYSTEM_PROMPT = `
 Kamu adalah AI Counselor untuk platform Cita-citaku.
@@ -143,6 +144,7 @@ async function startServer() {
   app.use(cors({ origin: true, credentials: true }));
   app.use(express.json({ limit: '1mb' }));
   app.use(mongoSanitize());
+  app.use(optionalAuth as any);
 
   registerApiRoutes(app);
   registerUploadRoute(app);

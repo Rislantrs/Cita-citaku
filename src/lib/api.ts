@@ -140,3 +140,55 @@ export async function uploadFile(file: File) {
 
   return parseJsonResponse<{ url: string }>(response);
 }
+
+// ─── Auth Helper ────────────────────────────────────────────────────────
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const { getAuth } = await import('firebase/auth');
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return { 'Content-Type': 'application/json' };
+
+  try {
+    const token = await user.getIdToken();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    };
+  } catch {
+    return { 'Content-Type': 'application/json' };
+  }
+}
+
+// ─── User Project Progress (Item 8) ─────────────────────────────────────
+export async function saveUserProject(payload: {
+  projectId: string;
+  completedSteps: string[];
+  stepChoices: Record<string, string>;
+  stepProofs: Record<string, string>;
+  driveLink: string;
+  githubLink: string;
+  status: 'in_progress' | 'submitted' | 'completed';
+}) {
+  const headers = await getAuthHeaders();
+  const response = await fetch('/api/user-projects', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  });
+  return parseJsonResponse<{ ok: boolean; project: unknown }>(response);
+}
+
+export async function fetchUserProjects(uid: string) {
+  const response = await fetch(`/api/user-projects/${encodeURIComponent(uid)}`);
+  return parseJsonResponse<{ projects: any[] }>(response);
+}
+
+// ─── User Dashboard Summary (Item 9) ────────────────────────────────────
+export async function fetchDashboardSummary(uid: string) {
+  const response = await fetch(`/api/users/${encodeURIComponent(uid)}/summary`);
+  return parseJsonResponse<{
+    user: any;
+    quizResult: any;
+    userProjects: any[];
+  }>(response);
+}

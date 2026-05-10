@@ -8,9 +8,6 @@ export default defineConfig(({mode}) => {
   const apiPort = env.API_PORT || '3001';
   return {
     plugins: [react(), tailwindcss()],
-    define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-    },
     resolve: {
       alias: {
         '@': path.resolve(process.cwd(), 'src'),

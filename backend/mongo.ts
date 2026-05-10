@@ -231,6 +231,19 @@ const chatSessionSchema = new mongoose.Schema({
   messages: { type: [chatMessageSchema], default: [] },
 }, { timestamps: true });
 
+const userProjectSchema = new mongoose.Schema({
+  userId: { type: String, required: true, index: true },
+  projectId: { type: String, required: true, index: true },
+  completedSteps: { type: [String], default: [] },
+  stepChoices: { type: mongoose.Schema.Types.Mixed, default: {} },
+  stepProofs: { type: mongoose.Schema.Types.Mixed, default: {} },
+  driveLink: { type: String, default: '' },
+  githubLink: { type: String, default: '' },
+  status: { type: String, enum: ['in_progress', 'submitted', 'completed'], default: 'in_progress' },
+}, { timestamps: true });
+
+userProjectSchema.index({ userId: 1, projectId: 1 }, { unique: true });
+
 export const UserModel = mongoose.models.User || mongoose.model('User', userSchema);
 export const CareerModel = mongoose.models.Career || mongoose.model('Career', careerSchema);
 export const ProjectModel = mongoose.models.Project || mongoose.model('Project', projectSchema);
@@ -238,6 +251,7 @@ export const SubmissionModel = mongoose.models.Submission || mongoose.model('Sub
 export const QuizResultModel = mongoose.models.QuizResult || mongoose.model('QuizResult', quizResultSchema);
 export const UserUsageModel = mongoose.models.UserUsage || mongoose.model('UserUsage', userUsageSchema);
 export const ChatSessionModel = mongoose.models.ChatSession || mongoose.model('ChatSession', chatSessionSchema);
+export const UserProjectModel = mongoose.models.UserProject || mongoose.model('UserProject', userProjectSchema);
 
 let connected = false;
 

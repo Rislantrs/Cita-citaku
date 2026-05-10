@@ -9,11 +9,38 @@ import * as motion from 'motion/react-client';
 import { AdminRiasec } from '../components/admin/AdminRiasec';
 import SubmitRoadmap from './SubmitRoadmap';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { doc, updateDoc, setDoc, serverTimestamp, collection, addDoc, getDocs, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp, collection, addDoc, getDocs, query, orderBy } from 'firebase/firestore';
+import { useAuth } from '../lib/AuthContext';
 
 type AdminView = 'dashboard' | 'review' | 'roadmaps' | 'riasec' | 'admins';
 
 export default function AdminDashboard() {
+  const { user, loading: authLoading } = useAuth();
+  const [adminVerified, setAdminVerified] = useState<boolean | null>(null);
+
+  // Admin Auth Gate: verify role from Firestore
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) { setAdminVerified(false); return; }
+
+    const checkAdmin = async () => {
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+          const role = snap.data()?.role;
+          setAdminVerified(role === 'admin' || role === 'super_admin' || role === 'moderator');
+        } else {
+          setAdminVerified(false);
+        }
+      } catch (err) {
+        console.error('[admin] Role check failed:', err);
+        setAdminVerified(false);
+      }
+    };
+    checkAdmin();
+  }, [user, authLoading]);
+
   const [currentView, setCurrentView] = useState<AdminView>('dashboard');
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [reviewingSubmission, setReviewingSubmission] = useState<any | null>(null);
@@ -162,6 +189,30 @@ export default function AdminDashboard() {
       toast.error('Terjadi kesalahan saat menghapus');
     }
   };
+
+  // Auth Gate: show loading or denied
+  if (authLoading || adminVerified === null) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600" />
+        <p className="text-sm font-bold text-slate-500">Memverifikasi akses admin...</p>
+      </div>
+    );
+  }
+
+  if (!adminVerified) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-6">
+        <div className="h-20 w-20 rounded-3xl bg-red-50 flex items-center justify-center text-red-500 mb-2">
+          <ShieldCheck size={40} />
+        </div>
+        <h1 className="text-2xl font-black text-slate-900">Akses Ditolak</h1>
+        <p className="text-sm text-slate-500 text-center max-w-md">
+          Halaman ini hanya bisa diakses oleh admin. Jika kamu merasa ini kesalahan, hubungi administrator.
+        </p>
+      </div>
+    );
+  }
 
   // Overlay for Editor
   if (reviewingSubmission || isCreatingNew) {

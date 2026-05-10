@@ -57,8 +57,21 @@ export function AdminRiasec() {
       setIsSaving(true);
       const batch = writeBatch(db);
       
-      // Clear existing (optional, or just update)
-      // For simplicity, we just set all current
+      // 1. Fetch existing doc IDs from Firestore
+      const existingSnapshot = await getDocs(collection(db, 'bank_soal'));
+      const existingIds = new Set(existingSnapshot.docs.map(d => d.id));
+      
+      // 2. Determine current IDs (what we want to keep)
+      const currentIds = new Set(questions.map(q => q.id));
+      
+      // 3. DELETE docs that exist in Firestore but NOT in current state
+      for (const existingId of existingIds) {
+        if (!currentIds.has(existingId)) {
+          batch.delete(doc(db, 'bank_soal', existingId));
+        }
+      }
+      
+      // 4. SET all current questions
       for (const q of questions) {
         const docRef = doc(db, 'bank_soal', q.id);
         batch.set(docRef, {

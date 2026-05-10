@@ -17,13 +17,15 @@ import {
   Trophy,
   BrainCircuit,
   X,
+  Rocket,
+  Loader2,
 } from 'lucide-react';
 import * as motion from 'motion/react-client';
 import ReactMarkdown from 'react-markdown';
 import { auth } from '../lib/firebase';
 import { toast } from 'sonner';
 import SEO from '../components/SEO';
-import { fetchProjects } from '../lib/api';
+import { fetchProjects, saveUserProject, fetchUserProjects } from '../lib/api';
 
 interface BriefSection {
   number: number;
@@ -91,6 +93,10 @@ export default function ProjectExplore() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
   const [projectError, setProjectError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingProgress, setIsSavingProgress] = useState(false);
+  const [isJoined, setIsJoined] = useState(false);
+  const [isCheckingJoined, setIsCheckingJoined] = useState(true);
 
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -223,6 +229,40 @@ export default function ProjectExplore() {
     }
   }, [id, searchParams, projects]);
 
+  // Check if user has already joined this project
+  useEffect(() => {
+    if (!activeProject || !auth.currentUser) {
+      setIsCheckingJoined(false);
+      return;
+    }
+
+    async function checkJoinStatus() {
+      try {
+        setIsCheckingJoined(true);
+        const res = await fetchUserProjects(auth.currentUser!.uid);
+        const userProj = res.projects.find(p => p.projectId === activeProject!.id);
+        
+        if (userProj) {
+          setIsJoined(true);
+          // Load saved state
+          setCompletedSteps(userProj.completedSteps || []);
+          setStepChoices(userProj.stepChoices || {});
+          setStepProofs(userProj.stepProofs || {});
+          setDriveLink(userProj.driveLink || '');
+          setGithubLink(userProj.githubLink || '');
+        } else {
+          setIsJoined(false);
+        }
+      } catch (err) {
+        console.error("Failed to check join status:", err);
+      } finally {
+        setIsCheckingJoined(false);
+      }
+    }
+
+    checkJoinStatus();
+  }, [activeProject]);
+
   const categories = ['Semua', ...Array.from(new Set(projects.map(p => p.category)))];
 
   const filteredProjects = projects.filter(project => {
@@ -349,6 +389,84 @@ export default function ProjectExplore() {
   };
 
 
+  const handleJoinProject = async () => {
+    if (!auth.currentUser || !activeProject) {
+      toast.error('Silakan login untuk mengikuti proyek.');
+      return;
+    }
+    
+    setIsSavingProgress(true);
+    try {
+      await saveUserProject({
+        projectId: activeProject.id,
+        completedSteps: [],
+        stepChoices: {},
+        stepProofs: {},
+        driveLink: '',
+        githubLink: '',
+        status: 'in_progress',
+      });
+      setIsJoined(true);
+      toast.success('Berhasil mengikuti proyek! Selamat belajar.');
+    } catch (err) {
+      toast.error('Gagal mengikuti proyek. Coba lagi nanti.');
+    } finally {
+      setIsSavingProgress(false);
+    }
+  };
+
+  const handleSaveProgress = async () => {
+    if (!auth.currentUser || !activeProject) {
+      toast.error('Silakan login terlebih dahulu untuk menyimpan progres.');
+      return;
+    }
+    setIsSavingProgress(true);
+    try {
+      await saveUserProject({
+        projectId: activeProject.id,
+        completedSteps,
+        stepChoices,
+        stepProofs,
+        driveLink,
+        githubLink,
+        status: 'in_progress',
+      });
+      toast.success('Progres berhasil disimpan!');
+    } catch (err) {
+      toast.error('Gagal menyimpan progres. Silakan coba lagi.');
+    } finally {
+      setIsSavingProgress(false);
+    }
+  };
+
+  const handleSubmitProject = async () => {
+    if (!auth.currentUser || !activeProject) {
+      toast.error('Silakan login terlebih dahulu.');
+      return;
+    }
+    if (completedSteps.length < (activeProject.interactiveSteps?.length || 0)) {
+      toast.warning('Selesaikan semua langkah terlebih dahulu.');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await saveUserProject({
+        projectId: activeProject.id,
+        completedSteps,
+        stepChoices,
+        stepProofs,
+        driveLink,
+        githubLink,
+        status: 'submitted',
+      });
+      toast.success('🎉 Project berhasil dikirim! Terima kasih atas kerja kerasmu.');
+    } catch (err) {
+      toast.error('Gagal mengirim project. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleStepChoice = (stepId: string, choiceId: string, nextStepId?: string | null) => {
     setStepChoices((prev) => ({ ...prev, [stepId]: choiceId }));
     if (nextStepId) {
@@ -398,11 +516,19 @@ export default function ProjectExplore() {
               </div>
 
               <div className="hidden items-center gap-3 sm:flex">
-                <button className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-gray-400 hover:text-gray-900">
-                  <Share2 size={15} /> Pamerkan
+                <button
+                  onClick={handleSaveProgress}
+                  disabled={isSavingProgress || !isJoined}
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-gray-400 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <Share2 size={15} /> {isSavingProgress ? 'Menyimpan...' : 'Simpan Progres'}
                 </button>
-                <button className="inline-flex items-center gap-2 rounded-full border border-gray-900 bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-black">
-                  <Trophy size={15} /> SELESAI
+                <button 
+                  onClick={handleSubmitProject}
+                  disabled={isSubmitting || !isJoined || completedSteps.length < steps.length}
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-900 bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-black disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <Trophy size={15} /> {isSubmitting ? 'Mengirim...' : 'SELESAI'}
                 </button>
                 <button
                   onClick={() => {
@@ -520,6 +646,33 @@ export default function ProjectExplore() {
                       )}
                     </div>
                   ))}
+                </div>
+              ) : !isJoined ? (
+                <div className="relative py-20 px-6 rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center text-center overflow-hidden">
+                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
+                    <Rocket size={120} className="text-blue-600" />
+                  </div>
+                  
+                  <div className="relative z-10 max-w-md">
+                    <div className="h-16 w-16 bg-blue-600 text-white rounded-2xl shadow-xl shadow-blue-200 flex items-center justify-center mx-auto mb-6">
+                      <Sparkles size={32} />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-950 mb-3">Mulai Perjalananmu?</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed mb-8">
+                      Ikuti proyek ini untuk membuka panduan interaktif, menyimpan progres, dan mengirim hasil karyamu ke mentor.
+                    </p>
+                    <button 
+                      onClick={handleJoinProject}
+                      disabled={isSavingProgress}
+                      className="group relative inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-2xl text-sm font-black shadow-xl hover:bg-blue-700 transition-all active:scale-[0.98] disabled:opacity-50"
+                    >
+                      {isSavingProgress ? <Loader2 className="animate-spin" size={18}/> : <Rocket size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                      IKUTI PROYEK SEKARANG
+                    </button>
+                    <p className="mt-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                      Gratis untuk seluruh komunitas Cita-Citaku
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="relative mt-4 pl-1 md:pl-6">
@@ -655,7 +808,8 @@ export default function ProjectExplore() {
                               <div className="flex flex-wrap items-center gap-3 pt-2">
                                 <button
                                   onClick={() => toggleStepCompletion(stepId)}
-                                  className={`inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-black transition-all duration-300 ${isStepCompleted ? 'border-emerald-700 bg-emerald-700 text-white shadow-lg shadow-emerald-200' : 'border-gray-300 bg-transparent text-gray-700 hover:border-gray-900 hover:text-gray-900 hover:bg-gray-50'}`}
+                                  disabled={!isJoined}
+                                  className={`inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-black transition-all duration-300 ${isStepCompleted ? 'border-emerald-700 bg-emerald-700 text-white shadow-lg shadow-emerald-200' : 'border-gray-300 bg-transparent text-gray-700 hover:border-gray-900 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-20'}`}
                                 >
                                   <Check size={16} />
                                   {isStepCompleted ? 'Selesai' : 'Tandai Selesai'}
@@ -716,16 +870,33 @@ export default function ProjectExplore() {
             </section>
 
             <section className="py-12">
-              <div className="mx-auto max-w-xl text-center">
-                {completedSteps.length < steps.length ? (
+              <div className="mx-auto max-w-xl text-center space-y-4">
+                <button
+                  onClick={handleSaveProgress}
+                  disabled={isSavingProgress || !isJoined}
+                  className="w-full rounded-2xl border-2 border-gray-200 bg-white py-4 text-sm font-black text-gray-700 transition-all hover:border-gray-400 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {isSavingProgress ? 'Menyimpan...' : '💾 Simpan Progres'}
+                </button>
+                {!isJoined ? (
+                   <button
+                    onClick={handleJoinProject}
+                    disabled={isSavingProgress}
+                    className="w-full rounded-2xl bg-blue-600 py-4 text-sm font-black text-white shadow-xl transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
+                  >
+                    🚀 Ikuti Proyek Sekarang
+                  </button>
+                ) : completedSteps.length < steps.length ? (
                   <div className="rounded-2xl border-2 border-gray-200 py-4 text-sm font-bold text-gray-400">
                     Masih ada tugas yang perlu diselesaikan!
                   </div>
                 ) : (
                   <button
-                    className="w-full rounded-2xl bg-gray-900 py-4 text-sm font-black text-white shadow-xl transition-all hover:bg-black active:scale-[0.98]"
+                    onClick={handleSubmitProject}
+                    disabled={isSubmitting}
+                    className="w-full rounded-2xl bg-gray-900 py-4 text-sm font-black text-white shadow-xl transition-all hover:bg-black active:scale-[0.98] disabled:opacity-50"
                   >
-                    Kirim Project Sekarang
+                    {isSubmitting ? 'Mengirim...' : '🚀 Kirim Project Sekarang'}
                   </button>
                 )}
               </div>

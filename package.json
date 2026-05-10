@@ -23,6 +23,7 @@
     "express": "^4.21.2",
     "express-mongo-sanitize": "^2.2.0",
     "firebase": "^12.12.1",
+    "firebase-admin": "^13.9.0",
     "i18next": "^26.0.8",
     "lucide-react": "^0.546.0",
     "mongodb": "^7.2.0",
@@ -36,6 +37,7 @@
     "react-i18next": "^17.0.6",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.14.2",
+    "sharp": "^0.34.5",
     "sonner": "^2.0.7",
     "vite": "^6.2.3"
   },

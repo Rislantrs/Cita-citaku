@@ -120,5 +120,22 @@ Roadmap ini disusun berdasarkan skala prioritas: **Keamanan > Fungsionalitas Int
 
 ---
 
+---
+
+## 📅 TO-DO LIST MEI 2026 (Urgent Updates)
+Daftar tugas yang sudah diimplementasikan pada 10 Mei 2026:
+
+1. ✅ **Audit Keamanan Total**: Secured semua endpoint admin dengan Firebase Admin token verification. Menghapus pola `reviewerRole` dari body (client-spoofable) → sekarang di-verify server-side.
+2. ✅ **Admin Authentication**: Auth wall di `AdminDashboard.tsx` — cek role dari Firestore sebelum render. Backend: `requireAuth` + `requireAdmin` middleware di `backend/auth.ts`.
+3. ✅ **Mobile Version Audit**: Firestore rules ditambahkan safe-area support. Responsive utilities sudah ada di semua page. *(Full visual testing perlu dilakukan manual di device)*
+4. ✅ **Database Integrity Check**: Ditambahkan `UserProjectModel` schema baru untuk user project progress. Semua model ter-export dan ter-index dengan benar.
+5. ✅ **Backend-First Philosophy**: Menghapus `GEMINI_API_KEY` dari `vite.config.ts` define (tidak lagi terekspos di frontend). Admin role verification dipindahkan ke server-side. Firestore rules diperketat.
+6. ✅ **Image Optimization (WebP)**: `/api/upload` sekarang otomatis compress + convert ke WebP via `sharp` (max 1920px, quality 80). File original dihapus setelah konversi.
+7. ✅ **RIASEC Persistence Fix**: Root cause: `saveQuestions()` hanya `batch.set()` tapi tidak `batch.delete()` untuk soal yang dihapus. Fix: fetch existing IDs, diff, delete yang hilang dalam batch yang sama.
+8. ✅ **Project Submission System**: `UserProjectModel` + `POST /api/user-projects` + `GET /api/user-projects/:uid`. Tombol "Simpan Progres" dan "Kirim Project" di `ProjectExplore.tsx` sekarang terhubung ke backend.
+9. ✅ **Dynamic Dashboard & User Panel**: `Dashboard.tsx` sekarang fetch real data via `GET /api/users/:uid/summary`. Quiz results, project count, dan career target ditarik dari database. Tombol "Simpan Progres" dan "Selesai" aktif.
+
+---
+
 ### Langkah Selanjutnya:
-Lanjutkan ke **Fase 4 (Gamification)** setelah menyelesaikan isu Firestore rules.
+Lanjutkan ke **Fase 4 (Gamification)** — semua prerequisite sudah terpenuhi.
