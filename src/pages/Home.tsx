@@ -75,7 +75,10 @@ export default function Home() {
       />
 
       {/* HERO SECTION - Balanced & Clean */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+      <section 
+        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden transition-colors duration-500"
+        style={{ backgroundColor: 'var(--bg-secondary)' }}
+      >
         {/* Subtle Background */}
         <div className="absolute inset-0 z-0">
           <img
@@ -84,10 +87,10 @@ export default function Home() {
             width={1920}
             height={1080}
             fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale-[0.5]"
+            className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-20 grayscale-[0.5] dark:grayscale-0"
             aria-hidden="true"
           />
-          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, var(--bg-secondary), transparent, var(--bg-secondary))` }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white dark:from-[#020617] dark:via-transparent dark:to-[#020617]" />
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-6 text-center">
@@ -96,13 +99,13 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="inline-block px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-[11px] font-bold tracking-widest uppercase text-blue-600 mb-8">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 text-[11px] font-bold tracking-widest uppercase text-blue-600 dark:text-blue-400 mb-8">
               Platform Eksplorasi Karir Indonesia
             </div>
 
-            <h1 className="text-4xl sm:text-7xl font-black leading-[1.15] sm:leading-[1.1] tracking-tight mb-8" style={{ color: 'var(--text-primary)' }}>
+            <h1 className="text-4xl sm:text-7xl font-black leading-[1.15] sm:leading-[1.1] tracking-tight mb-8 text-slate-900 dark:text-white">
               Arah Masa Depan, <br className="hidden sm:block" />
-              <span className="text-blue-600"> Lebih Jelas.</span>
+              <span className="text-blue-600 dark:text-blue-400"> Lebih Jelas.</span>
             </h1>
 
             <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>
@@ -120,8 +123,7 @@ export default function Home() {
 
               <Link
                 to="/roadmap"
-                className="w-full sm:w-auto flex items-center justify-center gap-3 rounded-full px-10 py-5 text-[15px] font-bold transition-all hover:-translate-y-1"
-                style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
+                className="w-full sm:w-auto flex items-center justify-center gap-3 rounded-full px-10 py-5 text-[15px] font-bold transition-all hover:-translate-y-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
               >
                 Cari Profesi
               </Link>

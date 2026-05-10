@@ -18,6 +18,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     localStorage.setItem('theme', theme);
   }, [theme]);
 
@@ -57,10 +62,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   // Dynamic header background for both light and dark mode
   const headerBg = scrolled 
-    ? (isDark ? 'rgba(2, 6, 23, 0.86)' : 'rgba(244, 247, 251, 0.86)')
+    ? 'var(--header-bg)'
     : 'transparent';
   const headerBorder = scrolled
-    ? (isDark ? '1px solid rgba(148, 163, 184, 0.1)' : '1px solid rgba(148, 163, 184, 0.18)')
+    ? '1px solid var(--border-color)'
     : '1px solid transparent';
 
   return (

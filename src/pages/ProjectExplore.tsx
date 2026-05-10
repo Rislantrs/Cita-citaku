@@ -120,7 +120,7 @@ export default function ProjectExplore() {
           if (careerRes.ok) {
             const careerData = await careerRes.json();
             const careers = careerData.items || [];
-            
+
             careers.forEach((career: any) => {
               const roadmap = career.roadmap || career.phases || [];
               roadmap.forEach((phase: any, pIdx: number) => {
@@ -241,7 +241,7 @@ export default function ProjectExplore() {
         setIsCheckingJoined(true);
         const res = await fetchUserProjects(auth.currentUser!.uid);
         const userProj = res.projects.find(p => p.projectId === activeProject!.id);
-        
+
         if (userProj) {
           setIsJoined(true);
           // Load saved state
@@ -266,9 +266,9 @@ export default function ProjectExplore() {
   const categories = ['Semua', ...Array.from(new Set(projects.map(p => p.category)))];
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         project.introduction.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         project.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.introduction.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === 'Semua' || project.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -383,7 +383,7 @@ export default function ProjectExplore() {
       },
       cancel: {
         label: 'Batal',
-        onClick: () => {},
+        onClick: () => { },
       },
     });
   };
@@ -394,7 +394,7 @@ export default function ProjectExplore() {
       toast.error('Silakan login untuk mengikuti proyek.');
       return;
     }
-    
+
     setIsSavingProgress(true);
     try {
       await saveUserProject({
@@ -523,7 +523,7 @@ export default function ProjectExplore() {
                 >
                   <Share2 size={15} /> {isSavingProgress ? 'Menyimpan...' : 'Simpan Progres'}
                 </button>
-                <button 
+                <button
                   onClick={handleSubmitProject}
                   disabled={isSubmitting || !isJoined || completedSteps.length < steps.length}
                   className="inline-flex items-center gap-2 rounded-full border border-gray-900 bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-black disabled:opacity-30 disabled:cursor-not-allowed"
@@ -549,361 +549,361 @@ export default function ProjectExplore() {
 
           <div className="flex-1 overflow-y-auto scroll-smooth pb-24 sm:pb-0">
             <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-10 md:px-6 md:pt-14">
-            <section className="border-b border-gray-200 pb-8">
-              <div className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800">
-                {activeProject.category}
-              </div>
-              <h1 className="mt-5 max-w-3xl text-4xl font-black tracking-tight text-gray-900 sm:text-5xl">
-                {activeProject.title}
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-8 text-gray-600 sm:text-lg">{activeProject.introduction}</p>
-            </section>
-
-            <section className="grid gap-6 border-b border-gray-200 py-10 lg:grid-cols-5">
-              <article className="rounded-3xl border border-gray-200 bg-white/70 p-6 lg:col-span-3">
-                <p className="mb-3 text-xs font-black uppercase tracking-widest text-slate-500">Latar Belakang Masalah</p>
-                <p className="text-base italic leading-8 text-gray-700 sm:text-lg">{activeProject.background}</p>
-              </article>
-
-              <article className="rounded-3xl border border-gray-200 bg-white/70 p-6 lg:col-span-2">
-                <p className="mb-4 text-xs font-black uppercase tracking-widest text-slate-500">Skill yang akan dipelajari</p>
-                <div className="flex flex-wrap gap-2.5">
-                  {(Array.isArray(activeProject.skills) ? activeProject.skills : []).map((skill: string, idx: number) => (
-                    <span
-                      key={skill + idx}
-                      className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/70 px-3 py-1.5 text-xs font-semibold text-blue-900"
-                    >
-                      {idx % 3 === 0 ? <BrainCircuit size={14} /> : idx % 3 === 1 ? <Cloud size={14} /> : <Code2 size={14} />}
-                      {skill}
-                    </span>
-                  ))}
+              <section className="border-b border-gray-200 pb-8">
+                <div className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800">
+                  {activeProject.category}
                 </div>
-              </article>
-            </section>
+                <h1 className="mt-5 max-w-3xl text-4xl font-black tracking-tight text-gray-900 sm:text-5xl">
+                  {activeProject.title}
+                </h1>
+                <p className="mt-4 max-w-2xl text-base leading-8 text-gray-600 sm:text-lg">{activeProject.introduction}</p>
+              </section>
 
-            <section className="space-y-6 border-b border-gray-200 py-10">
-              <div className="space-y-4">
-                <p className="text-xs font-black uppercase tracking-widest text-slate-500">Interactive Brief & Task</p>
-                <div className="inline-flex rounded-full border border-gray-200 bg-white/70 p-1 text-sm">
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('pure')}
-                    className={`rounded-full px-4 py-2 font-semibold transition ${viewMode === 'pure' ? 'border-b-2 border-gray-900 text-gray-900' : 'border-b-2 border-transparent text-gray-500'}`}
-                  >
-                    Murni
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setViewMode('guided');
-                      setCurrentStepId('step-1');
-                    }}
-                    className={`rounded-full px-4 py-2 font-semibold transition ${viewMode === 'guided' ? 'border-b-2 border-gray-900 text-gray-900' : 'border-b-2 border-transparent text-gray-500'}`}
-                  >
-                    Panduan
-                  </button>
-                </div>
-              </div>
+              <section className="grid gap-6 border-b border-gray-200 py-10 lg:grid-cols-5">
+                <article className="rounded-3xl border border-gray-200 bg-white/70 p-6 lg:col-span-3">
+                  <p className="mb-3 text-xs font-black uppercase tracking-widest text-slate-500">Latar Belakang Masalah</p>
+                  <p className="text-base italic leading-8 text-gray-700 sm:text-lg">{activeProject.background}</p>
+                </article>
 
-              {viewMode === 'pure' ? (
-                <div className="space-y-8">
-                  {activeProject.briefSections.map((section) => (
-                    <div key={section.number} className="space-y-3">
-                      <h3 className="text-lg font-bold text-gray-900">
-                        {section.number}️⃣ {section.title}
-                      </h3>
-                      {typeof section.content === 'string' ? (
-                        <p className="text-sm leading-relaxed text-gray-700 sm:text-base">{section.content}</p>
-                      ) : Array.isArray(section.content) ? (
-                        <ul className="space-y-2 text-sm leading-7 text-gray-700 sm:text-base">
-                          {section.content.map((item, idx) => (
-                            <li key={idx} className="flex gap-2">
-                              <span className="shrink-0 text-blue-600">•</span>
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <div className="space-y-4 text-sm text-gray-700 sm:text-base">
-                          {Object.entries(section.content).map(([subTitle, subContent]) => (
-                            <div key={subTitle}>
-                              <p className="mb-2 font-semibold text-gray-900">{subTitle}:</p>
-                              {Array.isArray(subContent) ? (
-                                <ul className="ml-4 space-y-1">
-                                  {subContent.map((item, idx) => (
-                                    <li key={idx} className="flex gap-2">
-                                      <span className="shrink-0 text-blue-600">→</span>
-                                      <span>{item}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <p className="ml-4">{subContent}</p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : !isJoined ? (
-                <div className="relative py-20 px-6 rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center text-center overflow-hidden">
-                  <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
-                    <Rocket size={120} className="text-blue-600" />
+                <article className="rounded-3xl border border-gray-200 bg-white/70 p-6 lg:col-span-2">
+                  <p className="mb-4 text-xs font-black uppercase tracking-widest text-slate-500">Skill yang akan dipelajari</p>
+                  <div className="flex flex-wrap gap-2.5">
+                    {(Array.isArray(activeProject.skills) ? activeProject.skills : []).map((skill: string, idx: number) => (
+                      <span
+                        key={skill + idx}
+                        className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/70 px-3 py-1.5 text-xs font-semibold text-blue-900"
+                      >
+                        {idx % 3 === 0 ? <BrainCircuit size={14} /> : idx % 3 === 1 ? <Cloud size={14} /> : <Code2 size={14} />}
+                        {skill}
+                      </span>
+                    ))}
                   </div>
-                  
-                  <div className="relative z-10 max-w-md">
-                    <div className="h-16 w-16 bg-blue-600 text-white rounded-2xl shadow-xl shadow-blue-200 flex items-center justify-center mx-auto mb-6">
-                      <Sparkles size={32} />
-                    </div>
-                    <h3 className="text-2xl font-black text-slate-950 mb-3">Mulai Perjalananmu?</h3>
-                    <p className="text-sm text-slate-600 leading-relaxed mb-8">
-                      Ikuti proyek ini untuk membuka panduan interaktif, menyimpan progres, dan mengirim hasil karyamu ke mentor.
-                    </p>
-                    <button 
-                      onClick={handleJoinProject}
-                      disabled={isSavingProgress}
-                      className="group relative inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-2xl text-sm font-black shadow-xl hover:bg-blue-700 transition-all active:scale-[0.98] disabled:opacity-50"
+                </article>
+              </section>
+
+              <section className="space-y-6 border-b border-gray-200 py-10">
+                <div className="space-y-4">
+                  <p className="text-xs font-black uppercase tracking-widest text-slate-500">Interactive Brief & Task</p>
+                  <div className="inline-flex rounded-full border border-gray-200 bg-white/70 p-1 text-sm">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('pure')}
+                      className={`rounded-full px-4 py-2 font-semibold transition ${viewMode === 'pure' ? 'border-b-2 border-gray-900 text-gray-900' : 'border-b-2 border-transparent text-gray-500'}`}
                     >
-                      {isSavingProgress ? <Loader2 className="animate-spin" size={18}/> : <Rocket size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
-                      IKUTI PROYEK SEKARANG
+                      Murni
                     </button>
-                    <p className="mt-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                      Gratis untuk seluruh komunitas Cita-Citaku
-                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setViewMode('guided');
+                        setCurrentStepId('step-1');
+                      }}
+                      className={`rounded-full px-4 py-2 font-semibold transition ${viewMode === 'guided' ? 'border-b-2 border-gray-900 text-gray-900' : 'border-b-2 border-transparent text-gray-500'}`}
+                    >
+                      Panduan
+                    </button>
                   </div>
                 </div>
-              ) : (
-                <div className="relative mt-4 pl-1 md:pl-6">
-                  <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 md:block" />
-                  <div className="space-y-16 md:space-y-20">
-                    {steps.map((step, index) => {
-                      const selectedChoiceId = stepChoices[step.id || `step-${index}`];
-                      const selectedChoice = step.choices?.find((choice: any) => choice.id === selectedChoiceId);
-                      const proofValue = stepProofs[step.id || `step-${index}`] || '';
-                      const isStepCompleted = completedSteps.includes(step.id || `step-${index}`);
-                      const isFirst = index === 0;
-                      
-                      // Roadmap project specific flags
-                      const stepId = step.id || `step-${index}`;
 
-                      return (
-                        <article key={stepId} className="relative scroll-mt-24">
-                          {!isFirst && <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 md:block" />}
-                          <div className="grid gap-5 md:grid-cols-[40px_minmax(0,1fr)] md:gap-8">
-                            <div className="relative z-10 flex md:justify-center">
-                              <div className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-black transition ${isStepCompleted ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 bg-white text-slate-900 shadow-sm'}`}>
-                                {isStepCompleted ? <Check size={16} /> : (index + 1)}
-                              </div>
-                            </div>
-
-                            <div className="space-y-6">
-                              <div className="space-y-3">
-                                <div className="inline-flex items-center rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                                  Step {index + 1} of {steps.length}
-                                </div>
-                                <h3 className="max-w-3xl text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">{step.title || `Langkah ${index + 1}`}</h3>
-                                {step.description && <p className="max-w-3xl text-base leading-8 text-gray-700 sm:text-[17px]">{step.description}</p>}
-                                {step.config && <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">{step.config}</p>}
-                              </div>
-
-                              {/* Media (New Roadmap Format) */}
-                              {step.mediaUrl && (
-                                <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-sm max-w-2xl bg-white p-2">
-                                  {step.mediaUrl.includes('youtube') || step.mediaUrl.includes('youtu.be') ? (
-                                    <iframe
-                                      src={step.mediaUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
-                                      className="w-full aspect-video rounded-2xl"
-                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                      allowFullScreen
-                                    />
-                                  ) : (
-                                    <img src={step.mediaUrl} alt={step.title} className="w-full object-cover rounded-2xl" />
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Content Blocks (New Roadmap Format) */}
-                              {step.contentBlocks?.map((block: any, bi: number) => (
-                                <div key={bi} className="space-y-4 max-w-2xl">
-                                  {block.type === 'text' && block.content && (
-                                    <div className="prose prose-slate max-w-none prose-p:leading-8 prose-p:text-gray-700">
-                                      <div>
-                                        <ReactMarkdown>{block.content}</ReactMarkdown>
-                                      </div>
-                                    </div>
-                                  )}
-                                  {block.type === 'image' && block.url && (
-                                    <div className="rounded-2xl overflow-hidden border border-slate-200">
-                                      <img src={block.url} alt="Step content" className="w-full object-cover" />
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-
-                              {/* Legacy Rendering for Hardcoded Demo Steps */}
-                              {!activeProject.isRoadmap && isFirst && (
-                                <div className="space-y-6">
-                                  <ul className="space-y-4 text-base leading-8 text-gray-700">
-                                    <li className="flex gap-3">
-                                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-400" />Pastikan Node.js sudah terpasang di perangkat Anda.
-                                    </li>
+                {viewMode === 'pure' ? (
+                  <div className="space-y-8">
+                    {activeProject.briefSections.map((section) => (
+                      <div key={section.number} className="space-y-3">
+                        <h3 className="text-lg font-bold text-gray-900">
+                          {section.number}️⃣ {section.title}
+                        </h3>
+                        {typeof section.content === 'string' ? (
+                          <p className="text-sm leading-relaxed text-gray-700 sm:text-base">{section.content}</p>
+                        ) : Array.isArray(section.content) ? (
+                          <ul className="space-y-2 text-sm leading-7 text-gray-700 sm:text-base">
+                            {section.content.map((item, idx) => (
+                              <li key={idx} className="flex gap-2">
+                                <span className="shrink-0 text-blue-600">•</span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="space-y-4 text-sm text-gray-700 sm:text-base">
+                            {Object.entries(section.content).map(([subTitle, subContent]) => (
+                              <div key={subTitle}>
+                                <p className="mb-2 font-semibold text-gray-900">{subTitle}:</p>
+                                {Array.isArray(subContent) ? (
+                                  <ul className="ml-4 space-y-1">
+                                    {subContent.map((item, idx) => (
+                                      <li key={idx} className="flex gap-2">
+                                        <span className="shrink-0 text-blue-600">→</span>
+                                        <span>{item}</span>
+                                      </li>
+                                    ))}
                                   </ul>
-                                </div>
-                              )}
-
-                              {/* Branching / Choices */}
-                              {step.choices && step.choices.length > 0 && (
-                                <div className="space-y-4">
-                                  <p className="text-xs font-black uppercase tracking-widest text-slate-400">Pilih Kondisi Anda:</p>
-                                  <div className="flex flex-wrap items-center gap-3">
-                                    {step.choices.map((choice: any) => {
-                                      const isSelected = selectedChoiceId === choice.id;
-                                      return (
-                                        <button
-                                          key={choice.id}
-                                          type="button"
-                                          onClick={() => handleStepChoice(stepId, choice.id, choice.nextStepId)}
-                                          className={`rounded-full border px-5 py-2.5 text-sm font-bold transition-all ${isSelected ? 'border-gray-900 bg-gray-900 text-white shadow-lg' : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900'}`}
-                                        >
-                                          {choice.label}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                  {selectedChoice?.guidance && (
-                                    <div className="rounded-2xl bg-blue-50 border border-blue-100 p-6 text-sm leading-relaxed text-blue-800">
-                                      <p className="font-bold mb-1">💡 Petunjuk Path ini:</p>
-                                      {selectedChoice.guidance}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Branching Question (Roadmap Format) */}
-                              {step.branchQuestion && (
-                                <div className="rounded-2xl bg-amber-50 border border-amber-100 p-6 max-w-2xl">
-                                  <p className="text-sm font-bold text-amber-900 italic">
-                                    ❓ {step.branchQuestion}
-                                  </p>
-                                </div>
-                              )}
-
-                              {/* Proof / Requirements */}
-                              <div className="space-y-4">
-                                {(step.requireExplanation || step.requiresExplanation || selectedChoice?.requiresExplanation) && (
-                                  <div className="space-y-3">
-                                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">Penjelasan Singkat:</label>
-                                    <textarea
-                                      value={proofValue}
-                                      onChange={(event) => setStepProofs((prev) => ({ ...prev, [stepId]: event.target.value }))}
-                                      placeholder="Tulis hasil atau kendala Anda di sini..."
-                                      className="min-h-28 w-full max-w-2xl rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm leading-7 text-gray-800 outline-none transition focus:border-gray-400 focus:shadow-sm"
-                                    />
-                                  </div>
+                                ) : (
+                                  <p className="ml-4">{subContent}</p>
                                 )}
                               </div>
-
-                              <div className="flex flex-wrap items-center gap-3 pt-2">
-                                <button
-                                  onClick={() => toggleStepCompletion(stepId)}
-                                  disabled={!isJoined}
-                                  className={`inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-black transition-all duration-300 ${isStepCompleted ? 'border-emerald-700 bg-emerald-700 text-white shadow-lg shadow-emerald-200' : 'border-gray-300 bg-transparent text-gray-700 hover:border-gray-900 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-20'}`}
-                                >
-                                  <Check size={16} />
-                                  {isStepCompleted ? 'Selesai' : 'Tandai Selesai'}
-                                </button>
-
-                                <button
-                                  onClick={() => {
-                                    setIsAiOpen(true);
-                                    setActiveTab('ai');
-                                  }}
-                                  className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-6 py-3 text-sm font-black text-blue-700 transition-all hover:bg-blue-100/80"
-                                >
-                                  <Sparkles size={16} />
-                                  Tanya Mentor AI
-                                </button>
-                              </div>
-                            </div>
+                            ))}
                           </div>
-                        </article>
-                      );
-                    })}
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </div>
-              )}
-            </section>
+                ) : !isJoined ? (
+                  <div className="relative py-20 px-6 rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center text-center overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12">
+                      <Rocket size={120} className="text-blue-600" />
+                    </div>
 
-            <section className="py-10 border-b border-gray-200">
-              <div className="max-w-xl">
-                <p className="mb-4 text-xs font-black uppercase tracking-widest text-slate-500">Bukti Hasil Karya</p>
-                <div className="space-y-4">
-                  <label className="block">
-                    <span className="mb-2 block text-sm font-semibold text-gray-700">Tempel link Google Drive di sini...</span>
-                    <input
-                      type="url"
-                      value={driveLink}
-                      onChange={(e) => setDriveLink(e.target.value)}
-                      placeholder="https://drive.google.com/..."
-                      className="w-full rounded-2xl border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-gray-400 focus:ring-0"
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-2 block text-sm font-semibold text-gray-700">Link GitHub / Portofolio...</span>
-                    <input
-                      type="url"
-                      value={githubLink}
-                      onChange={(e) => setGithubLink(e.target.value)}
-                      placeholder="https://github.com/..."
-                      className="w-full rounded-2xl border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-gray-400 focus:ring-0"
-                    />
-                  </label>
-                </div>
-
-                <div className="mt-4 rounded-2xl border-2 border-dashed border-gray-300 px-5 py-8 text-sm text-gray-500">
-                  Upload Screenshot / Bukti (Coming Soon)
-                </div>
-              </div>
-            </section>
-
-            <section className="py-12">
-              <div className="mx-auto max-w-xl text-center space-y-4">
-                <button
-                  onClick={handleSaveProgress}
-                  disabled={isSavingProgress || !isJoined}
-                  className="w-full rounded-2xl border-2 border-gray-200 bg-white py-4 text-sm font-black text-gray-700 transition-all hover:border-gray-400 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  {isSavingProgress ? 'Menyimpan...' : '💾 Simpan Progres'}
-                </button>
-                {!isJoined ? (
-                   <button
-                    onClick={handleJoinProject}
-                    disabled={isSavingProgress}
-                    className="w-full rounded-2xl bg-blue-600 py-4 text-sm font-black text-white shadow-xl transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
-                  >
-                    🚀 Ikuti Proyek Sekarang
-                  </button>
-                ) : completedSteps.length < steps.length ? (
-                  <div className="rounded-2xl border-2 border-gray-200 py-4 text-sm font-bold text-gray-400">
-                    Masih ada tugas yang perlu diselesaikan!
+                    <div className="relative z-10 max-w-md">
+                      <div className="h-16 w-16 bg-blue-600 text-white rounded-2xl shadow-xl shadow-blue-200 flex items-center justify-center mx-auto mb-6">
+                        <Sparkles size={32} />
+                      </div>
+                      <h3 className="text-2xl font-black text-slate-950 mb-3">Mulai Perjalananmu?</h3>
+                      <p className="text-sm text-slate-600 leading-relaxed mb-8">
+                        Ikuti proyek ini untuk membuka panduan interaktif, menyimpan progres, dan mengirim hasil karyamu ke mentor.
+                      </p>
+                      <button
+                        onClick={handleJoinProject}
+                        disabled={isSavingProgress}
+                        className="group relative inline-flex items-center gap-3 bg-slate-950 text-white px-8 py-4 rounded-2xl text-sm font-black shadow-xl hover:bg-blue-700 transition-all active:scale-[0.98] disabled:opacity-50"
+                      >
+                        {isSavingProgress ? <Loader2 className="animate-spin" size={18} /> : <Rocket size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                        IKUTI PROYEK SEKARANG
+                      </button>
+                      <p className="mt-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        Gratis untuk seluruh komunitas Cita-Citaku
+                      </p>
+                    </div>
                   </div>
                 ) : (
-                  <button
-                    onClick={handleSubmitProject}
-                    disabled={isSubmitting}
-                    className="w-full rounded-2xl bg-gray-900 py-4 text-sm font-black text-white shadow-xl transition-all hover:bg-black active:scale-[0.98] disabled:opacity-50"
-                  >
-                    {isSubmitting ? 'Mengirim...' : '🚀 Kirim Project Sekarang'}
-                  </button>
+                  <div className="relative mt-4 pl-1 md:pl-6">
+                    <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 md:block" />
+                    <div className="space-y-16 md:space-y-20">
+                      {steps.map((step, index) => {
+                        const selectedChoiceId = stepChoices[step.id || `step-${index}`];
+                        const selectedChoice = step.choices?.find((choice: any) => choice.id === selectedChoiceId);
+                        const proofValue = stepProofs[step.id || `step-${index}`] || '';
+                        const isStepCompleted = completedSteps.includes(step.id || `step-${index}`);
+                        const isFirst = index === 0;
+
+                        // Roadmap project specific flags
+                        const stepId = step.id || `step-${index}`;
+
+                        return (
+                          <article key={stepId} className="relative scroll-mt-24">
+                            {!isFirst && <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 md:block" />}
+                            <div className="grid gap-5 md:grid-cols-[40px_minmax(0,1fr)] md:gap-8">
+                              <div className="relative z-10 flex md:justify-center">
+                                <div className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-black transition ${isStepCompleted ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 bg-white text-slate-900 shadow-sm'}`}>
+                                  {isStepCompleted ? <Check size={16} /> : (index + 1)}
+                                </div>
+                              </div>
+
+                              <div className="space-y-6">
+                                <div className="space-y-3">
+                                  <div className="inline-flex items-center rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                                    Step {index + 1} of {steps.length}
+                                  </div>
+                                  <h3 className="max-w-3xl text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">{step.title || `Langkah ${index + 1}`}</h3>
+                                  {step.description && <p className="max-w-3xl text-base leading-8 text-gray-700 sm:text-[17px]">{step.description}</p>}
+                                  {step.config && <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">{step.config}</p>}
+                                </div>
+
+                                {/* Media (New Roadmap Format) */}
+                                {step.mediaUrl && (
+                                  <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-sm max-w-2xl bg-white p-2">
+                                    {step.mediaUrl.includes('youtube') || step.mediaUrl.includes('youtu.be') ? (
+                                      <iframe
+                                        src={step.mediaUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                                        className="w-full aspect-video rounded-2xl"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                      />
+                                    ) : (
+                                      <img src={step.mediaUrl} alt={step.title} className="w-full object-cover rounded-2xl" />
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Content Blocks (New Roadmap Format) */}
+                                {step.contentBlocks?.map((block: any, bi: number) => (
+                                  <div key={bi} className="space-y-4 max-w-2xl">
+                                    {block.type === 'text' && block.content && (
+                                      <div className="prose prose-slate max-w-none prose-p:leading-8 prose-p:text-gray-700">
+                                        <div>
+                                          <ReactMarkdown>{block.content}</ReactMarkdown>
+                                        </div>
+                                      </div>
+                                    )}
+                                    {block.type === 'image' && block.url && (
+                                      <div className="rounded-2xl overflow-hidden border border-slate-200">
+                                        <img src={block.url} alt="Step content" className="w-full object-cover" />
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+
+                                {/* Legacy Rendering for Hardcoded Demo Steps */}
+                                {!activeProject.isRoadmap && isFirst && (
+                                  <div className="space-y-6">
+                                    <ul className="space-y-4 text-base leading-8 text-gray-700">
+                                      <li className="flex gap-3">
+                                        <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-400" />Pastikan Node.js sudah terpasang di perangkat Anda.
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
+
+                                {/* Branching / Choices */}
+                                {step.choices && step.choices.length > 0 && (
+                                  <div className="space-y-4">
+                                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">Pilih Kondisi Anda:</p>
+                                    <div className="flex flex-wrap items-center gap-3">
+                                      {step.choices.map((choice: any) => {
+                                        const isSelected = selectedChoiceId === choice.id;
+                                        return (
+                                          <button
+                                            key={choice.id}
+                                            type="button"
+                                            onClick={() => handleStepChoice(stepId, choice.id, choice.nextStepId)}
+                                            className={`rounded-full border px-5 py-2.5 text-sm font-bold transition-all ${isSelected ? 'border-gray-900 bg-gray-900 text-white shadow-lg' : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900'}`}
+                                          >
+                                            {choice.label}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                    {selectedChoice?.guidance && (
+                                      <div className="rounded-2xl bg-blue-50 border border-blue-100 p-6 text-sm leading-relaxed text-blue-800">
+                                        <p className="font-bold mb-1">💡 Petunjuk Path ini:</p>
+                                        {selectedChoice.guidance}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Branching Question (Roadmap Format) */}
+                                {step.branchQuestion && (
+                                  <div className="rounded-2xl bg-amber-50 border border-amber-100 p-6 max-w-2xl">
+                                    <p className="text-sm font-bold text-amber-900 italic">
+                                      ❓ {step.branchQuestion}
+                                    </p>
+                                  </div>
+                                )}
+
+                                {/* Proof / Requirements */}
+                                <div className="space-y-4">
+                                  {(step.requireExplanation || step.requiresExplanation || selectedChoice?.requiresExplanation) && (
+                                    <div className="space-y-3">
+                                      <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">Penjelasan Singkat:</label>
+                                      <textarea
+                                        value={proofValue}
+                                        onChange={(event) => setStepProofs((prev) => ({ ...prev, [stepId]: event.target.value }))}
+                                        placeholder="Tulis hasil atau kendala Anda di sini..."
+                                        className="min-h-28 w-full max-w-2xl rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm leading-7 text-gray-800 outline-none transition focus:border-gray-400 focus:shadow-sm"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-3 pt-2">
+                                  <button
+                                    onClick={() => toggleStepCompletion(stepId)}
+                                    disabled={!isJoined}
+                                    className={`inline-flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-black transition-all duration-300 ${isStepCompleted ? 'border-emerald-700 bg-emerald-700 text-white shadow-lg shadow-emerald-200' : 'border-gray-300 bg-transparent text-gray-700 hover:border-gray-900 hover:text-gray-900 hover:bg-gray-50 disabled:opacity-20'}`}
+                                  >
+                                    <Check size={16} />
+                                    {isStepCompleted ? 'Selesai' : 'Tandai Selesai'}
+                                  </button>
+
+                                  <button
+                                    onClick={() => {
+                                      setIsAiOpen(true);
+                                      setActiveTab('ai');
+                                    }}
+                                    className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-6 py-3 text-sm font-black text-blue-700 transition-all hover:bg-blue-100/80"
+                                  >
+                                    <Sparkles size={16} />
+                                    Tanya Mentor AI
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
-              </div>
-            </section>
-          </main>
+              </section>
+
+              <section className="py-10 border-b border-gray-200">
+                <div className="max-w-xl">
+                  <p className="mb-4 text-xs font-black uppercase tracking-widest text-slate-500">Bukti Hasil Karya</p>
+                  <div className="space-y-4">
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-semibold text-gray-700">Tempel link Google Drive di sini...</span>
+                      <input
+                        type="url"
+                        value={driveLink}
+                        onChange={(e) => setDriveLink(e.target.value)}
+                        placeholder="https://drive.google.com/..."
+                        className="w-full rounded-2xl border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-gray-400 focus:ring-0"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="mb-2 block text-sm font-semibold text-gray-700">Link GitHub / Portofolio...</span>
+                      <input
+                        type="url"
+                        value={githubLink}
+                        onChange={(e) => setGithubLink(e.target.value)}
+                        placeholder="https://github.com/..."
+                        className="w-full rounded-2xl border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-gray-400 focus:ring-0"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="mt-4 rounded-2xl border-2 border-dashed border-gray-300 px-5 py-8 text-sm text-gray-500">
+                    Upload Screenshot / Bukti (Coming Soon)
+                  </div>
+                </div>
+              </section>
+
+              <section className="py-12">
+                <div className="mx-auto max-w-xl text-center space-y-4">
+                  <button
+                    onClick={handleSaveProgress}
+                    disabled={isSavingProgress || !isJoined}
+                    className="w-full rounded-2xl border-2 border-gray-200 bg-white py-4 text-sm font-black text-gray-700 transition-all hover:border-gray-400 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    {isSavingProgress ? 'Menyimpan...' : '💾 Simpan Progres'}
+                  </button>
+                  {!isJoined ? (
+                    <button
+                      onClick={handleJoinProject}
+                      disabled={isSavingProgress}
+                      className="w-full rounded-2xl bg-blue-600 py-4 text-sm font-black text-white shadow-xl transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
+                    >
+                      🚀 Ikuti Proyek Sekarang
+                    </button>
+                  ) : completedSteps.length < steps.length ? (
+                    <div className="rounded-2xl border-2 border-gray-200 py-4 text-sm font-bold text-gray-400">
+                      Masih ada tugas yang perlu diselesaikan!
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleSubmitProject}
+                      disabled={isSubmitting}
+                      className="w-full rounded-2xl bg-gray-900 py-4 text-sm font-black text-white shadow-xl transition-all hover:bg-black active:scale-[0.98] disabled:opacity-50"
+                    >
+                      {isSubmitting ? 'Mengirim...' : '🚀 Kirim Project Sekarang'}
+                    </button>
+                  )}
+                </div>
+              </section>
+            </main>
+          </div>
         </div>
-      </div>
 
         {/* AI Assistant Column - Mobile Adaptive */}
         <aside
@@ -971,12 +971,12 @@ export default function ProjectExplore() {
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[90%] rounded-3xl px-5 py-4 text-sm leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-slate-900 text-white shadow-slate-200' : 'bg-white border border-slate-100 text-slate-700'}`}>
                         <div className="prose prose-sm prose-slate max-w-none">
-                          <ReactMarkdown 
+                          <ReactMarkdown
                             components={{
-                              p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
-                              strong: ({children}) => <strong className="font-black text-blue-600">{children}</strong>,
-                              ul: ({children}) => <ul className="list-disc pl-4 mb-3 space-y-1">{children}</ul>,
-                              li: ({children}) => <li className="text-slate-600">{children}</li>
+                              p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+                              strong: ({ children }) => <strong className="font-black text-blue-600">{children}</strong>,
+                              ul: ({ children }) => <ul className="list-disc pl-4 mb-3 space-y-1">{children}</ul>,
+                              li: ({ children }) => <li className="text-slate-600">{children}</li>
                             }}
                           >
                             {msg.content}
@@ -990,11 +990,11 @@ export default function ProjectExplore() {
                       <div className="max-w-[90%] rounded-3xl bg-white border border-slate-100 px-5 py-4 text-sm leading-relaxed text-slate-700 shadow-sm">
                         <div className="prose prose-sm prose-slate max-w-none">
                           <div>
-                            <ReactMarkdown 
+                            <ReactMarkdown
                               components={{
-                                p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
-                                strong: ({children}) => <strong className="font-black text-blue-600">{children}</strong>,
-                                ul: ({children}) => <ul className="list-disc pl-4 mb-3 space-y-1">{children}</ul>,
+                                p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+                                strong: ({ children }) => <strong className="font-black text-blue-600">{children}</strong>,
+                                ul: ({ children }) => <ul className="list-disc pl-4 mb-3 space-y-1">{children}</ul>,
                               }}
                             >
                               {aiStreamingText}
@@ -1011,7 +1011,7 @@ export default function ProjectExplore() {
 
             {/* Sidebar Input Footer - Adaptive Padding */}
             <footer className="shrink-0 border-t border-slate-100 p-6 pb-28 sm:pb-10 bg-white">
-              <form 
+              <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleAiSend();
@@ -1046,7 +1046,7 @@ export default function ProjectExplore() {
   }
 
   return (
-    <div className="page-shell min-h-screen bg-[#FCFCFD] pb-32 pt-28">
+    <div className="page-shell min-h-screen bg-[#FCFCFD] dark:bg-[#020617] pb-32 pt-28 transition-colors duration-300">
       <SEO
         title="Eksplorasi Proyek"
         description="Bangun portofolio nyata dari proyek interaktif lintas profesi — Cloud, AI, Web Engineering, dan banyak lagi."
@@ -1054,11 +1054,11 @@ export default function ProjectExplore() {
       />
       <div className="mx-auto max-w-7xl px-6">
         <header className="mb-12">
-          <span className="text-blue-600 text-[9px] font-black tracking-[0.4em] uppercase mb-3 block">Misi Masa Depan</span>
-          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 leading-tight">
-            Pilih Misi <span className="text-slate-400">Terbaik Anda.</span>
+          <span className="text-blue-600 dark:text-blue-400 text-[9px] font-black tracking-[0.4em] uppercase mb-3 block">Misi Masa Depan</span>
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            Pilih Misi <span className="text-slate-400 dark:text-slate-500">Terbaik Anda.</span>
           </h1>
-          <p className="text-sm text-slate-500 font-medium mt-3 leading-relaxed max-w-md">
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-3 leading-relaxed max-w-md">
             Bangun portofolio nyata dengan tantangan industri yang dirancang untuk menguji batas kemampuan Anda.
           </p>
         </header>
@@ -1066,13 +1066,13 @@ export default function ProjectExplore() {
         {/* Search & Filter Section - Refined */}
         <section className="mb-12 space-y-8">
           <div className="relative max-w-xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-            <input 
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600" size={16} />
+            <input
               type="text"
               placeholder="Cari tantangan, teknologi, atau topik..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-100 bg-white py-3.5 pl-12 pr-6 text-xs font-bold shadow-sm outline-none transition focus:border-blue-200 focus:ring-4 focus:ring-blue-50/50"
+              className="w-full rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 py-3.5 pl-12 pr-6 text-xs font-bold shadow-sm outline-none transition focus:border-blue-200 dark:focus:border-blue-800 text-slate-900 dark:text-white"
             />
           </div>
 
@@ -1093,11 +1093,10 @@ export default function ProjectExplore() {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`rounded-lg px-5 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
-                  selectedCategory === category 
-                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10' 
-                  : 'bg-white border border-slate-100 text-slate-400 hover:border-slate-300 hover:text-slate-600 shadow-sm'
-                }`}
+                className={`rounded-lg px-5 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === category
+                    ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-lg shadow-slate-900/10'
+                    : 'bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-600 dark:hover:text-slate-300 shadow-sm'
+                  }`}
               >
                 {category}
               </button>
@@ -1113,14 +1112,14 @@ export default function ProjectExplore() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               onClick={() => setActiveProject(project)}
-              className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-100 bg-white p-2.5 shadow-sm transition-all hover:border-blue-100 hover:shadow-xl hover:shadow-blue-500/5"
+              className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-2.5 shadow-sm transition-all hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-xl hover:shadow-blue-500/5"
             >
-              <div className="relative mb-4 aspect-[4/3] overflow-hidden rounded-xl bg-slate-50">
+              <div className="relative mb-4 aspect-[4/3] overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-800">
                 {project.image && (
-                  <img 
-                    src={project.image} 
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                    alt={project.title} 
+                  <img
+                    src={project.image}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    alt={project.title}
                   />
                 )}
                 <div className="absolute left-3 top-3">
@@ -1138,18 +1137,18 @@ export default function ProjectExplore() {
                     </span>
                   ))}
                 </div>
-                <h3 className="mb-2 text-sm font-black leading-tight text-slate-800 transition-colors group-hover:text-blue-600">
+                <h3 className="mb-2 text-sm font-black leading-tight text-slate-800 dark:text-slate-200 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
                   {project.title}
                 </h3>
-                <p className="mb-6 line-clamp-2 text-[11px] font-medium leading-relaxed text-slate-400">
+                <p className="mb-6 line-clamp-2 text-[11px] font-medium leading-relaxed text-slate-400 dark:text-slate-500">
                   {project.introduction}
                 </p>
-                
-                <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                  <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-300 group-hover:text-blue-600 transition-colors">
+
+                <div className="flex items-center justify-between pt-4 border-t border-slate-50 dark:border-slate-800">
+                  <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-slate-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     Mulai Misi <ArrowRight size={10} />
                   </div>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-300 transition-colors group-hover:bg-blue-600 group-hover:text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-300 dark:text-slate-600 transition-colors group-hover:bg-blue-600 dark:group-hover:bg-blue-500 group-hover:text-white">
                     <Sparkles size={12} />
                   </div>
                 </div>

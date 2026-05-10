@@ -156,10 +156,10 @@ export default function Dashboard() {
       <header className="mb-16 max-w-3xl">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
           <p className="section-kicker mb-3">Dasbor Pribadi</p>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-[-0.04em] text-slate-950">
-            Halo, <span className="text-blue-600">{user?.displayName || 'Sahabat Cita'}</span>
+          <h1 className="text-3xl sm:text-5xl font-black tracking-[-0.04em] text-slate-950 dark:text-white">
+            Halo, <span className="text-blue-600 dark:text-blue-400">{user?.displayName || 'Sahabat Cita'}</span>
           </h1>
-          <p className="section-copy mt-3 text-[15px]">
+          <p className="section-copy mt-3 text-[15px] dark:text-slate-400">
             Fokus, pelajari, dan raih karir impianmu langkah demi langkah.
           </p>
         </motion.div>
@@ -180,13 +180,13 @@ export default function Dashboard() {
                     {topCode}
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-slate-950">{topLabel}</h3>
-                    <p className="text-[13px] text-slate-500">Skor: {topScore}</p>
+                    <h3 className="text-xl font-black text-slate-950 dark:text-white">{topLabel}</h3>
+                    <p className="text-[13px] text-slate-500 dark:text-slate-400">Skor: {topScore}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6 text-[12px] font-semibold text-slate-500">
                   {completedDate && <span>{completedDate}</span>}
-                  <Link to="/test?view=result" className="link-underline text-blue-600 flex items-center gap-1">
+                  <Link to="/test?view=result" className="link-underline text-blue-600 dark:text-blue-400 flex items-center gap-1">
                     Lihat Hasil <ArrowUpRight size={12} />
                   </Link>
                   <Link to="/test" className="link-underline opacity-50 hover:opacity-100 transition-opacity">
@@ -208,12 +208,12 @@ export default function Dashboard() {
 
           {/* Quick Stats */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="surface-card rounded-3xl p-5">
-              <p className="text-3xl font-black text-slate-950">{savedRoadmaps.length}</p>
+            <div className="rounded-3xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+              <p className="text-3xl font-black text-slate-950 dark:text-white">{savedRoadmaps.length}</p>
               <p className="text-[11px] font-black tracking-widest uppercase text-slate-500 mt-1">Roadmap Tersedia</p>
             </div>
-            <div className="surface-card rounded-3xl p-5">
-              <p className="text-3xl font-black text-slate-950">{projectsDone}</p>
+            <div className="rounded-3xl p-5 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+              <p className="text-3xl font-black text-slate-950 dark:text-white">{projectsDone}</p>
               <p className="text-[11px] font-black tracking-widest uppercase text-slate-500 mt-1">Proyek Selesai</p>
             </div>
           </div>
@@ -271,12 +271,12 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={phase.id} 
-                        className={`click-feedback flex items-center justify-between py-4 px-5 rounded-3xl transition-all surface-card ${
+                        className={`click-feedback flex items-center justify-between py-4 px-5 rounded-3xl transition-all ${
                           status === 'current' ? 'shadow-sm' : status === 'done' ? 'opacity-50' : 'opacity-30'
                         }`}
                         style={{ 
-                          backgroundColor: status === 'current' ? 'rgba(37,99,235,0.04)' : 'transparent',
-                          border: status === 'current' ? '1px solid rgba(37,99,235,0.12)' : '1px solid var(--border-color)'
+                          backgroundColor: status === 'current' ? 'var(--gradient-1)' : 'var(--card-bg)',
+                          border: status === 'current' ? '1px solid var(--accent-blue)' : '1px solid var(--border-color)'
                         }}
                       >
                         <div className="flex items-center gap-4">
@@ -284,16 +284,16 @@ export default function Dashboard() {
                             ? <CheckCircle2 className="text-emerald-500" size={18}/> 
                             : status === 'current' 
                             ? <Circle className="text-blue-500" size={18}/> 
-                            : <Circle className="opacity-30" size={18}/>
+                            : <Circle className="opacity-30 dark:text-slate-600" size={18}/>
                           }
-                          <span className={`font-semibold text-[15px] ${status === 'current' ? 'text-blue-700' : 'text-slate-700'}`}>
+                          <span className={`font-semibold text-[15px] ${status === 'current' ? 'text-blue-700 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>
                             {phase.title}
                           </span>
                         </div>
                         {status === 'current' && (
                           <button 
                             onClick={() => markPhaseDone(phase.id)} 
-                            className="click-feedback text-[11px] font-semibold tracking-wider uppercase bg-slate-950 text-white px-4 py-2 rounded-full transition-all hover:shadow-md hover:-translate-y-0.5 hover:bg-blue-700"
+                            className="click-feedback text-[11px] font-semibold tracking-wider uppercase bg-slate-950 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-full transition-all hover:shadow-md hover:-translate-y-0.5 hover:bg-blue-700 dark:hover:bg-slate-100"
                           >
                             Tandai Selesai
                           </button>
@@ -325,14 +325,14 @@ export default function Dashboard() {
             <div className="fluid-separator mt-12 mb-12" />
 
             {/* AI Counselor CTA */}
-            <div className="text-center py-8 surface-card rounded-3xl px-6">
-              <h3 className="text-xl font-black mb-2 text-slate-950">Butuh Teman Diskusi?</h3>
-              <p className="text-[14px] text-slate-600 mb-6 max-w-sm mx-auto">
+            <div className="text-center py-8 rounded-3xl px-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+              <h3 className="text-xl font-black mb-2 text-slate-950 dark:text-white">Butuh Teman Diskusi?</h3>
+              <p className="text-[14px] text-slate-600 dark:text-slate-400 mb-6 max-w-sm mx-auto">
                 Ceritakan kendala belajarmu, Konselor AI siap memberi saran yang personal.
               </p>
               <Link 
                 to="/counselor" 
-                className="click-feedback inline-flex items-center gap-2 rounded-full px-6 py-3 text-[13px] font-semibold text-white transition-all hover:-translate-y-0.5 bg-slate-950 hover:bg-blue-700"
+                className="click-feedback inline-flex items-center gap-2 rounded-full px-6 py-3 text-[13px] font-semibold text-white transition-all hover:-translate-y-0.5 bg-slate-950 dark:bg-blue-600 hover:bg-blue-700"
               >
                 Mulai Sesi Konseling <ArrowRight size={14} />
               </Link>

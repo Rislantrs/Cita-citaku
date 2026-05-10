@@ -324,8 +324,8 @@ export default function AICounselor() {
           Percakapan Baru
         </button>
 
-        <div className="flex-1 flex flex-col rounded-[2.5rem] bg-slate-50 border border-slate-100 overflow-hidden">
-          <div className="p-6 border-b border-slate-200/50">
+        <div className="flex-1 flex flex-col rounded-[2.5rem] bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors">
+          <div className="p-6 border-b border-slate-200/50 dark:border-slate-800">
              <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400">Riwayat Sesi</p>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-1">
@@ -336,13 +336,13 @@ export default function AICounselor() {
                 <div 
                   key={session.sessionId} 
                   className={`group flex w-full items-center gap-2 rounded-2xl p-1 transition-all ${
-                    session.sessionId === sessionId ? 'bg-white shadow-sm' : 'hover:bg-white/50'
+                    session.sessionId === sessionId ? 'bg-white dark:bg-slate-800 shadow-sm' : 'hover:bg-white/50 dark:hover:bg-slate-800/50'
                   }`}
                 >
                   <button 
                     onClick={() => loadSession(session.sessionId)}
                     className={`flex-1 flex items-center gap-4 px-4 py-3 text-sm font-bold transition-all text-left ${
-                      session.sessionId === sessionId ? 'text-blue-700' : 'text-slate-600 hover:text-blue-700'
+                      session.sessionId === sessionId ? 'text-blue-700 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-400'
                     }`}
                   >
                     <MessageSquare size={18} className={`${session.isPinned ? 'text-blue-600 fill-blue-600' : 'opacity-40'} shrink-0`} />
@@ -370,8 +370,8 @@ export default function AICounselor() {
               ))
             )}
           </div>
-          <div className="p-6 bg-white/50 border-t border-slate-200/50">
-             <div className="flex items-center gap-3 text-[11px] font-bold text-slate-400">
+          <div className="p-6 bg-white/50 dark:bg-slate-800/50 border-t border-slate-200/50 dark:border-slate-800">
+             <div className="flex items-center gap-3 text-[11px] font-bold text-slate-400 dark:text-slate-500">
                 <History size={14} />
                 Auto-save Aktif
              </div>
@@ -380,12 +380,12 @@ export default function AICounselor() {
       </aside>
 
       {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col rounded-[2rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm overflow-hidden">
+      <main className="flex-1 flex flex-col rounded-[2rem] sm:rounded-[3rem] bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
         {/* Header */}
-        <header className="flex items-center justify-between px-6 sm:px-10 py-4 sm:py-6 border-b border-slate-50 bg-white/80 backdrop-blur-md relative z-10">
+        <header className="flex items-center justify-between px-6 sm:px-10 py-4 sm:py-6 border-b border-slate-50 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md relative z-10">
           <div className="flex items-center gap-4">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-            <h1 className="text-base font-black tracking-tight text-slate-900">Konselor AI</h1>
+            <h1 className="text-base font-black tracking-tight text-slate-900 dark:text-white">Konselor AI</h1>
             {streamingText && (
               <span className="text-[10px] font-bold text-blue-500 animate-pulse">● Sedang mengetik...</span>
             )}
@@ -405,11 +405,11 @@ export default function AICounselor() {
         >
           {messages.length === 0 && !streamingText && (
             <div className="flex h-full flex-col items-center justify-center text-center max-w-xl mx-auto">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[2rem] sm:rounded-[2.5rem] bg-blue-50 flex items-center justify-center text-blue-600 mb-6 sm:mb-8">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[2rem] sm:rounded-[2.5rem] bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 sm:mb-8">
                 <Bot size={36} />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-3 sm:mb-4 tracking-tight">Apa yang bisa saya bantu?</h2>
-              <p className="text-base sm:text-lg text-slate-500 font-medium leading-relaxed px-4">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-3 sm:mb-4 tracking-tight">Apa yang bisa saya bantu?</h2>
+              <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 font-medium leading-relaxed px-4">
                 Tanyakan apa saja tentang karir, jurusan, atau hasil tes jati dirimu. Saya di sini untuk membantumu menemukan jalan.
               </p>
               
@@ -418,7 +418,7 @@ export default function AICounselor() {
                   <button
                     key={topic.label}
                     onClick={() => sendMessage(topic.prompt)}
-                    className="bg-white border border-slate-200 rounded-full px-6 py-3 text-sm font-bold text-slate-600 transition-all hover:border-blue-300 hover:text-blue-700 hover:shadow-md"
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full px-6 py-3 text-sm font-bold text-slate-600 dark:text-slate-400 transition-all hover:border-blue-300 dark:hover:border-blue-800 hover:text-blue-700 dark:hover:text-blue-400 hover:shadow-md"
                   >
                     {topic.label}
                   </button>
@@ -436,14 +436,14 @@ export default function AICounselor() {
             >
               <div className={`flex max-w-[90%] sm:max-w-[80%] items-start gap-3 sm:gap-5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center text-[9px] sm:text-[10px] font-black shrink-0 ${
-                  msg.role === 'user' ? 'bg-slate-100 text-slate-500' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                  msg.role === 'user' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                 }`}>
                   {msg.role === 'user' ? 'ME' : 'AI'}
                 </div>
                 <div className={`px-5 sm:px-6 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] text-sm sm:text-base leading-relaxed ${
                   msg.role === 'user' 
-                    ? 'bg-slate-900 text-white font-medium shadow-xl shadow-slate-900/10' 
-                    : 'bg-slate-50 text-slate-800 font-medium prose prose-slate max-w-none'
+                    ? 'bg-slate-900 dark:bg-blue-600 text-white font-medium shadow-xl shadow-slate-900/10' 
+                    : 'bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium prose dark:prose-invert prose-slate max-w-none'
                 }`}>
                   {msg.role === 'user' ? (
                     <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -468,7 +468,7 @@ export default function AICounselor() {
                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center text-[9px] sm:text-[10px] font-black shrink-0 bg-blue-600 text-white shadow-lg shadow-blue-600/20">
                   AI
                 </div>
-                <div className="px-5 sm:px-6 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] text-sm sm:text-base leading-relaxed bg-slate-50 text-slate-800 font-medium prose prose-slate max-w-none">
+                <div className="px-5 sm:px-6 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] text-sm sm:text-base leading-relaxed bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium prose dark:prose-invert prose-slate max-w-none">
                   <div className="markdown-content">
                     <ReactMarkdown>{streamingText}</ReactMarkdown>
                   </div>
@@ -490,9 +490,9 @@ export default function AICounselor() {
         </div>
 
         {/* Input Area */}
-        <footer className="p-4 sm:p-10 bg-white">
+        <footer className="p-4 sm:p-10 bg-white dark:bg-slate-950 transition-colors">
           <div className="max-w-4xl mx-auto relative">
-            <div className="flex items-center gap-2 sm:gap-3 rounded-full sm:rounded-[2rem] bg-slate-50 border border-slate-100 p-1.5 sm:p-2 focus-within:border-blue-200 focus-within:bg-white transition-all">
+            <div className="flex items-center gap-2 sm:gap-3 rounded-full sm:rounded-[2rem] bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-1.5 sm:p-2 focus-within:border-blue-200 dark:focus-within:border-blue-800 focus-within:bg-white dark:focus-within:bg-slate-900 transition-all">
               <button 
                 onClick={isRecording ? stopRecording : startRecording}
                 className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full sm:rounded-2xl transition-all ${
@@ -510,7 +510,7 @@ export default function AICounselor() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                 placeholder="Tanyakan sesuatu..."
-                className="flex-1 bg-transparent border-none px-2 sm:px-4 py-2 sm:py-3 focus:ring-0 font-bold text-sm sm:text-base text-slate-800 placeholder:text-slate-400 input-mobile-large"
+                className="flex-1 bg-transparent border-none px-2 sm:px-4 py-2 sm:py-3 focus:ring-0 font-bold text-sm sm:text-base text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-600 input-mobile-large"
               />
               
               <button 

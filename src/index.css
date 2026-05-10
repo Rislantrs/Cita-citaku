@@ -1,39 +1,43 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 :root {
 	color-scheme: light;
-	--bg-primary: #f4f7fb;
+	--bg-primary: #f8fafc;
 	--bg-secondary: #ffffff;
 	--text-primary: #0f172a;
 	--text-secondary: #475569;
-	--border-color: #dbe4ef;
+	--border-color: #e2e8f0;
 	--card-bg: #ffffff;
 	--input-bg: #ffffff;
-	--accent-blue: #2458e6;
-	--accent-indigo: #3730a3;
-	--accent-purple: #7c3aed;
-	--gradient-1: #dbeafe;
-	--gradient-2: #e2e8f0;
-	--gradient-3: #fce7f3;
-	--gradient-4: #eef2ff;
+	--accent-blue: #2563eb;
+	--accent-indigo: #4f46e5;
+	--accent-purple: #9333ea;
+	--gradient-1: #eff6ff;
+	--gradient-2: #f8fafc;
+	--gradient-3: #fdf2f8;
+	--gradient-4: #f5f3ff;
+	--header-bg: rgba(255, 255, 255, 0.8);
 }
 
 [data-theme='dark'] {
 	color-scheme: dark;
 	--bg-primary: #020617;
-	--bg-secondary: #0f172a;
-	--text-primary: #f8fafc;
-	--text-secondary: #cbd5e1;
-	--border-color: #243244;
+	--bg-secondary: #0b1120;
+	--text-primary: #f1f5f9;
+	--text-secondary: #94a3b8;
+	--border-color: #1e293b;
 	--card-bg: #0f172a;
 	--input-bg: #1e293b;
 	--accent-blue: #3b82f6;
 	--accent-indigo: #6366f1;
 	--accent-purple: #a855f7;
-	--gradient-1: #0f172a;
-	--gradient-2: #1e1b4b;
-	--gradient-3: #2e1065;
+	--gradient-1: #020617;
+	--gradient-2: #0f172a;
+	--gradient-3: #1e1b4b;
 	--gradient-4: #020617;
+	--header-bg: rgba(2, 6, 23, 0.8);
 }
 
 html {
@@ -52,14 +56,25 @@ body {
 	min-width: 320px;
 	min-height: 100vh;
 	min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+	background-color: var(--bg-primary);
 	color: var(--text-primary);
-	background:
-		radial-gradient(circle at 12% 18%, rgba(36, 88, 230, 0.10), transparent 28%),
-		radial-gradient(circle at 88% 2%, rgba(124, 58, 237, 0.08), transparent 20%),
-		linear-gradient(180deg, #fbfdff 0%, var(--bg-primary) 100%);
 	transition: background-color 0.3s ease, color 0.3s ease;
 	padding-bottom: env(safe-area-inset-bottom, 0px);
 	overflow-x: hidden;
+}
+
+[data-theme='light'] body {
+	background:
+		radial-gradient(circle at 12% 18%, rgba(36, 88, 230, 0.04), transparent 25%),
+		radial-gradient(circle at 88% 2%, rgba(124, 58, 237, 0.03), transparent 20%),
+		#f8fafc;
+}
+
+[data-theme='dark'] body {
+	background:
+		radial-gradient(circle at 12% 18%, rgba(36, 88, 230, 0.08), transparent 28%),
+		radial-gradient(circle at 88% 2%, rgba(124, 58, 237, 0.06), transparent 20%),
+		#020617;
 }
 
 body::before {
