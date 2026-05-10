@@ -261,7 +261,7 @@ export async function ensureCareerSeeded() {
           await CareerModel.findOneAndUpdate(
             { slug: career.slug } as any,
             career,
-            { upsert: true, new: true }
+            { upsert: true, returnDocument: 'after' }
           );
         }
         console.log('[mongo] Atlas sync complete!');

@@ -195,7 +195,13 @@ export default function AdminDashboard() {
     if (!confirm('Apakah Anda yakin ingin menghapus karir ini secara permanen?')) return;
     
     try {
-      const response = await fetch(`/api/careers/${slug}`, { method: 'DELETE' });
+      const idToken = await user?.getIdToken();
+      const response = await fetch(`/api/careers/${slug}`, { 
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
       if (response.ok) {
         toast.success('Karir berhasil dihapus');
         fetchRoadmaps();

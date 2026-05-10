@@ -146,12 +146,14 @@ export default function ProjectDetail() {
     setAiStreamingText('');
 
     try {
+      const sessionId = `project-${project.id}-${auth.currentUser?.uid}`;
       const response = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           task: 'assistant',
           userId: auth.currentUser?.uid,
+          sessionId: sessionId,
           messages: newMessages.map((m) => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })),
           context: `Anda adalah "Mentor AI Cita-Citaku". Anda membantu user memahami materi: "${project.title}". Berikan penjelasan edukatif, profesional, dan mudah dipahami. Gunakan markdown.`,
         }),

@@ -236,7 +236,7 @@ export function registerApiRoutes(app: Express) {
     const user = await UserModel.findOneAndUpdate(
       { uid } as any,
       { $set: payload },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
     res.json({ ok: true, user: toPlain(user) });
   });
@@ -263,7 +263,7 @@ export function registerApiRoutes(app: Express) {
       const user = await (UserModel as any).findOneAndUpdate(
         { uid },
         updateData,
-        { new: true, upsert: true }
+        { returnDocument: 'after', upsert: true }
       );
 
       res.json({ ok: true, progress: user?.progressTracker });
@@ -473,7 +473,7 @@ export function registerApiRoutes(app: Express) {
           'aiReview.notes': safeString(notes),
         },
       },
-      { new: true },
+      { returnDocument: 'after' },
     ).lean();
 
     if (!updated) {
@@ -491,7 +491,7 @@ export function registerApiRoutes(app: Express) {
             featured: false,
           },
         },
-        { upsert: true, new: true },
+        { upsert: true, returnDocument: 'after' },
       );
     }
 
@@ -524,7 +524,7 @@ export function registerApiRoutes(app: Express) {
     const result = await QuizResultModel.findOneAndUpdate(
       { userUid: user.uid } as any,
       { $set: payload },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
     res.json({ ok: true, result: toPlain(result) });
   });
@@ -732,7 +732,7 @@ export function registerApiRoutes(app: Express) {
         const career = await CareerModel.findOneAndUpdate(
           { slug } as any,
           careerUpdate,
-          { upsert: true, new: true }
+          { upsert: true, returnDocument: 'after' }
         );
         res.json({ ok: true, item: career });
       } else {
