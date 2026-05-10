@@ -127,25 +127,42 @@ export default function AdminDashboard() {
             ...data,
             slug,
             idKategori: data.idKategori || 'tech',
+            judul: data.judul || data.title,
+            title: data.title || data.judul,
+            duniaPerkuliahan: data.duniaPerkuliahan || {},
+            universitasTerbaik: data.universitasTerbaik || {},
+            infoGaji: data.infoGaji || {},
+            infoPendidikan: data.infoPendidikan || {},
+            faqs: data.faqs || [],
+            roadmap: data.roadmap || data.phases || []
           };
           
+          const idToken = await user?.getIdToken();
           const response = await fetch('/api/careers', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`
+            },
             body: JSON.stringify(mongoPayload)
           });
           
           if (!response.ok) {
-            console.warn('[admin] Failed to sync to MongoDB, but will continue with Firestore');
+            const errorText = await response.text();
+            console.warn('[admin] Failed to sync to MongoDB:', errorText);
+            toast.error('Gagal sinkron ke MongoDB: ' + errorText);
+          } else {
+            toast.success('Sinkronisasi MongoDB Berhasil!');
           }
         } catch (e) {
           console.error('[admin] MongoDB sync error:', e);
         }
 
         // 2. FIRESTORE LEGACY SYNC (Optional, but good for community view)
+        const cleanFirestoreData = JSON.parse(JSON.stringify(data, (k, v) => v === undefined ? null : v));
         const roadmapRef = doc(db, 'roadmaps', slug);
         await setDoc(roadmapRef, {
-          ...data,
+          ...cleanFirestoreData,
           status: 'published',
           publishedAt: serverTimestamp(),
           updatedAt: serverTimestamp()

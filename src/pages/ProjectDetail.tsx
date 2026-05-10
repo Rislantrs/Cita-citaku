@@ -234,13 +234,14 @@ export default function ProjectDetail() {
             </div>
           </div>
 
+          {/* Desktop AI Button only - Mobile uses FAB */}
           {!isChatOpen && project && (
             <button
               onClick={() => setIsChatOpen(true)}
-              className="flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white transition-all shadow-sm shadow-blue-600/20 hover:bg-blue-700 active:scale-95"
+              className="hidden lg:flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white transition-all shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-95"
             >
               <Sparkles size={16} />
-              <span className="hidden sm:inline">Mentor AI</span>
+              <span>Mentor AI</span>
             </button>
           )}
         </header>
@@ -269,7 +270,7 @@ export default function ProjectDetail() {
             <div className="mx-auto w-full max-w-4xl px-5 py-10 lg:px-12 lg:py-16 pb-32">
               <div className="space-y-12">
 
-                {/* Hero */}
+                {/* Hero Section */}
                 <div className="space-y-5 pb-8 border-b border-slate-100">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
@@ -368,7 +369,7 @@ export default function ProjectDetail() {
                   </div>
                 )}
 
-                {/* Misi Praktek */}
+                {/* Project Section */}
                 {project.hasProject && (
                   <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 lg:p-10 shadow-2xl">
                     <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(ellipse at top right, rgba(59,130,246,0.4), transparent 60%)' }} />
@@ -402,20 +403,31 @@ export default function ProjectDetail() {
             </div>
           )}
         </div>
+
+        {/* MOBILE FLOATING ACTION BUTTON (FAB) */}
+        {!isChatOpen && project && (
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className="fixed bottom-6 right-6 z-[9990] flex h-14 w-14 lg:hidden items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl shadow-blue-600/40 transition-all hover:scale-110 active:scale-90 animate-in zoom-in duration-300"
+          >
+            <Sparkles size={24} />
+            <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
+          </button>
+        )}
       </main>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Sidebar / Drawer Overlay */}
       {isChatOpen && (
         <div
-          className="fixed inset-0 z-[9990] bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-[9991] bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity duration-300"
           onClick={() => setIsChatOpen(false)}
         />
       )}
 
-      {/* AI Sidebar Drawer / Column */}
+      {/* AI Sidebar / Drawer Content */}
       <aside className={`
-        fixed inset-y-0 right-0 z-[10000] flex w-[85vw] max-w-[400px] flex-col bg-slate-50 shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
-        lg:static lg:z-auto lg:w-[400px] xl:w-[480px] lg:border-l lg:border-slate-200 lg:shadow-none
+        fixed inset-y-0 right-0 z-[10000] flex w-full sm:w-[85vw] lg:w-[400px] xl:w-[480px] flex-col bg-slate-50 shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+        lg:static lg:z-auto lg:border-l lg:border-slate-200 lg:shadow-none
         ${isChatOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0 lg:hidden'}
       `}>
         {/* Sidebar Header */}
@@ -491,7 +503,7 @@ export default function ProjectDetail() {
           )}
         </div>
 
-        {/* Chat Input - with env(safe-area-inset-bottom) to handle mobile keyboards elegantly */}
+        {/* Chat Input Area */}
         <footer className="shrink-0 bg-white border-t border-slate-200 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <form onSubmit={(e) => { e.preventDefault(); handleAiSend(); }} className="relative flex items-center">
             <input

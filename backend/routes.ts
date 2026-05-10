@@ -641,6 +641,8 @@ export function registerApiRoutes(app: Express) {
         return;
       }
 
+      console.log(`[api] Saving career: ${slug}`, JSON.stringify(data).substring(0, 500) + '...');
+
       // === FULL FIELD NORMALIZATION ===
       const careerUpdate: any = {
         slug,
@@ -656,11 +658,15 @@ export function registerApiRoutes(app: Express) {
         featured: data.featured || data.unggulan || false,
 
         // Gaji
-        infoGaji: data.infoGaji || { rentangIDR: '', rentangUSD: '', penjelasan: '' },
+        infoGaji: data.infoGaji || { 
+          rentangIDR: data.salaryIndo || '', 
+          rentangUSD: data.salaryUSA || '', 
+          penjelasan: '' 
+        },
 
         // Pendidikan
         infoPendidikan: {
-          jurusan: data.infoPendidikan?.jurusan || [],
+          jurusan: data.infoPendidikan?.jurusan || data.recommendationMajors || [],
           durasi: data.infoPendidikan?.durasi || '',
           jalurAkademik: data.infoPendidikan?.jalurAkademik || '',
           gelar: data.infoPendidikan?.gelar || '',
@@ -693,15 +699,16 @@ export function registerApiRoutes(app: Express) {
           jawab: f.jawab || f.a || '',
         })).filter((f: any) => f.tanya || f.jawab),
 
-        // Universitas Terbaik (normalize from either field name)
+        // Universitas Terbaik
         universitasTerbaik: {
-          lokal: data.universitasTerbaik?.lokal || data.topUniversities?.local || [],
+          lokal: data.universitasTerbaik?.lokal || data.universitasTerbaik?.local || data.topUniversities?.local || data.topUniversities?.lokal || [],
+          local: data.universitasTerbaik?.lokal || data.universitasTerbaik?.local || data.topUniversities?.local || data.topUniversities?.lokal || [],
           global: data.universitasTerbaik?.global || data.topUniversities?.global || [],
         },
 
-        // Dunia Perkuliahan (normalize from either field name)
+        // Dunia Perkuliahan
         duniaPerkuliahan: {
-          ringkasan: data.duniaPerkuliahan?.ringkasan || data.universityWorld?.ringkasan || data.universityWorld?.overview || '',
+          ringkasan: data.duniaPerkuliahan?.ringkasan || data.universityWorld?.ringkasan || data.universityWorld?.overview || data.duniaPerkuliahan?.overview || '',
           keahlianWajib: data.duniaPerkuliahan?.keahlianWajib || data.universityWorld?.keahlianWajib || data.universityWorld?.requiredSkills || [],
           alasanMemilih: (data.duniaPerkuliahan?.alasanMemilih || data.universityWorld?.alasanMemilih || data.universityWorld?.whyChoose || []).map((a: any) => ({
             judul: a.judul || a.title || '',
@@ -709,16 +716,14 @@ export function registerApiRoutes(app: Express) {
           })).filter((a: any) => a.judul || a.deskripsi),
         },
 
-        // Roadmap (normalize from either field name, preserve nested topics/projects)
+        // Roadmap
         roadmap: (data.roadmap || data.phases || []).map((phase: any, idx: number) => ({
           fase: phase.fase || `Fase ${idx + 1}`,
           judul: phase.judul || phase.title || '',
           deskripsi: phase.deskripsi || phase.description || '',
           meta: phase.meta || phase.stats || '',
           proyek: phase.proyek || (phase.topics || []).map((t: any) => t.title || t).filter(Boolean),
-          // Store detailed topic data too
           topics: phase.topics || [],
-          buku: phase.buku || [],
         })),
       };
 

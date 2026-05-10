@@ -17,7 +17,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../lib/AuthContext';
 import SEO from '../components/SEO';
 import { KategoriKarir, CAREER_CATEGORIES } from '../lib/careerCatalog';
-import { uploadFile } from '../lib/api';
+import { uploadFile, fetchCareers } from '../lib/api';
 
 type ContributionMode = 'none' | 'new_roadmap' | 'edit_roadmap' | 'add_content';
 
@@ -66,52 +66,7 @@ interface RoadmapPhase {
   isSaved: boolean;
 }
 
-const EXISTING_ROADMAPS = [
-  {
-    id: '1',
-    title: 'AWS Cloud Engineer',
-    category: 'IT & Software',
-    description: 'Jalur profesional untuk menguasai infrastruktur cloud AWS.',
-    salaryIndo: 'Rp 15jt - 35jt',
-    salaryUSA: '$110k - $180k',
-    phases: [
-      {
-        title: 'Cloud Foundation',
-        stats: '5 Materi',
-        isSaved: true,
-        topics: [
-          {
-            title: 'IAM & Security',
-            isDetailed: false,
-            description: 'Dasar keamanan AWS.',
-            timeEstimate: '20 Min',
-            difficulty: 'Easy Peasy',
-            keyConcepts: 'IAM, MFA',
-            summary: 'Keamanan adalah nomor satu di AWS...',
-            resources: [{ type: 'web', title: 'AWS IAM Docs', description: 'Dokumentasi resmi', link: 'https://aws.amazon.com/iam/', priceType: 'Gratis' }],
-            costNote: 'Gratis di Free Tier',
-            showProject: true,
-            project: { title: 'Setup Secure Account', background: 'Mengamankan akun baru', skillsLearned: 'Security Best Practices', specifications: ['Aktifkan MFA', 'Buat Admin User'], imageSource: 'url', image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800' }
-          },
-          {
-            title: 'Networking Dasar (VPC)',
-            isDetailed: false,
-            description: '',
-            timeEstimate: '',
-            difficulty: 'Easy Peasy',
-            keyConcepts: '',
-            summary: '',
-            resources: [],
-            costNote: '',
-            showProject: false,
-            project: { title: '', background: '', skillsLearned: '', mode: 'murni', specifications: [''], imageSource: 'url', image: '', interactiveSteps: [] }
-          }
-        ]
-      }
-    ]
-  },
-  { id: '2', title: 'Frontend Developer', category: 'IT & Software', description: 'Kuasai React dan modern CSS.', salaryIndo: 'Rp 8jt - 20jt', salaryUSA: '$80k - $140k', phases: [] }
-];
+// EXISTING_ROADMAPS dummy data removed. Now fetching from API.
 
 interface SubmitRoadmapProps {
   isAdmin?: boolean;
@@ -127,7 +82,25 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [existingRoadmaps, setExistingRoadmaps] = useState<any[]>([]);
+  const [isFetchingRoadmaps, setIsFetchingRoadmaps] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch real roadmaps from DB
+  useEffect(() => {
+    if (mode === 'edit_roadmap' || mode === 'add_content') {
+      setIsFetchingRoadmaps(true);
+      fetchCareers()
+        .then(res => {
+          setExistingRoadmaps(res.items || []);
+        })
+        .catch(err => {
+          console.error("Failed to fetch roadmaps:", err);
+          toast.error("Gagal memuat daftar roadmap.");
+        })
+        .finally(() => setIsFetchingRoadmaps(false));
+    }
+  }, [mode]);
 
   const [formData, setFormData] = useState({
     judul: '',
@@ -213,19 +186,26 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
         })),
       });
 
-      setFaqs((roadmap.faqs || []).map((f: any) => ({
+      setFaqs((roadmap.faqs && roadmap.faqs.length > 0 ? roadmap.faqs : [{ tanya: '', jawab: '' }]).map((f: any) => ({
         tanya: f.tanya || f.q || '',
         jawab: f.jawab || f.a || ''
-      })) || [{ tanya: '', jawab: '' }]);
+      })));
 
-      setTopUniversities(roadmap.universitasTerbaik || roadmap.topUniversities || { local: [''], global: [''] });
+      setTopUniversities({
+        local: roadmap.universitasTerbaik?.lokal || roadmap.universitasTerbaik?.local || roadmap.topUniversities?.local || [''],
+        global: roadmap.universitasTerbaik?.global || roadmap.topUniversities?.global || ['']
+      });
 
       setUniversityWorld({
-        ringkasan: roadmap.duniaPerkuliahan?.ringkasan || roadmap.universityWorld?.ringkasan || roadmap.universityWorld?.overview || '',
-        keahlianWajib: roadmap.duniaPerkuliahan?.keahlianWajib || roadmap.universityWorld?.keahlianWajib || roadmap.universityWorld?.requiredSkills || [''],
-        alasanMemilih: (roadmap.duniaPerkuliahan?.alasanMemilih || roadmap.universityWorld?.alasanMemilih || roadmap.universityWorld?.whyChoose || [{ judul: '', deskripsi: '' }]).map((a: any) => ({
-          judul: a.judul || a.title || '',
-          deskripsi: a.deskripsi || a.desc || ''
+        ringkasan: roadmap.duniaPerkuliahan?.ringkasan || roadmap.duniaPerkuliahan?.overview || roadmap.universityWorld?.ringkasan || roadmap.universityWorld?.overview || '',
+        keahlianWajib: roadmap.duniaPerkuliahan?.keahlianWajib && roadmap.duniaPerkuliahan.keahlianWajib.length > 0 
+          ? roadmap.duniaPerkuliahan.keahlianWajib 
+          : (roadmap.universityWorld?.keahlianWajib || roadmap.universityWorld?.requiredSkills || ['']),
+        alasanMemilih: (roadmap.duniaPerkuliahan?.alasanMemilih && roadmap.duniaPerkuliahan.alasanMemilih.length > 0 
+          ? roadmap.duniaPerkuliahan.alasanMemilih 
+          : (roadmap.universityWorld?.alasanMemilih || roadmap.universityWorld?.whyChoose || [{ judul: '', deskripsi: '' }])).map((a: any) => ({
+            judul: a.judul || a.title || '',
+            deskripsi: a.deskripsi || a.desc || ''
         }))
       });
 
@@ -717,15 +697,29 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
           <input placeholder="Cari judul roadmap..." className="h-14 w-full rounded-2xl bg-white border border-slate-100 pl-12 pr-4 font-bold text-base shadow-sm focus:ring-2 focus:ring-blue-500 transition-all outline-none" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
         </div>
         <div className="space-y-4">
-          {EXISTING_ROADMAPS.filter(r => r.title.toLowerCase().includes(searchQuery.toLowerCase())).map(roadmap => (
-            <button key={roadmap.id} onClick={() => handleSelectRoadmap(roadmap)} className={`w-full p-6 bg-white rounded-2xl border flex items-center justify-between hover:shadow-md transition-all group ${mode === 'add_content' ? 'border-emerald-100 hover:border-emerald-300' : 'border-slate-100 hover:border-blue-200'}`}>
-              <div className="text-left">
-                <h4 className="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{roadmap.title}</h4>
-                <p className="text-xs font-bold text-slate-400">{roadmap.category}</p>
-              </div>
-              <ChevronRight className="text-slate-300 group-hover:text-emerald-600 transition-colors" size={20} />
-            </button>
-          ))}
+          {isFetchingRoadmaps ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="animate-spin text-blue-600 mb-4" size={32} />
+              <p className="text-sm font-bold text-slate-400">Memuat data asli...</p>
+            </div>
+          ) : (
+            existingRoadmaps
+              .filter(r => (r.title || r.judul || '').toLowerCase().includes(searchQuery.toLowerCase()))
+              .map(roadmap => (
+                <button key={roadmap.id || roadmap.slug} onClick={() => handleSelectRoadmap(roadmap)} className={`w-full p-6 bg-white dark:bg-slate-900 rounded-2xl border flex items-center justify-between hover:shadow-md transition-all group ${mode === 'add_content' ? 'border-emerald-100 dark:border-emerald-900/30 hover:border-emerald-300' : 'border-slate-100 dark:border-slate-800 hover:border-blue-200'}`}>
+                  <div className="text-left">
+                    <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 transition-colors">{roadmap.title || roadmap.judul}</h4>
+                    <p className="text-xs font-bold text-slate-400">{roadmap.category || roadmap.idKategori}</p>
+                  </div>
+                  <ChevronRight className="text-slate-300 dark:text-slate-700 group-hover:text-emerald-600 transition-colors" size={20} />
+                </button>
+              ))
+          )}
+          {!isFetchingRoadmaps && existingRoadmaps.length === 0 && (
+            <div className="text-center py-12 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl">
+              <p className="text-sm font-bold text-slate-400">Tidak ada roadmap yang ditemukan.</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -798,16 +792,16 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="rounded-2xl bg-slate-900 px-12 py-5 text-xl font-bold text-white shadow-xl hover:bg-black transition-all active:scale-95 flex items-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="flex items-center gap-3 rounded-full bg-emerald-600 px-12 py-5 text-base font-black text-white shadow-2xl shadow-emerald-600/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="animate-spin" size={24} />
-                Mengirim Kontribusi...
+                <Loader2 className="animate-spin" size={20} />
+                Sedang Memproses...
               </>
             ) : (
               <>
-                Kirim Semua Kontribusi <Send size={24} />
+                {isAdmin ? 'Publish & Sinkron Database' : 'Kirim Semua Kontribusi'} <Send size={20} />
               </>
             )}
           </button>
@@ -1045,17 +1039,17 @@ export default function SubmitRoadmap({ isAdmin = false, initialData = null, onA
               type="submit"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className={`rounded-2xl px-12 py-5 text-xl font-bold text-white shadow-xl transition-all active:scale-95 flex items-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed ${mode === 'edit_roadmap' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+              className="flex items-center gap-3 rounded-full bg-emerald-600 px-12 py-5 text-base font-black text-white shadow-2xl shadow-emerald-600/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin" size={24} />
-                  {mode === 'edit_roadmap' ? 'Memperbarui...' : 'Mengirim...'}
+                  <Loader2 className="animate-spin" size={20} />
+                  {mode === 'edit_roadmap' ? 'Memperbarui...' : 'Sedang Mengirim...'}
                 </>
               ) : (
                 <>
-                  {mode === 'edit_roadmap' ? 'Perbarui Roadmap' : 'Kirim Kontribusi'}
-                  <Send size={24} />
+                  {mode === 'edit_roadmap' ? 'Simpan Perubahan' : 'Kirim Kontribusi'}
+                  <Send size={20} />
                 </>
               )}
             </button>

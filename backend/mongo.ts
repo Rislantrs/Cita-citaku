@@ -135,77 +135,17 @@ const careerSchema = new Schema(
     riasecCategories: { type: [String], default: [] },
     mbtiTags: { type: [String], default: [] },
     featured: { type: Boolean, default: false },
-    infoGaji: {
-      rentangIDR: { type: String, default: '' },
-      rentangUSD: { type: String, default: '' },
-      penjelasan: { type: String, default: '' },
-    },
-    infoPendidikan: {
-      jurusan: { type: [String], default: [] },
-      durasi: { type: String, default: '' },
-      jalurAkademik: { type: String, default: '' },
-      gelar: { type: String, default: '' },
-    },
-    materiBelajar: [
-      {
-        judul: { type: String, default: '' },
-        tipe: { type: String, default: 'video' },
-        link: { type: String, default: '' },
-      }
-    ],
-    daftarBuku: [
-      {
-        judul: { type: String, default: '' },
-        penulis: { type: String, default: '' },
-        link: { type: String, default: '' },
-      }
-    ],
-    referensiDigital: [
-      {
-        judul: { type: String, default: '' },
-        tipe: { type: String, default: 'website' },
-        link: { type: String, default: '' },
-      }
-    ],
-    faqs: [
-      {
-        tanya: { type: String, default: '' },
-        jawab: { type: String, default: '' },
-      }
-    ],
-    universitasTerbaik: {
-      lokal: { type: [String], default: [] },
-      global: { type: [String], default: [] },
-    },
-    duniaPerkuliahan: {
-      ringkasan: { type: String, default: '' },
-      keahlianWajib: { type: [String], default: [] },
-      alasanMemilih: [
-        {
-          judul: { type: String, default: '' },
-          deskripsi: { type: String, default: '' },
-        }
-      ],
-    },
-    roadmap: [
-      {
-        fase: { type: String, default: '' },
-        meta: { type: String, default: '' },
-        judul: { type: String, default: '' },
-        deskripsi: { type: String, default: '' },
-        proyek: { type: [String], default: [] },
-        topics: { type: Schema.Types.Mixed, default: [] },
-        buku: [
-          {
-            judul: { type: String, default: '' },
-            penulis: { type: String, default: '' },
-            link: { type: String, default: '' },
-          }
-        ],
-      }
-    ],
+    infoGaji: { type: Schema.Types.Mixed, default: {} },
+    infoPendidikan: { type: Schema.Types.Mixed, default: {} },
+    materiBelajar: { type: Schema.Types.Mixed, default: [] },
+    daftarBuku: { type: Schema.Types.Mixed, default: [] },
+    referensiDigital: { type: Schema.Types.Mixed, default: [] },
+    faqs: { type: Schema.Types.Mixed, default: [] },
+    universitasTerbaik: { type: Schema.Types.Mixed, default: {} },
+    duniaPerkuliahan: { type: Schema.Types.Mixed, default: {} },
+    roadmap: { type: Schema.Types.Mixed, default: [] },
   },
-  { timestamps: true },
+  { timestamps: true, strict: false },
 );
 
 const userUsageSchema = new mongoose.Schema({
