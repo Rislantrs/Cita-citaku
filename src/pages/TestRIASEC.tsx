@@ -105,7 +105,19 @@ export default function TestRIASEC() {
       try {
         const res = await fetch('/api/careers');
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) setDynamicCareers(data);
+        // API returns { items: [...] }, NOT a plain array
+        const items = data?.items || data;
+        if (Array.isArray(items) && items.length > 0) {
+          // Normalize field names: API uses 'title', catalog uses 'judul'
+          // API uses 'riasecCategories', catalog uses 'kategoriRIASEC'
+          const normalized = items.map((c: any) => ({
+            ...c,
+            title: c.title || c.judul || '',
+            slug: c.slug || '',
+            kategoriRIASEC: c.kategoriRIASEC || c.riasecCategories || [],
+          }));
+          setDynamicCareers(normalized);
+        }
       } catch (err) {
         console.warn("Failed to fetch dynamic careers, using static fallback", err);
       }
@@ -390,28 +402,54 @@ export default function TestRIASEC() {
                 <Trophy size={20} className="text-yellow-500" /> Karir Rekomendasi
               </h3>
               <div className="grid gap-4 sm:grid-cols-2">
-                {(aiAnalysis?.recommendations && Array.isArray(aiAnalysis.recommendations)
-                  ? aiAnalysis.recommendations.map((rec: any) => {
+               {(() => {
+                  // Normalize helper: handle both API and static catalog field names
+                  const getTitle = (c: any) => c.title || c.judul || 'Karir Tidak Diketahui';
+                  const getRiasec = (c: any): string[] => c.kategoriRIASEC || c.riasecCategories || [];
+
+                  // 1. Get AI recommendations if available
+                  let finalRecs = aiAnalysis?.recommendations?.map((rec: any) => {
                     const career = dynamicCareers.find(c => c.slug === rec.slug);
                     if (!career) return null;
-                    return { ...career, matchScore: rec.matchScore };
-                  }).filter(Boolean)
-                  : dynamicCareers.slice(0, 4).map(c => ({ ...c, matchScore: 98 }))
-                ).map((career: any) => (
-                  <Link
-                    key={career.slug}
-                    to={`/roadmap/${career.slug}`}
-                    className="theme-card group flex items-center gap-4 rounded-3xl p-5 transition-all hover:scale-[1.02] hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-600/10"
-                  >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
-                      <ArrowRight size={20} />
-                    </div>
-                    <div>
-                      <h4 className="font-black group-hover:text-blue-600 transition-colors" style={{ color: 'var(--text-primary)' }}>{career.title}</h4>
-                      <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Cocok {career.matchScore}%</p>
-                    </div>
-                  </Link>
-                ))}
+                    return { ...career, title: getTitle(career), matchScore: rec.matchScore };
+                  }).filter(Boolean) || [];
+
+                  // 2. Fallback: manual RIASEC matching
+                  if (finalRecs.length === 0) {
+                    const topCodes = top3.map(([code]) => code);
+                    finalRecs = dynamicCareers
+                      .map(career => {
+                        const codes = getRiasec(career);
+                        const matches = codes.filter((code: string) => topCodes.includes(code)).length;
+                        const matchScore = matches === 3 ? 98 : matches === 2 ? 85 : matches === 1 ? 70 : 50;
+                        return { ...career, title: getTitle(career), matchScore, matches };
+                      })
+                      .filter(c => c.matches > 0)
+                      .sort((a, b) => b.matches - a.matches)
+                      .slice(0, 4);
+                  }
+
+                  // 3. Last resort fallback
+                  if (finalRecs.length === 0) {
+                    finalRecs = dynamicCareers.slice(0, 4).map(c => ({ ...c, title: getTitle(c), matchScore: 90 }));
+                  }
+
+                  return finalRecs.map((career: any) => (
+                    <Link
+                      key={career.slug}
+                      to={`/roadmap/${career.slug}`}
+                      className="theme-card group flex items-center gap-4 rounded-3xl p-5 transition-all hover:scale-[1.02] hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-600/10"
+                    >
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
+                        <ArrowRight size={20} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-black group-hover:text-blue-600 transition-colors truncate" style={{ color: 'var(--text-primary)' }}>{career.title}</h4>
+                        <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Cocok {career.matchScore}%</p>
+                      </div>
+                    </Link>
+                  ));
+                })()}
               </div>
               <button
                 onClick={() => {

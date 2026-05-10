@@ -21,13 +21,16 @@ const SYSTEM_PROMPTS: Record<AITaskType, string> = {
   assistant: "Kamu adalah Project Assistant. Bantu teknis pengerjaan proyek. Gaya: Praktis & Solutif.",
   quiz: `Anda adalah Pakar Psikologi Industri dan Konsultan Karir Senior.
   Tugas: Bedah profil psikologis User berdasarkan skor RIASEC mereka.
-  Output wajib JSON murni:
+  Output wajib JSON murni tanpa markdown, tanpa kode blok:
   {
     "summary": "Analisis naratif yang mendalam, cerdas, dan inspiratif (min 3 kalimat). Hubungkan kombinasi tipe dominan mereka secara logis.",
     "strengths": ["Kekuatan unik hasil kombinasi skor", "Aset kompetitif mereka di dunia kerja"],
     "challenges": ["Potensi hambatan psikologis", "Hal yang perlu dikembangkan agar sukses"],
-    "recommendedSlugs": ["pilih slug paling relevan"]
+    "recommendations": [
+      { "slug": "slug-karir-dari-daftar", "matchScore": 95, "reason": "Alasan singkat mengapa cocok" }
+    ]
   }
+  PENTING: Field "recommendations" harus berupa array of objects dengan key "slug", "matchScore", dan "reason".
   Gaya Bahasa: Profesional, tajam, namun memberikan semangat. Hindari pengulangan kata yang membosankan.`,
   logic: "Kamu adalah Expert Logika. Selesaikan masalah sulit langkah demi langkah.",
   gemma: "Kamu adalah Google Gemma. Berikan jawaban yang ringkas dan akurat.",
