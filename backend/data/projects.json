@@ -4,12 +4,24 @@
     "title": "Membuat Landing Page Portofolio",
     "introduction": "Simulasi membuat website portofolio untuk freelancer.",
     "background": "Sebagai frontend engineer, tugas pertamamu adalah membuat portofolio yang cepat dan responsif.",
-    "skills": ["HTML", "CSS", "Flexbox", "Responsive Design"],
+    "skills": [
+      "HTML",
+      "CSS",
+      "Flexbox",
+      "Responsive Design"
+    ],
     "brief": "Gunakan HTML dan CSS murni untuk membuat layout 1 halaman.",
     "category": "Web Development",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Struktur HTML", "content": "Mulai dari header, hero section, about, dan contact.", "imageUrl": "/images/hero-modern.webp" }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Struktur HTML",
+        "content": "Mulai dari header, hero section, about, dan contact.",
+        "imageUrl": "/images/hero-modern.webp"
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -18,8 +30,17 @@
         "description": "Tag apa yang terbaik untuk membungkus konten utama?",
         "question": "Pilih tag HTML5:",
         "choices": [
-          { "id": "c1", "label": "<main>", "guidance": "Benar! Tag main sangat baik untuk SEO and accessibility.", "nextStepId": "complete" },
-          { "id": "c2", "label": "<div>", "guidance": "Bisa, tapi kurang semantik." }
+          {
+            "id": "c1",
+            "label": "<main>",
+            "guidance": "Benar! Tag main sangat baik untuk SEO and accessibility.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "<div>",
+            "guidance": "Bisa, tapi kurang semantik."
+          }
         ]
       }
     ]
@@ -29,12 +50,23 @@
     "title": "Membangun Todo App Pertama",
     "introduction": "Membangun aplikasi Todo sederhana di HP.",
     "background": "Aplikasi pengingat tugas harian yang bisa tambah, hapus, coret.",
-    "skills": ["State Management", "UI Layout", "Event Handling"],
+    "skills": [
+      "State Management",
+      "UI Layout",
+      "Event Handling"
+    ],
     "brief": "Buat list yang bisa di-scroll.",
     "category": "Mobile Development",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "State", "content": "Data harus disimpan di state agar UI update.", "imageUrl": "/images/cat-tech.webp" }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "State",
+        "content": "Data harus disimpan di state agar UI update.",
+        "imageUrl": "/images/cat-tech.webp"
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -43,8 +75,17 @@
         "description": "Struktur data apa yang cocok untuk list todo?",
         "question": "Pilih tipe data:",
         "choices": [
-          { "id": "c1", "label": "Array of Objects", "guidance": "Benar! Bisa simpan id, teks, dan status selesai.", "nextStepId": "complete" },
-          { "id": "c2", "label": "String", "guidance": "Salah, tidak bisa menyimpan banyak item dengan status berbeda." }
+          {
+            "id": "c1",
+            "label": "Array of Objects",
+            "guidance": "Benar! Bisa simpan id, teks, dan status selesai.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "String",
+            "guidance": "Salah, tidak bisa menyimpan banyak item dengan status berbeda."
+          }
         ]
       }
     ]
@@ -54,12 +95,23 @@
     "title": "Riset Kebutuhan Fitur Chat",
     "introduction": "Menentukan apakah fitur chat dibutuhkan di aplikasi E-commerce.",
     "background": "Sebagai PM, kamu harus memvalidasi asumsi sebelum tim engineer ngoding berbulan-bulan.",
-    "skills": ["User Interview", "A/B Testing", "Data Analysis"],
+    "skills": [
+      "User Interview",
+      "A/B Testing",
+      "Data Analysis"
+    ],
     "brief": "Tanya user, cek kompetitor, buat MVP.",
     "category": "Product Management",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Validasi Asumsi", "content": "Jangan bikin fitur yang ga dipakai.", "imageUrl": "/images/cat-business.webp" }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Validasi Asumsi",
+        "content": "Jangan bikin fitur yang ga dipakai.",
+        "imageUrl": "/images/cat-business.webp"
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -68,8 +120,17 @@
         "description": "Apa yang harus dilakukan pertama kali?",
         "question": "Pilih tindakan:",
         "choices": [
-          { "id": "c1", "label": "Melakukan interview ke 5 pengguna aktif", "guidance": "Tepat! Validasi kualitatif sangat penting di awal.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Langsung suruh programmer bikin", "guidance": "Bahaya! Bisa buang-buang resource." }
+          {
+            "id": "c1",
+            "label": "Melakukan interview ke 5 pengguna aktif",
+            "guidance": "Tepat! Validasi kualitatif sangat penting di awal.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Langsung suruh programmer bikin",
+            "guidance": "Bahaya! Bisa buang-buang resource."
+          }
         ]
       }
     ]
@@ -79,12 +140,23 @@
     "title": "Prediksi Harga Rumah dengan AI",
     "introduction": "Menggunakan Linear Regression untuk prediksi harga.",
     "background": "Kamu punya dataset luas tanah, jumlah kamar, dan harga.",
-    "skills": ["Python", "Scikit-Learn", "Data Cleaning"],
+    "skills": [
+      "Python",
+      "Scikit-Learn",
+      "Data Cleaning"
+    ],
     "brief": "Latih model regresi linier sederhana.",
     "category": "Artificial Intelligence",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Linear Regression", "content": "Mencari garis lurus terbaik yang mewakili tren data.", "imageUrl": "/images/cat-tech.webp" }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Linear Regression",
+        "content": "Mencari garis lurus terbaik yang mewakili tren data.",
+        "imageUrl": "/images/cat-tech.webp"
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -93,8 +165,17 @@
         "description": "Ada data rumah yang jumlah kamarnya kosong.",
         "question": "Apa yang sebaiknya dilakukan?",
         "choices": [
-          { "id": "c1", "label": "Isi dengan nilai rata-rata (mean) kamar", "guidance": "Benar! Ini cara umum untuk menangani missing values.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Hapus seluruh dataset", "guidance": "Terlalu ekstrem, data lain jadi terbuang." }
+          {
+            "id": "c1",
+            "label": "Isi dengan nilai rata-rata (mean) kamar",
+            "guidance": "Benar! Ini cara umum untuk menangani missing values.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Hapus seluruh dataset",
+            "guidance": "Terlalu ekstrem, data lain jadi terbuang."
+          }
         ]
       }
     ]
@@ -104,12 +185,23 @@
     "title": "Membangun Game Mario Clone",
     "introduction": "Menerapkan fisika gravitasi dan lompatan.",
     "background": "Karaktermu butuh bisa lompat di atas platform tanpa tembus ke bawah.",
-    "skills": ["Game Loop", "Collision Detection", "Physics"],
+    "skills": [
+      "Game Loop",
+      "Collision Detection",
+      "Physics"
+    ],
     "brief": "Implementasi Collider 2D.",
     "category": "Game Development",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Collider", "content": "Komponen yang mendeteksi tabrakan antar objek.", "imageUrl": "/images/cat-art.webp" }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Collider",
+        "content": "Komponen yang mendeteksi tabrakan antar objek.",
+        "imageUrl": "/images/cat-art.webp"
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -118,8 +210,17 @@
         "description": "Karaktermu jatuh menembus lantai.",
         "question": "Komponen apa yang lupa dipasang pada lantai?",
         "choices": [
-          { "id": "c1", "label": "Box Collider 2D", "guidance": "Benar! Lantai butuh collider agar objek lain bisa berpijak.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Audio Source", "guidance": "Salah, itu untuk suara." }
+          {
+            "id": "c1",
+            "label": "Box Collider 2D",
+            "guidance": "Benar! Lantai butuh collider agar objek lain bisa berpijak.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Audio Source",
+            "guidance": "Salah, itu untuk suara."
+          }
         ]
       }
     ]
@@ -129,12 +230,22 @@
     "title": "Deploy Web di AWS EC2",
     "introduction": "Simulasi menyewa dan menyetel server virtual di cloud.",
     "background": "Aplikasi butuh server yang bisa diakses 24/7.",
-    "skills": ["AWS EC2", "Linux Command Line", "Networking"],
+    "skills": [
+      "AWS EC2",
+      "Linux Command Line",
+      "Networking"
+    ],
     "brief": "Buat instance EC2 dan buka port 80.",
     "category": "Cloud Computing",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Security Group", "content": "Firewall virtual untuk mengontrol trafik masuk." }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Security Group",
+        "content": "Firewall virtual untuk mengontrol trafik masuk."
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -143,8 +254,17 @@
         "description": "Port mana yang harus dibuka di Security Group agar website bisa diakses dari internet via HTTP?",
         "question": "Pilih port:",
         "choices": [
-          { "id": "c1", "label": "Port 80", "guidance": "Benar! Port 80 adalah standar HTTP.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Port 22", "guidance": "Salah, itu untuk SSH." }
+          {
+            "id": "c1",
+            "label": "Port 80",
+            "guidance": "Benar! Port 80 adalah standar HTTP.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Port 22",
+            "guidance": "Salah, itu untuk SSH."
+          }
         ]
       }
     ]
@@ -154,12 +274,22 @@
     "title": "Analisis Data E-commerce",
     "introduction": "Menggunakan SQL untuk mencari insight bisnis.",
     "background": "Manager ingin tahu produk apa yang paling laku bulan ini.",
-    "skills": ["SQL", "Data Aggregation", "Data Visualization"],
+    "skills": [
+      "SQL",
+      "Data Aggregation",
+      "Data Visualization"
+    ],
     "brief": "Tulis query GROUP BY.",
     "category": "Data Analysis",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Agregasi", "content": "Menggabungkan banyak baris data jadi satu rangkuman." }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Agregasi",
+        "content": "Menggabungkan banyak baris data jadi satu rangkuman."
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -168,8 +298,17 @@
         "description": "Fungsi SQL apa yang digunakan untuk menjumlahkan total pendapatan?",
         "question": "Pilih fungsi:",
         "choices": [
-          { "id": "c1", "label": "SUM()", "guidance": "Benar! SUM() akan menjumlahkan nilai.", "nextStepId": "complete" },
-          { "id": "c2", "label": "COUNT()", "guidance": "Salah, COUNT() hanya menghitung jumlah baris." }
+          {
+            "id": "c1",
+            "label": "SUM()",
+            "guidance": "Benar! SUM() akan menjumlahkan nilai.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "COUNT()",
+            "guidance": "Salah, COUNT() hanya menghitung jumlah baris."
+          }
         ]
       }
     ]
@@ -179,12 +318,22 @@
     "title": "Membangun Kripto Pertama",
     "introduction": "Membuat smart contract untuk token berstandar ERC-20.",
     "background": "Kamu ingin membuat koin untuk komunitas belajar.",
-    "skills": ["Solidity", "Smart Contracts", "Blockchain"],
+    "skills": [
+      "Solidity",
+      "Smart Contracts",
+      "Blockchain"
+    ],
     "brief": "Tulis kontrak di Remix IDE.",
     "category": "Blockchain",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Gas Fee", "content": "Biaya transaksi di jaringan blockchain." }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Gas Fee",
+        "content": "Biaya transaksi di jaringan blockchain."
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -193,8 +342,17 @@
         "description": "Setelah smart contract di-deploy, apakah kodenya bisa diubah?",
         "question": "Pilih jawaban:",
         "choices": [
-          { "id": "c1", "label": "Tidak bisa", "guidance": "Benar! Sifat blockchain adalah immutable.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Bisa kapan saja", "guidance": "Salah." }
+          {
+            "id": "c1",
+            "label": "Tidak bisa",
+            "guidance": "Benar! Sifat blockchain adalah immutable.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Bisa kapan saja",
+            "guidance": "Salah."
+          }
         ]
       }
     ]
@@ -204,12 +362,22 @@
     "title": "Audit SEO Landing Page",
     "introduction": "Mencari celah agar website masuk halaman pertama Google.",
     "background": "Trafik website turun drastis.",
-    "skills": ["SEO", "Keyword Research", "On-Page Optimization"],
+    "skills": [
+      "SEO",
+      "Keyword Research",
+      "On-Page Optimization"
+    ],
     "brief": "Gunakan tool audit untuk perbaiki tag HTML.",
     "category": "Digital Marketing",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Title Tag", "content": "Elemen paling penting untuk SEO on-page." }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Title Tag",
+        "content": "Elemen paling penting untuk SEO on-page."
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -218,8 +386,17 @@
         "description": "Berapa banyak tag H1 yang sebaiknya ada dalam satu halaman artikel?",
         "question": "Pilih jumlah:",
         "choices": [
-          { "id": "c1", "label": "Satu saja", "guidance": "Benar! H1 adalah judul utama halaman.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Semakin banyak semakin baik", "guidance": "Salah, itu akan membingungkan mesin pencari." }
+          {
+            "id": "c1",
+            "label": "Satu saja",
+            "guidance": "Benar! H1 adalah judul utama halaman.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Semakin banyak semakin baik",
+            "guidance": "Salah, itu akan membingungkan mesin pencari."
+          }
         ]
       }
     ]
@@ -229,12 +406,22 @@
     "title": "Animasi Bouncing Ball di Blender",
     "introduction": "Menerapkan prinsip fisika pada animasi 3D.",
     "background": "Membuat ilusi berat dan kelenturan pada bola yang memantul.",
-    "skills": ["Keyframing", "Graph Editor", "3D Animation"],
+    "skills": [
+      "Keyframing",
+      "Graph Editor",
+      "3D Animation"
+    ],
     "brief": "Gunakan Squash & Stretch.",
     "category": "3D Animation",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Squash & Stretch", "content": "Memberikan kesan kelenturan pada objek saat membentur lantai." }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Squash & Stretch",
+        "content": "Memberikan kesan kelenturan pada objek saat membentur lantai."
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -243,8 +430,17 @@
         "description": "Apa bentuk bola sesaat sebelum membentur lantai karena kecepatan tinggi?",
         "question": "Pilih bentuk:",
         "choices": [
-          { "id": "c1", "label": "Memanjang (Stretch)", "guidance": "Benar! Ini prinsip Stretch.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Membulat sempurna", "guidance": "Salah, harusnya berubah bentuk." }
+          {
+            "id": "c1",
+            "label": "Memanjang (Stretch)",
+            "guidance": "Benar! Ini prinsip Stretch.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Membulat sempurna",
+            "guidance": "Salah, harusnya berubah bentuk."
+          }
         ]
       }
     ]
@@ -254,12 +450,23 @@
     "title": "Defense: SQL Injection",
     "introduction": "Simulasi mengamankan query database dari serangan SQL Injection.",
     "background": "Sebuah website e-commerce baru saja diretas karena form login yang tidak aman.",
-    "skills": ["SQL Security", "Input Validation", "Prepared Statements"],
+    "skills": [
+      "SQL Security",
+      "Input Validation",
+      "Prepared Statements"
+    ],
     "brief": "Perbaiki kode PHP/Node.js yang rentan.",
     "category": "Cyber Security",
     "image": "/images/cat-tech.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "Prepared Statements", "content": "Memisahkan query SQL dari data input user.", "imageUrl": "/images/cat-tech.webp" }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Prepared Statements",
+        "content": "Memisahkan query SQL dari data input user.",
+        "imageUrl": "/images/cat-tech.webp"
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -268,8 +475,17 @@
         "description": "Kode menggunakan concatenating string: `SELECT * FROM users WHERE pass = '` + input + `'`",
         "question": "Kenapa kode ini berbahaya?",
         "choices": [
-          { "id": "c1", "label": "User bisa memasukkan ' OR 1=1 --", "guidance": "Benar! Itu akan membuat query selalu true.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Kode akan error jika input kosong", "guidance": "Kurang tepat, bahaya utamanya adalah bypass autentikasi." }
+          {
+            "id": "c1",
+            "label": "User bisa memasukkan ' OR 1=1 --",
+            "guidance": "Benar! Itu akan membuat query selalu true.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Kode akan error jika input kosong",
+            "guidance": "Kurang tepat, bahaya utamanya adalah bypass autentikasi."
+          }
         ]
       }
     ]
@@ -279,12 +495,23 @@
     "title": "UX Redesign: Landing Page",
     "introduction": "Meningkatkan konversi dengan memperbaiki pengalaman pengguna.",
     "background": "User sering berhenti di halaman depan tanpa melakukan klik apapun (bounce rate tinggi).",
-    "skills": ["User Research", "Wireframing", "A/B Testing"],
+    "skills": [
+      "User Research",
+      "Wireframing",
+      "A/B Testing"
+    ],
     "brief": "Buat 2 variasi landing page dan tentukan mana yang lebih baik.",
     "category": "UI/UX Design",
     "image": "/images/cat-art.webp",
     "featured": true,
-    "briefSections": [{ "number": 1, "title": "A/B Testing", "content": "Metode membandingkan dua versi desain untuk melihat mana yang performanya lebih baik.", "imageUrl": "/images/cat-art.webp" }],
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "A/B Testing",
+        "content": "Metode membandingkan dua versi desain untuk melihat mana yang performanya lebih baik.",
+        "imageUrl": "/images/cat-art.webp"
+      }
+    ],
     "interactiveSteps": [
       {
         "id": "step-1",
@@ -293,8 +520,173 @@
         "description": "Tombol 'Beli Sekarang' diletakkan di paling bawah halaman.",
         "question": "Dimana posisi terbaik untuk tombol utama?",
         "choices": [
-          { "id": "c1", "label": "Above the fold (Terlihat tanpa scroll)", "guidance": "Tepat! Memudahkan user langsung bertindak.", "nextStepId": "complete" },
-          { "id": "c2", "label": "Di halaman footer saja", "guidance": "Kurang efektif, user harus scroll jauh." }
+          {
+            "id": "c1",
+            "label": "Above the fold (Terlihat tanpa scroll)",
+            "guidance": "Tepat! Memudahkan user langsung bertindak.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Di halaman footer saja",
+            "guidance": "Kurang efektif, user harus scroll jauh."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "devops-cicd-pipeline",
+    "title": "Automated CI/CD Pipeline Deployment",
+    "introduction": "Bangun sistem otomatisasi untuk menguji dan merilis kode ke server produksi tanpa campur tangan manusia secara manual.",
+    "background": "Tim developer sering mengalami konflik kode dan downtime saat merilis fitur baru karena masih dilakukan secara manual via FTP.",
+    "skills": [
+      "Git Actions",
+      "Docker",
+      "Linux Server",
+      "Bash Scripting"
+    ],
+    "brief": "Tugasmu adalah membuat script CI/CD menggunakan GitHub Actions yang otomatis melakukan build Docker image dan deploy ke server VPS saat ada push ke branch 'main'.",
+    "category": "Tech / DevOps",
+    "image": "/images/cat-tech.webp",
+    "featured": true,
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Containerization dengan Docker",
+        "content": "Docker memungkinkan aplikasimu berjalan dengan lingkungan yang sama persis antara laptop developer dan server produksi. Buat `Dockerfile` yang ringan berbasis Alpine Linux.",
+        "imageUrl": "/images/cat-tech.webp"
+      },
+      {
+        "number": 2,
+        "title": "GitHub Actions YAML",
+        "content": "File `.github/workflows/deploy.yml` adalah jantung dari otomasi ini. Kamu harus mendefinisikan *trigger* dan *jobs* yang akan dieksekusi secara berurutan.",
+        "imageUrl": "/images/cat-tech.webp"
+      },
+      {
+        "number": 3,
+        "title": "Secure SSH Deployment",
+        "content": "Jangan pernah menyimpan password server di dalam kode. Gunakan GitHub Secrets untuk menyimpan SSH Key yang akan digunakan runner untuk login ke server dan memanipulasi container.",
+        "imageUrl": "/images/cat-tech.webp"
+      }
+    ],
+    "interactiveSteps": [
+      {
+        "id": "step-1",
+        "stepNumber": 1,
+        "title": "Optimasi Dockerfile",
+        "description": "Kamu diberikan Dockerfile untuk aplikasi Node.js. Namun, ukurannya mencapai 1GB. Bagaimana cara menguranginya?",
+        "question": "Metode apa yang paling efektif untuk mengurangi ukuran final image Docker?",
+        "choices": [
+          {
+            "id": "c1",
+            "label": "Multi-stage Builds",
+            "guidance": "Sangat Tepat! Dengan memisahkan proses build dan environment production, kamu membuang dependensi yang tidak diperlukan di server.",
+            "nextStepId": "step-2"
+          },
+          {
+            "id": "c2",
+            "label": "Menghapus komentar di dalam kode Node.js",
+            "guidance": "Komentar teks hanya berukuran beberapa Kilobyte, tidak akan signifikan mengurangi ukuran 1GB."
+          }
+        ]
+      },
+      {
+        "id": "step-2",
+        "stepNumber": 2,
+        "title": "Mengatasi Downtime Saat Deploy",
+        "description": "Pipeline kamu berhasil jalan, tapi setiap kali deploy, server mati selama 10 detik saat mengganti container lama dengan yang baru.",
+        "question": "Strategi deployment apa yang bisa mencegah downtime ini (Zero-Downtime)?",
+        "choices": [
+          {
+            "id": "c1",
+            "label": "Blue-Green Deployment",
+            "guidance": "Sempurna! Kamu menjalankan versi baru (Green) secara paralel dengan versi lama (Blue), lalu mengarahkan traffic melalui Load Balancer seketika.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Menjalankan script deploy di jam 3 pagi",
+            "guidance": "Ini bukan best practice DevOps, ini hanya menghindari masalah, bukan menyelesaikannya secara teknis."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pm-prd-creation",
+    "title": "Market Research & PRD (Product Requirement Document)",
+    "introduction": "Berperan sebagai Product Manager untuk merancang fitur 'Group Booking' pada aplikasi travel.",
+    "background": "Data analitik menunjukkan banyak pengguna aplikasi travel kita yang mencoba memesan untuk rombongan lebih dari 10 orang, namun sistem saat ini membatasi maksimal 5 orang per transaksi.",
+    "skills": [
+      "Product Strategy",
+      "User Research",
+      "Wireframing",
+      "Documentation"
+    ],
+    "brief": "Lakukan riset kompetitor, tentukan user story, dan tulis Product Requirement Document (PRD) yang akan diserahkan ke tim engineering.",
+    "category": "Business / Product",
+    "image": "/images/cat-business.webp",
+    "featured": true,
+    "briefSections": [
+      {
+        "number": 1,
+        "title": "Riset Kompetitor",
+        "content": "Analisis bagaimana Traveloka atau Tiket.com menangani pemesanan rombongan besar. Apa pain points yang belum mereka selesaikan?",
+        "imageUrl": "/images/cat-business.webp"
+      },
+      {
+        "number": 2,
+        "title": "User Persona & Stories",
+        "content": "Bentuk profil 'Budi, Sang Koordinator Tour'. Buat format User Story: 'Sebagai [Persona], saya ingin [Tujuan], sehingga [Alasan/Benefit]'.",
+        "imageUrl": "/images/cat-business.webp"
+      },
+      {
+        "number": 3,
+        "title": "Menyusun PRD",
+        "content": "PRD harus mencakup: Visi Fitur, Target Metrik (Success Metrics), Scope Pekerjaan (MVP), Out of Scope, dan Mockup Kasar (Wireframe).",
+        "imageUrl": "/images/cat-business.webp"
+      }
+    ],
+    "interactiveSteps": [
+      {
+        "id": "step-1",
+        "stepNumber": 1,
+        "title": "Menentukan Success Metrics",
+        "description": "Sebagai PM, kamu harus mendefinisikan apa yang disebut 'sukses' untuk fitur Group Booking ini.",
+        "question": "Metrik utama apa yang paling merepresentasikan kesuksesan fitur baru ini?",
+        "choices": [
+          {
+            "id": "c1",
+            "label": "Peningkatan jumlah transaksi dengan >5 penumpang sebesar 20% di bulan pertama",
+            "guidance": "Tepat! Metrik ini SMART (Specific, Measurable, Actionable, Relevant, Time-bound).",
+            "nextStepId": "step-2"
+          },
+          {
+            "id": "c2",
+            "label": "Jumlah likes di postingan Instagram peluncuran fitur",
+            "guidance": "Ini adalah vanity metrics (metrik pamer) yang tidak berdampak langsung pada pendapatan bisnis."
+          }
+        ]
+      },
+      {
+        "id": "step-2",
+        "stepNumber": 2,
+        "title": "Prioritas MVP (Minimum Viable Product)",
+        "description": "Tim developer mengatakan fitur 'Pembayaran Patungan' akan memakan waktu 3 bulan. Jika dimasukkan, peluncuran fitur akan tertunda.",
+        "question": "Apa keputusanmu sebagai Product Manager?",
+        "choices": [
+          {
+            "id": "c1",
+            "label": "Tunda fitur 'Patungan' untuk Fase 2, luncurkan booking rombongan dengan pembayaran tunggal dulu (MVP).",
+            "guidance": "Keputusan yang solid! Prinsip Agile adalah merilis cepat untuk mendapatkan feedback pasar.",
+            "nextStepId": "complete"
+          },
+          {
+            "id": "c2",
+            "label": "Tunda peluncuran 3 bulan, fitur harus sempurna sejak hari pertama.",
+            "guidance": "Berisiko tinggi. Bagaimana jika setelah 3 bulan ternyata user tidak menyukainya? Kamu membuang waktu dan biaya besar."
+          }
         ]
       }
     ]
