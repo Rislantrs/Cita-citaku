@@ -275,7 +275,38 @@ export async function ensureCareerSeeded() {
 }
 
 export async function ensureProjectSeeded() {
-  // Let the user manage their own database
+  const isReady = isMongoReady();
+  
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const dataPath = path.join(process.cwd(), 'backend', 'data', 'projects.json');
+    
+    if (fs.existsSync(dataPath)) {
+      const raw = fs.readFileSync(dataPath, 'utf8');
+      const projects = JSON.parse(raw);
+      
+      // 1. Always seed memoryStore
+      memoryStore.projects = projects;
+      
+      // 2. If Mongo is ready, sync to Atlas
+      if (isReady) {
+        console.log(`[mongo] Atlas connected. Syncing ${projects.length} projects...`);
+        for (const project of projects) {
+          await ProjectModel.findOneAndUpdate(
+            { id: project.id } as any,
+            project,
+            { upsert: true, returnDocument: 'after' }
+          );
+        }
+        console.log('[mongo] Project Atlas sync complete!');
+      } else {
+        console.log(`[mongo] Hybrid Mode: Auto-seeded ${projects.length} projects to memory`);
+      }
+    }
+  } catch (err) {
+    console.error('[mongo] Project Seeding failed:', err);
+  }
 }
 
 export { memoryStore };

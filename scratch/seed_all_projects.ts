@@ -1,0 +1,285 @@
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const mongoUri = process.env.MONGODB_URI;
+const dbName = process.env.MONGODB_DB_NAME || 'cita-citaku';
+
+const projects = [
+  {
+    id: "landing-page-project",
+    title: "Membuat Landing Page Portofolio",
+    introduction: "Simulasi membuat website portofolio untuk freelancer.",
+    background: "Sebagai frontend engineer, tugas pertamamu adalah membuat portofolio yang cepat dan responsif.",
+    skills: ["HTML", "CSS", "Flexbox", "Responsive Design"],
+    brief: "Gunakan HTML dan CSS murni untuk membuat layout 1 halaman.",
+    category: "Web Development",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Struktur HTML", content: "Mulai dari header, hero section, about, dan contact." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Pilih Tag Semantic",
+        description: "Tag apa yang terbaik untuk membungkus konten utama?",
+        question: "Pilih tag HTML5:",
+        choices: [
+          { id: "c1", label: "<main>", guidance: "Benar! Tag main sangat baik untuk SEO dan accessibility.", nextStepId: "complete" },
+          { id: "c2", label: "<div>", guidance: "Bisa, tapi kurang semantik." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "todo-app-project",
+    title: "Membangun Todo App Pertama",
+    introduction: "Membangun aplikasi Todo sederhana di HP.",
+    background: "Aplikasi pengingat tugas harian yang bisa tambah, hapus, coret.",
+    skills: ["State Management", "UI Layout", "Event Handling"],
+    brief: "Buat list yang bisa di-scroll.",
+    category: "Mobile Development",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "State", content: "Data harus disimpan di state agar UI update." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Menyimpan List",
+        description: "Struktur data apa yang cocok untuk list todo?",
+        question: "Pilih tipe data:",
+        choices: [
+          { id: "c1", label: "Array of Objects", guidance: "Benar! Bisa simpan id, teks, dan status selesai.", nextStepId: "complete" },
+          { id: "c2", label: "String", guidance: "Salah, tidak bisa menyimpan banyak item dengan status berbeda." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "user-research-project",
+    title: "Riset Kebutuhan Fitur Chat",
+    introduction: "Menentukan apakah fitur chat dibutuhkan di aplikasi E-commerce.",
+    background: "Sebagai PM, kamu harus memvalidasi asumsi sebelum tim engineer ngoding berbulan-bulan.",
+    skills: ["User Interview", "A/B Testing", "Data Analysis"],
+    brief: "Tanya user, cek kompetitor, buat MVP.",
+    category: "Product Management",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Validasi Asumsi", content: "Jangan bikin fitur yang ga dipakai." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Langkah Pertama",
+        description: "Apa yang harus dilakukan pertama kali?",
+        question: "Pilih tindakan:",
+        choices: [
+          { id: "c1", label: "Melakukan interview ke 5 pengguna aktif", guidance: "Tepat! Validasi kualitatif sangat penting di awal.", nextStepId: "complete" },
+          { id: "c2", label: "Langsung suruh programmer bikin", guidance: "Bahaya! Bisa buang-buang resource." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "ai-prediction-project",
+    title: "Prediksi Harga Rumah dengan AI",
+    introduction: "Menggunakan Linear Regression untuk prediksi harga.",
+    background: "Kamu punya dataset luas tanah, jumlah kamar, dan harga.",
+    skills: ["Python", "Scikit-Learn", "Data Cleaning"],
+    brief: "Latih model regresi linier sederhana.",
+    category: "Artificial Intelligence",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Linear Regression", content: "Mencari garis lurus terbaik yang mewakili tren data." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Missing Values",
+        description: "Ada data rumah yang jumlah kamarnya kosong.",
+        question: "Apa yang sebaiknya dilakukan?",
+        choices: [
+          { id: "c1", label: "Isi dengan nilai rata-rata (mean) kamar", guidance: "Benar! Ini cara umum untuk menangani missing values.", nextStepId: "complete" },
+          { id: "c2", label: "Hapus seluruh dataset", guidance: "Terlalu ekstrem, data lain jadi terbuang." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "platformer-game-project",
+    title: "Membangun Game Mario Clone",
+    introduction: "Menerapkan fisika gravitasi dan lompatan.",
+    background: "Karaktermu butuh bisa lompat di atas platform tanpa tembus ke bawah.",
+    skills: ["Game Loop", "Collision Detection", "Physics"],
+    brief: "Implementasi Collider 2D.",
+    category: "Game Development",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Collider", content: "Komponen yang mendeteksi tabrakan antar objek." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Tembus Lantai",
+        description: "Karaktermu jatuh menembus lantai.",
+        question: "Komponen apa yang lupa dipasang pada lantai?",
+        choices: [
+          { id: "c1", label: "Box Collider 2D", guidance: "Benar! Lantai butuh collider agar objek lain bisa berpijak.", nextStepId: "complete" },
+          { id: "c2", label: "Audio Source", guidance: "Salah, itu untuk suara." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "cloud-server-project",
+    title: "Deploy Web di AWS EC2",
+    introduction: "Simulasi menyewa dan menyetel server virtual di cloud.",
+    background: "Aplikasi butuh server yang bisa diakses 24/7.",
+    skills: ["AWS EC2", "Linux Command Line", "Networking"],
+    brief: "Buat instance EC2 dan buka port 80.",
+    category: "Cloud Computing",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Security Group", content: "Firewall virtual untuk mengontrol trafik masuk." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Membuka Akses Web",
+        description: "Port mana yang harus dibuka di Security Group agar website bisa diakses dari internet via HTTP?",
+        question: "Pilih port:",
+        choices: [
+          { id: "c1", label: "Port 80", guidance: "Benar! Port 80 adalah standar HTTP.", nextStepId: "complete" },
+          { id: "c2", label: "Port 22", guidance: "Salah, itu untuk SSH." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "data-query-project",
+    title: "Analisis Data E-commerce",
+    introduction: "Menggunakan SQL untuk mencari insight bisnis.",
+    background: "Manager ingin tahu produk apa yang paling laku bulan ini.",
+    skills: ["SQL", "Data Aggregation", "Data Visualization"],
+    brief: "Tulis query GROUP BY.",
+    category: "Data Analysis",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Agregasi", content: "Menggabungkan banyak baris data jadi satu rangkuman." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Menghitung Total",
+        description: "Fungsi SQL apa yang digunakan untuk menjumlahkan total pendapatan?",
+        question: "Pilih fungsi:",
+        choices: [
+          { id: "c1", label: "SUM()", guidance: "Benar! SUM() akan menjumlahkan nilai.", nextStepId: "complete" },
+          { id: "c2", label: "COUNT()", guidance: "Salah, COUNT() hanya menghitung jumlah baris." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "erc20-project",
+    title: "Membangun Kripto Pertama",
+    introduction: "Membuat smart contract untuk token berstandar ERC-20.",
+    background: "Kamu ingin membuat koin untuk komunitas belajar.",
+    skills: ["Solidity", "Smart Contracts", "Blockchain"],
+    brief: "Tulis kontrak di Remix IDE.",
+    category: "Blockchain",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Gas Fee", content: "Biaya transaksi di jaringan blockchain." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Kekal (Immutable)",
+        description: "Setelah smart contract di-deploy, apakah kodenya bisa diubah?",
+        question: "Pilih jawaban:",
+        choices: [
+          { id: "c1", label: "Tidak bisa", guidance: "Benar! Sifat blockchain adalah immutable.", nextStepId: "complete" },
+          { id: "c2", label: "Bisa kapan saja", guidance: "Salah." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "seo-audit-project",
+    title: "Audit SEO Landing Page",
+    introduction: "Mencari celah agar website masuk halaman pertama Google.",
+    background: "Trafik website turun drastis.",
+    skills: ["SEO", "Keyword Research", "On-Page Optimization"],
+    brief: "Gunakan tool audit untuk perbaiki tag HTML.",
+    category: "Digital Marketing",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Title Tag", content: "Elemen paling penting untuk SEO on-page." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Tag H1",
+        description: "Berapa banyak tag H1 yang sebaiknya ada dalam satu halaman artikel?",
+        question: "Pilih jumlah:",
+        choices: [
+          { id: "c1", label: "Satu saja", guidance: "Benar! H1 adalah judul utama halaman.", nextStepId: "complete" },
+          { id: "c2", label: "Semakin banyak semakin baik", guidance: "Salah, itu akan membingungkan mesin pencari." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "bouncing-ball-project",
+    title: "Animasi Bouncing Ball di Blender",
+    introduction: "Menerapkan prinsip fisika pada animasi 3D.",
+    background: "Membuat ilusi berat dan kelenturan pada bola yang memantul.",
+    skills: ["Keyframing", "Graph Editor", "3D Animation"],
+    brief: "Gunakan Squash & Stretch.",
+    category: "3D Animation",
+    image: "/images/cat-tech.webp",
+    featured: true,
+    briefSections: [{ number: 1, title: "Squash & Stretch", content: "Memberikan kesan kelenturan pada objek saat membentur lantai." }],
+    interactiveSteps: [
+      {
+        id: "step-1",
+        stepNumber: 1,
+        title: "Saat Membentur",
+        description: "Apa bentuk bola sesaat sebelum membentur lantai karena kecepatan tinggi?",
+        question: "Pilih bentuk:",
+        choices: [
+          { id: "c1", label: "Memanjang (Stretch)", guidance: "Benar! Ini prinsip Stretch.", nextStepId: "complete" },
+          { id: "c2", label: "Membulat sempurna", guidance: "Salah, harusnya berubah bentuk." }
+        ]
+      }
+    ]
+  }
+];
+
+async function seed() {
+  if (!mongoUri) {
+    console.error('MONGODB_URI missing');
+    return;
+  }
+  try {
+    await mongoose.connect(mongoUri, { dbName });
+    console.log('Connected to DB');
+    const ProjectModel = mongoose.model('Project', new mongoose.Schema({}, { strict: false }));
+
+    for (const p of projects) {
+      await ProjectModel.findOneAndUpdate({ id: p.id }, p, { upsert: true });
+      console.log('Project upserted:', p.id);
+    }
+    
+    console.log('Semua project berhasil di-inject ke Database!');
+    process.exit(0);
+  } catch (e) {
+    console.error('Gagal koneksi ke MongoDB Atlas (pastikan IP anda whitelisted!):', e.message);
+    process.exit(1);
+  }
+}
+
+seed();

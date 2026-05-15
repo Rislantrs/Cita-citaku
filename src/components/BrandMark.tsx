@@ -21,7 +21,7 @@ const textSizeClasses = {
 
 export default function BrandMark({ className = '', showLabel = true, showTagline = false, size = 'md' }: BrandMarkProps) {
   const { t } = useTranslation();
-  const logoSrc = (import.meta as any).env?.VITE_BRAND_LOGO_URL || '/logo.webp?v=1';
+  const logoSrc = (import.meta as any).env?.VITE_BRAND_LOGO_URL || '/images/logo.webp';
 
   return (
     <div className={`inline-flex items-center gap-3 ${className}`}>

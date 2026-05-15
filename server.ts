@@ -133,6 +133,7 @@ async function startServer() {
     if (connected) {
       console.log('[mongo] connected to cita-citaku');
       await ensureCareerSeeded(); // Sync memory to Atlas
+      await ensureProjectSeeded(); // Sync memory to Atlas
     } else {
       console.warn('[mongo] running in hybrid mode (local memory)');
     }

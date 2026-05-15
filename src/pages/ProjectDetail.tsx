@@ -277,15 +277,15 @@ export default function ProjectDetail() {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
                       <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
-                      {project.category || 'Lab Proyek'}
+                      {project.category}
                     </span>
                     {project.difficulty && (
                       <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 border border-slate-200">{project.difficulty}</span>
                     )}
                   </div>
                   <h1 className="text-3xl lg:text-4xl xl:text-5xl font-black text-slate-950 tracking-tight leading-[1.1]">{project.title}</h1>
-                  {project.description && (
-                    <p className="text-base lg:text-lg text-slate-600 leading-relaxed max-w-3xl font-medium">{project.description}</p>
+                  {project.introduction && (
+                    <p className="text-base lg:text-lg text-slate-600 leading-relaxed max-w-3xl font-medium">{project.introduction}</p>
                   )}
                   {project.skills?.length > 0 && (
                     <div className="flex flex-wrap gap-2 pt-1">
@@ -341,7 +341,7 @@ export default function ProjectDetail() {
                   </div>
                 )}
 
-                {/* Content Blocks */}
+                {/* Content Blocks (Legacy or Rich Content) */}
                 {project.contentBlocks?.length > 0 && (
                   <div className="space-y-10">
                     {project.contentBlocks.map((block: any, idx: number) => (
@@ -352,6 +352,25 @@ export default function ProjectDetail() {
                         </div>
                         {block.imageUrl && (
                           <img src={block.imageUrl} alt={block.title} className="w-full rounded-2xl border border-slate-200 shadow-sm" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Brief Sections (New Project Structure) */}
+                {project.briefSections?.length > 0 && (
+                  <div className="space-y-10">
+                    {project.briefSections.map((section: any, idx: number) => (
+                      <div key={idx} className="space-y-4">
+                        <h2 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">
+                          {section.number}. {section.title}
+                        </h2>
+                        <div className="prose prose-slate prose-base lg:prose-lg max-w-none prose-a:text-blue-600 prose-strong:text-slate-900 prose-img:rounded-2xl">
+                          <ReactMarkdown>{section.content}</ReactMarkdown>
+                        </div>
+                        {section.imageUrl && (
+                          <img src={section.imageUrl} alt={section.title} className="w-full rounded-2xl border border-slate-200 shadow-sm" />
                         )}
                       </div>
                     ))}
@@ -382,9 +401,9 @@ export default function ProjectDetail() {
                         </div>
                         <span className="text-xs font-black uppercase tracking-[0.25em] text-blue-400">Misi Praktek</span>
                       </div>
-                      <h3 className="text-2xl lg:text-3xl font-black text-white mb-3 leading-tight">{project.projectTitle || project.title}</h3>
-                      {project.projectBackground && (
-                        <p className="text-slate-400 leading-relaxed mb-8 font-medium max-w-2xl text-sm lg:text-base">{project.projectBackground}</p>
+                      <h3 className="text-2xl lg:text-3xl font-black text-white mb-3 leading-tight">{project.projectTitle || project.title || project.judul}</h3>
+                      {(project.projectBackground || project.background) && (
+                        <p className="text-slate-400 leading-relaxed mb-8 font-medium max-w-2xl text-sm lg:text-base">{project.projectBackground || project.background}</p>
                       )}
                       <div className="flex flex-wrap items-center gap-4">
                         <Link to={`/project/${project.id}`}

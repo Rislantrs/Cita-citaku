@@ -82,7 +82,7 @@ export default function Home() {
         {/* Subtle Background */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/images/hero-modern.png"
+            src="/images/hero-modern.webp"
             alt="Cita-citaku Platform Eksplorasi Karir"
             width={1920}
             height={1080}
@@ -212,7 +212,7 @@ export default function Home() {
                 className="group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] aspect-[4/3] flex flex-col justify-end p-6 sm:p-8 hover-lift shadow-xl transition-all duration-500"
               >
                 <img
-                  src={`/images/cat-${category.id}.png`}
+                  src={`/images/cat-${category.id}.webp`}
                   alt={category.label}
                   width={400}
                   height={300}

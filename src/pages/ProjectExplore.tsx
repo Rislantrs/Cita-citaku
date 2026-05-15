@@ -265,6 +265,20 @@ export default function ProjectExplore() {
 
   const categories = ['Semua', ...Array.from(new Set(projects.map(p => p.category)))];
 
+  const getCategoryIcon = (cat: string) => {
+    const c = cat.toLowerCase();
+    if (c.includes('web')) return <div className="h-2 w-2 rounded-full bg-blue-500" />;
+    if (c.includes('mobile')) return <div className="h-2 w-2 rounded-full bg-emerald-500" />;
+    if (c.includes('product')) return <div className="h-2 w-2 rounded-full bg-amber-500" />;
+    if (c.includes('data')) return <div className="h-2 w-2 rounded-full bg-purple-500" />;
+    if (c.includes('ai') || c.includes('intelligence')) return <div className="h-2 w-2 rounded-full bg-indigo-500" />;
+    if (c.includes('design') || c.includes('ui')) return <div className="h-2 w-2 rounded-full bg-pink-500" />;
+    if (c.includes('blockchain') || c.includes('crypto')) return <div className="h-2 w-2 rounded-full bg-orange-500" />;
+    if (c.includes('cloud')) return <div className="h-2 w-2 rounded-full bg-cyan-500" />;
+    if (c.includes('game')) return <div className="h-2 w-2 rounded-full bg-red-500" />;
+    return <div className="h-2 w-2 rounded-full bg-slate-400" />;
+  };
+
   const filteredProjects = projects.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.introduction.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -1089,16 +1103,18 @@ export default function ProjectExplore() {
           )}
 
           <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
+            {categories.map((cat) => (
               <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`rounded-lg px-5 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === category
-                    ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-lg shadow-slate-900/10'
-                    : 'bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-600 dark:hover:text-slate-300 shadow-sm'
-                  }`}
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-bold transition-all whitespace-nowrap ${
+                  selectedCategory === cat 
+                    ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-xl shadow-slate-200 dark:shadow-none' 
+                    : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-slate-200'
+                }`}
               >
-                {category}
+                {cat !== 'Semua' && getCategoryIcon(cat)}
+                {cat}
               </button>
             ))}
           </div>
@@ -1115,13 +1131,11 @@ export default function ProjectExplore() {
               className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-2.5 shadow-sm transition-all hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-xl hover:shadow-blue-500/5"
             >
               <div className="relative mb-4 aspect-[4/3] overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-800">
-                {project.image && (
-                  <img
-                    src={project.image}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    alt={project.title}
-                  />
-                )}
+                <img 
+                  src={project.image} 
+                  alt={project.title} 
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                />
                 <div className="absolute left-3 top-3">
                   <span className="rounded-md bg-white/95 backdrop-blur-sm px-2.5 py-1 text-[8px] font-black uppercase tracking-widest text-slate-900 shadow-sm border border-slate-100/50">
                     {project.category}

@@ -2897,5 +2897,668 @@
         "University of California, Berkeley"
       ]
     }
+  },
+  {
+    "slug": "frontend-engineer",
+    "title": "Frontend Engineer",
+    "categoryId": "tech",
+    "description": "Spesialis yang membangun antarmuka interaktif yang langsung digunakan oleh pengguna akhir (user interface).",
+    "keyIkon": "monitor",
+    "recommendationMajors": [
+      "Teknik Informatika",
+      "Sistem Informasi",
+      "Ilmu Komputer"
+    ],
+    "sertifikasi": [
+      "Meta Front-End Developer",
+      "React Certification"
+    ],
+    "riasecCategories": [
+      "I",
+      "A",
+      "C"
+    ],
+    "mbtiTags": [
+      "ENFP",
+      "INFP",
+      "ISFP",
+      "ESFP"
+    ],
+    "universityWorld": {
+      "overview": "Mempelajari bagaimana membuat tampilan web dan aplikasi yang menarik dan responsif.",
+      "requiredSkills": [
+        "HTML/CSS",
+        "JavaScript/TypeScript",
+        "React/Vue/Angular",
+        "Web Performance"
+      ],
+      "whyChoose": [
+        {
+          "title": "Visual & Logika",
+          "desc": "Menggabungkan keindahan desain dengan logika pemrograman."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Dasar Web",
+        "topics": [
+          {
+            "title": "Membangun Landing Page",
+            "description": "Praktik membuat website statis.",
+            "showProject": true,
+            "project": {
+              "id": "landing-page-project",
+              "title": "Membuat Landing Page Portofolio",
+              "background": "Kamu mendapat klien yang butuh landing page.",
+              "mode": "interactive"
+            }
+          }
+        ]
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 6.000.000 - Rp 25.000.000 / bulan",
+      "rentangUSD": ",000 - ,000 / tahun",
+      "penjelasan": "Bervariasi berdasarkan senioritas."
+    },
+    "infoPendidikan": {
+      "jurusan": [
+        "Teknik Informatika"
+      ],
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.Kom"
+    },
+    "materiBelajar": [],
+    "daftarBuku": [],
+    "referensiDigital": [],
+    "proyekTerkait": [],
+    "faqs": [],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [],
+      "global": []
+    }
+  },
+  {
+    "slug": "mobile-developer",
+    "title": "Mobile App Developer",
+    "categoryId": "tech",
+    "description": "Pengembang aplikasi untuk perangkat mobile (Android & iOS).",
+    "keyIkon": "smartphone",
+    "recommendationMajors": [
+      "Teknik Informatika",
+      "Ilmu Komputer"
+    ],
+    "sertifikasi": [
+      "Google Associate Android Developer",
+      "iOS Developer Certificate"
+    ],
+    "riasecCategories": [
+      "I",
+      "R",
+      "C"
+    ],
+    "mbtiTags": [
+      "ISTP",
+      "INTP",
+      "ESTP"
+    ],
+    "universityWorld": {
+      "overview": "Fokus pada pembuatan aplikasi yang berjalan di genggaman tangan pengguna.",
+      "requiredSkills": [
+        "Kotlin/Swift",
+        "Flutter/React Native",
+        "Mobile UI/UX"
+      ],
+      "whyChoose": [
+        {
+          "title": "Impact Besar",
+          "desc": "Aplikasimu bisa diunduh jutaan orang di app store."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Dasar Mobile",
+        "topics": [
+          {
+            "title": "Aplikasi Todo List",
+            "description": "Membuat aplikasi sederhana.",
+            "showProject": true,
+            "project": {
+              "id": "todo-app-project",
+              "title": "Membangun Todo App Pertama",
+              "background": "Buat aplikasi produktivitas.",
+              "mode": "interactive"
+            }
+          }
+        ]
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 7.000.000 - Rp 30.000.000 / bulan",
+      "rentangUSD": ",000 - ,000 / tahun",
+      "penjelasan": "Bervariasi"
+    },
+    "infoPendidikan": {
+      "jurusan": [
+        "Teknik Informatika"
+      ],
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.Kom"
+    },
+    "materiBelajar": [],
+    "daftarBuku": [],
+    "referensiDigital": [],
+    "proyekTerkait": [],
+    "faqs": [],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [],
+      "global": []
+    }
+  },
+  {
+    "slug": "product-manager",
+    "title": "Product Manager",
+    "categoryId": "business",
+    "description": "CEO dari sebuah produk. Bertanggung jawab atas visi, strategi, dan pengembangan produk digital.",
+    "keyIkon": "briefcase",
+    "recommendationMajors": [
+      "Manajemen Bisnis",
+      "Sistem Informasi",
+      "Teknik Industri"
+    ],
+    "sertifikasi": [
+      "Certified Product Manager (CPM)",
+      "Agile Certified Practitioner"
+    ],
+    "riasecCategories": [
+      "E",
+      "S",
+      "C"
+    ],
+    "mbtiTags": [
+      "ENTJ",
+      "ESTJ",
+      "ENFJ"
+    ],
+    "universityWorld": {
+      "overview": "Menjembatani antara bisnis, teknologi, dan pengalaman pengguna.",
+      "requiredSkills": [
+        "Product Strategy",
+        "Agile/Scrum",
+        "Data Analysis",
+        "User Research"
+      ],
+      "whyChoose": [
+        {
+          "title": "Pengambil Keputusan",
+          "desc": "Menentukan arah dan fitur produk masa depan."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Product Discovery",
+        "topics": [
+          {
+            "title": "Riset Pengguna",
+            "description": "Melakukan riset untuk fitur baru.",
+            "showProject": true,
+            "project": {
+              "id": "user-research-project",
+              "title": "Riset Kebutuhan Fitur Chat",
+              "background": "Aplikasi butuh fitur chat, bagaimana risetnya?",
+              "mode": "interactive"
+            }
+          }
+        ]
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 10.000.000 - Rp 40.000.000 / bulan",
+      "rentangUSD": ",000 - ,000 / tahun",
+      "penjelasan": "Bervariasi"
+    },
+    "infoPendidikan": {
+      "jurusan": [
+        "Manajemen Bisnis"
+      ],
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.E / S.M"
+    },
+    "materiBelajar": [],
+    "daftarBuku": [],
+    "referensiDigital": [],
+    "proyekTerkait": [],
+    "faqs": [],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [],
+      "global": []
+    }
+  },
+  {
+    "slug": "game-developer",
+    "title": "Game Developer",
+    "categoryId": "tech",
+    "description": "Menciptakan dunia interaktif dan permainan digital yang imersif.",
+    "keyIkon": "play",
+    "recommendationMajors": [
+      "Teknik Informatika",
+      "Desain Komunikasi Visual",
+      "Animasi"
+    ],
+    "sertifikasi": [
+      "Unity Certified User",
+      "Unreal Engine Certification"
+    ],
+    "riasecCategories": [
+      "I",
+      "A",
+      "R"
+    ],
+    "mbtiTags": [
+      "INTP",
+      "ENFP",
+      "ISTP"
+    ],
+    "universityWorld": {
+      "overview": "Menggabungkan seni, cerita, dan pemrograman ke dalam satu produk interaktif.",
+      "requiredSkills": [
+        "C# / C++",
+        "Unity / Unreal Engine",
+        "Game Physics",
+        "3D Math"
+      ],
+      "whyChoose": [
+        {
+          "title": "Bikin Game Sendiri",
+          "desc": "Bisa merealisasikan imajinasi dunia buatanmu."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Dasar Game Engine",
+        "topics": [
+          {
+            "title": "Game 2D Pertama",
+            "description": "Membuat platformer game.",
+            "showProject": true,
+            "project": {
+              "id": "platformer-game-project",
+              "title": "Membangun Game Mario Clone",
+              "background": "Belajar fisika dan input pemain.",
+              "mode": "interactive"
+            }
+          }
+        ]
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 5.000.000 - Rp 25.000.000 / bulan",
+      "rentangUSD": ",000 - ,000 / tahun",
+      "penjelasan": "Bervariasi"
+    },
+    "infoPendidikan": {
+      "jurusan": [
+        "Teknik Informatika"
+      ],
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.Kom"
+    },
+    "materiBelajar": [],
+    "daftarBuku": [],
+    "referensiDigital": [],
+    "proyekTerkait": [],
+    "faqs": [],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [],
+      "global": []
+    }
+  },
+  {
+    "slug": "cloud-architect",
+    "title": "Cloud Architect",
+    "categoryId": "tech",
+    "description": "Arsitek yang merancang dan membangun sistem komputasi awan (cloud) untuk perusahaan.",
+    "keyIkon": "cloud",
+    "recommendationMajors": [
+      "Teknik Informatika",
+      "Sistem Komputer",
+      "Ilmu Komputer"
+    ],
+    "sertifikasi": [
+      "AWS Certified Solutions Architect",
+      "Google Cloud Professional Architect"
+    ],
+    "riasecCategories": [
+      "I",
+      "R",
+      "C"
+    ],
+    "mbtiTags": [
+      "INTJ",
+      "INTP",
+      "ISTJ",
+      "ESTJ"
+    ],
+    "universityWorld": {
+      "overview": "Mempelajari cara merancang infrastruktur IT skala besar dan efisien di awan.",
+      "requiredSkills": [
+        "AWS/GCP/Azure",
+        "Networking",
+        "Security",
+        "System Architecture"
+      ],
+      "whyChoose": [
+        {
+          "title": "Infrastruktur Skala Besar",
+          "desc": "Membangun pondasi bagi aplikasi bernilai jutaan dolar."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Dasar Cloud",
+        "topics": [
+          {
+            "title": "Membangun Server Web di Cloud",
+            "description": "Membuat EC2 Instance.",
+            "showProject": true,
+            "project": {
+              "id": "cloud-server-project",
+              "title": "Deploy Web di AWS EC2",
+              "background": "Perusahaan butuh server baru.",
+              "mode": "interactive"
+            }
+          }
+        ]
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 15.000.000 - Rp 60.000.000 / bulan",
+      "rentangUSD": ",000 - ,000 / tahun",
+      "penjelasan": "Bervariasi"
+    },
+    "infoPendidikan": {
+      "jurusan": [
+        "Teknik Informatika"
+      ],
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.Kom"
+    },
+    "materiBelajar": [],
+    "daftarBuku": [],
+    "referensiDigital": [],
+    "proyekTerkait": [],
+    "faqs": [],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [],
+      "global": []
+    }
+  },
+  {
+    "slug": "data-analyst",
+    "title": "Data Analyst",
+    "categoryId": "tech",
+    "description": "Pakar yang mengubah data mentah menjadi wawasan bisnis yang berguna.",
+    "keyIkon": "bar-chart",
+    "recommendationMajors": [
+      "Statistika",
+      "Matematika",
+      "Sistem Informasi"
+    ],
+    "sertifikasi": [
+      "Google Data Analytics Certificate",
+      "IBM Data Analyst"
+    ],
+    "riasecCategories": [
+      "I",
+      "C",
+      "E"
+    ],
+    "mbtiTags": [
+      "ISTJ",
+      "INTP",
+      "ESTJ"
+    ],
+    "universityWorld": {
+      "overview": "Fokus pada pengambilan kesimpulan dari data masa lalu.",
+      "requiredSkills": [
+        "SQL",
+        "Excel",
+        "Tableau/PowerBI",
+        "Python"
+      ],
+      "whyChoose": [
+        {
+          "title": "Bermain dengan Data",
+          "desc": "Menjadi detektif yang mencari pola dalam angka."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Data Analysis dengan SQL",
+        "topics": [
+          {
+            "title": "Query Data Penjualan",
+            "description": "Mengambil data dari database.",
+            "showProject": true,
+            "project": {
+              "id": "data-query-project",
+              "title": "Analisis Data E-commerce",
+              "background": "Berapa total penjualan bulan ini?",
+              "mode": "interactive"
+            }
+          }
+        ]
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 6.000.000 - Rp 25.000.000 / bulan",
+      "rentangUSD": ",000 - ,000 / tahun",
+      "penjelasan": "Bervariasi"
+    },
+    "infoPendidikan": {
+      "jurusan": [
+        "Statistika"
+      ],
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.Stat"
+    },
+    "materiBelajar": [],
+    "daftarBuku": [],
+    "referensiDigital": [],
+    "proyekTerkait": [],
+    "faqs": [],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [],
+      "global": []
+    }
+  },
+  {
+    "slug": "blockchain-developer",
+    "title": "Blockchain Developer",
+    "categoryId": "tech",
+    "description": "Pengembang yang membangun kontrak pintar (smart contracts) dan aplikasi terdesentralisasi (DApps).",
+    "keyIkon": "link",
+    "recommendationMajors": [
+      "Teknik Informatika",
+      "Ilmu Komputer",
+      "Kriptografi"
+    ],
+    "sertifikasi": [
+      "Certified Blockchain Developer"
+    ],
+    "riasecCategories": [
+      "I",
+      "R",
+      "C"
+    ],
+    "mbtiTags": [
+      "INTP",
+      "INTJ",
+      "ISTP"
+    ],
+    "universityWorld": {
+      "overview": "Mempelajari teknologi buku besar terdistribusi dan kriptografi.",
+      "requiredSkills": [
+        "Solidity",
+        "Web3.js/Ethers.js",
+        "Cryptography",
+        "Smart Contracts"
+      ],
+      "whyChoose": [
+        {
+          "title": "Teknologi Mutakhir",
+          "desc": "Terlibat dalam revolusi web3 dan keuangan terdesentralisasi."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Smart Contract",
+        "topics": [
+          {
+            "title": "Membuat Token",
+            "description": "Membuat token ERC-20 pertama.",
+            "showProject": true,
+            "project": {
+              "id": "erc20-project",
+              "title": "Membangun Kripto Pertama",
+              "background": "Buat token koin untuk komunitasmu.",
+              "mode": "interactive"
+            }
+          }
+        ]
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 10.000.000 - Rp 45.000.000 / bulan",
+      "rentangUSD": ",000 - ,000 / tahun",
+      "penjelasan": "Bervariasi"
+    },
+    "infoPendidikan": {
+      "jurusan": [
+        "Teknik Informatika"
+      ],
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1",
+      "gelar": "S.Kom"
+    },
+    "materiBelajar": [],
+    "daftarBuku": [],
+    "referensiDigital": [],
+    "proyekTerkait": [],
+    "faqs": [],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [],
+      "global": []
+    }
+  },
+  {
+    "slug": "3d-animator",
+    "title": "3D Animator",
+    "categoryId": "creative",
+    "description": "Seniman yang menghidupkan objek tiga dimensi untuk film, video game, atau iklan.",
+    "keyIkon": "film",
+    "recommendationMajors": [
+      "Animasi",
+      "Desain Komunikasi Visual",
+      "Seni Rupa"
+    ],
+    "sertifikasi": [
+      "Autodesk Maya Certified User",
+      "Blender Foundation"
+    ],
+    "riasecCategories": [
+      "A",
+      "R",
+      "I"
+    ],
+    "mbtiTags": [
+      "ISFP",
+      "INFP",
+      "ENFP"
+    ],
+    "universityWorld": {
+      "overview": "Mempelajari prinsip animasi dan penggunaan perangkat lunak 3D untuk menciptakan ilusi gerakan.",
+      "requiredSkills": [
+        "Blender/Maya",
+        "Rigging",
+        "Keyframing",
+        "Texturing"
+      ],
+      "whyChoose": [
+        {
+          "title": "Menghidupkan Imajinasi",
+          "desc": "Kamu dapat menciptakan karakter dan dunia yang terasa nyata."
+        }
+      ]
+    },
+    "roadmap": [
+      {
+        "fase": "Fase 1",
+        "judul": "Dasar Animasi 3D",
+        "topics": [
+          {
+            "title": "Bouncing Ball",
+            "description": "Membuat animasi dasar.",
+            "showProject": true,
+            "project": {
+              "id": "bouncing-ball-project",
+              "title": "Animasi Bouncing Ball di Blender",
+              "background": "Terapkan prinsip squash & stretch.",
+              "mode": "interactive"
+            }
+          }
+        ]
+      }
+    ],
+    "infoGaji": {
+      "rentangIDR": "Rp 5.000.000 - Rp 20.000.000 / bulan",
+      "rentangUSD": ",000 - ,000 / tahun",
+      "penjelasan": "Bervariasi"
+    },
+    "infoPendidikan": {
+      "jurusan": [
+        "Animasi"
+      ],
+      "durasi": "4 Tahun",
+      "jalurAkademik": "S1/D4",
+      "gelar": "S.Sn / S.Tr.Sn"
+    },
+    "materiBelajar": [],
+    "daftarBuku": [],
+    "referensiDigital": [],
+    "proyekTerkait": [],
+    "faqs": [],
+    "tipe": "skill_based",
+    "universitasTerbaik": {
+      "lokal": [],
+      "global": []
+    }
   }
 ]

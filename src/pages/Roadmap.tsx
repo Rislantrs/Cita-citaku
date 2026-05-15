@@ -21,7 +21,7 @@ export default function Roadmap() {
       try {
         const response = await fetch('/api/careers');
         const data = await response.json();
-        
+
         if (data.items) {
           setRoadmaps(data.items);
         } else {
@@ -55,18 +55,18 @@ export default function Roadmap() {
     const categoryId = career.idKategori || career.categoryId || '';
 
     const matchesCategory = activeCategory === 'all' || categoryId === activeCategory;
-    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const suggestions = searchQuery.length > 1 
+  const suggestions = searchQuery.length > 1
     ? roadmaps.filter(c => (c.judul || c.title || '').toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
     : [];
 
   return (
     <div className="page-shell flex flex-col">
-      <SEO 
+      <SEO
         title="Katalog Roadmap Karir"
         description="Eksplorasi ratusan jalur karir masa depan lengkap dengan roadmap belajar, skill, dan standar industri global."
         keywords="katalog karir, daftar profesi, roadmap belajar, masa depan anak muda indonesia"
@@ -76,9 +76,9 @@ export default function Roadmap() {
       {/* ─── Hero ─── */}
       <section className="relative pt-20 pb-24 px-6 overflow-hidden">
         <div className="photo-overlay absolute inset-0">
-          <img 
-            src="/images/hero-collab.png" 
-            alt="" 
+          <img
+            src="/images/hero-collab.webp"
+            alt=""
             className="absolute inset-0 w-full h-full object-cover"
             aria-hidden="true"
           />
@@ -92,8 +92,8 @@ export default function Roadmap() {
           >
             Katalog Karir Masa Depan
           </motion.p>
-          
-          <motion.h1 
+
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -102,19 +102,19 @@ export default function Roadmap() {
             Eksplorasi roadmap karir yang
             <span className="block bg-linear-to-r from-blue-700 via-indigo-700 to-slate-900 bg-clip-text text-transparent"> lebih konkret.</span>
           </motion.h1>
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="section-copy mt-6 text-lg max-w-xl mx-auto"
           >
-            Temukan langkah konkret menuju profesi impianmu. 
+            Temukan langkah konkret menuju profesi impianmu.
             Dari nol hingga standar industri global.
           </motion.p>
 
           {/* Search */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -130,15 +130,15 @@ export default function Roadmap() {
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-14 w-full rounded-full pl-14 pr-6 text-[15px] font-medium transition-all focus:ring-4 focus:ring-blue-600/10 focus:outline-none input-mobile-large"
-                style={{ 
-                  backgroundColor: 'var(--card-bg)', 
+                style={{
+                  backgroundColor: 'var(--card-bg)',
                   border: '1px solid var(--border-color)',
                   color: 'var(--text-primary)'
                 }}
               />
-              
+
               {showSuggestions && suggestions.length > 0 && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="absolute top-16 z-50 w-full overflow-hidden rounded-3xl shadow-2xl"
@@ -169,11 +169,10 @@ export default function Roadmap() {
         <div className="max-w-6xl mx-auto flex sm:flex-wrap items-center justify-start sm:justify-center gap-2 pb-2 sm:pb-0 min-w-max">
           <button
             onClick={() => setActiveCategory('all')}
-            className={`click-feedback rounded-full px-5 py-3 text-[11px] font-semibold tracking-widest uppercase transition-all whitespace-nowrap ${
-              activeCategory === 'all' 
-              ? 'bg-slate-950 text-white shadow-lg' 
-              : 'text-slate-600 bg-white/80 border border-slate-200/70 hover:text-slate-950'
-            }`}
+            className={`click-feedback rounded-full px-5 py-3 text-[11px] font-semibold tracking-widest uppercase transition-all whitespace-nowrap ${activeCategory === 'all'
+                ? 'bg-slate-950 text-white shadow-lg'
+                : 'text-slate-600 bg-white/80 border border-slate-200/70 hover:text-slate-950'
+              }`}
           >
             Semua
           </button>
@@ -181,11 +180,10 @@ export default function Roadmap() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`click-feedback rounded-full px-5 py-3 text-[11px] font-semibold tracking-widest uppercase transition-all whitespace-nowrap ${
-                activeCategory === cat.id 
-                ? 'bg-blue-700 text-white shadow-lg shadow-blue-700/15' 
-                : 'text-slate-600 bg-white/80 border border-slate-200/70 hover:text-slate-950'
-              }`}
+              className={`click-feedback rounded-full px-5 py-3 text-[11px] font-semibold tracking-widest uppercase transition-all whitespace-nowrap ${activeCategory === cat.id
+                  ? 'bg-blue-700 text-white shadow-lg shadow-blue-700/15'
+                  : 'text-slate-600 bg-white/80 border border-slate-200/70 hover:text-slate-950'
+                }`}
             >
               {cat.label}
             </button>
@@ -194,7 +192,7 @@ export default function Roadmap() {
       </div>
 
       <section className="py-12 sm:py-20 px-5 sm:px-6">
-        <motion.div 
+        <motion.div
           layout
           className="max-w-6xl mx-auto grid grid-cols-1 gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3"
         >
@@ -210,12 +208,12 @@ export default function Roadmap() {
                 exit={{ opacity: 0 }}
                 transition={{ delay: idx * 0.03 }}
               >
-                <Link 
+                <Link
                   to={`/roadmap/${career.slug || career.id}`}
                   className="hover-lift hover-glow click-feedback group block h-full rounded-4xl p-8 transition-all surface-card-strong"
-                  style={{ 
-                    backgroundColor: 'rgba(255,255,255,0.78)', 
-                    border: '1px solid rgba(148,163,184,0.22)' 
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.78)',
+                    border: '1px solid rgba(148,163,184,0.22)'
                   }}
                 >
                   <div className="flex items-center justify-between mb-6">
@@ -224,32 +222,32 @@ export default function Roadmap() {
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-black leading-snug mb-3" style={{ color: 'var(--text-primary)' }}>
-                    {career.judul || career.title}
-                  </h3>
-                  <p className="text-[13px] leading-relaxed line-clamp-2 mb-6" style={{ color: 'var(--text-secondary)' }}>
-                    {career.deskripsi || career.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between pt-5" style={{ borderTop: '1px solid var(--border-color)' }}>
-                    <span className="text-[12px] font-semibold text-slate-500">{(career.roadmap || career.phases || []).length} Tahap Belajar</span>
-                    <span className="text-[12px] font-semibold text-blue-700 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                      Lihat <ArrowRight size={12} />
-                    </span>
-                  </div>
-                </Link>
+                <h3 className="text-xl font-black leading-snug mb-3" style={{ color: 'var(--text-primary)' }}>
+                  {career.judul || career.title}
+                </h3>
+                <p className="text-[13px] leading-relaxed line-clamp-2 mb-6" style={{ color: 'var(--text-secondary)' }}>
+                  {career.deskripsi || career.description}
+                </p>
+
+                <div className="flex items-center justify-between pt-5" style={{ borderTop: '1px solid var(--border-color)' }}>
+                  <span className="text-[12px] font-semibold text-slate-500">{(career.roadmap || career.phases || []).length} Tahap Belajar</span>
+                  <span className="text-[12px] font-semibold text-blue-700 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    Lihat <ArrowRight size={12} />
+                  </span>
+                </div>
+              </Link>
               </motion.div>
-            ))
+        ))
           )}
-        </motion.div>
-        
-        {filteredCareers.length === 0 && !isLoading && (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
-            <h3 className="text-2xl font-black text-slate-950" style={{ color: 'var(--text-primary)' }}>Pencarian Tidak Ditemukan</h3>
-            <p className="mt-3 text-[15px] text-slate-600" style={{ color: 'var(--text-secondary)' }}>Coba gunakan kata kunci yang lebih umum.</p>
-          </div>
-        )}
-      </section>
-    </div>
+      </motion.div>
+
+      {filteredCareers.length === 0 && !isLoading && (
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <h3 className="text-2xl font-black text-slate-950" style={{ color: 'var(--text-primary)' }}>Pencarian Tidak Ditemukan</h3>
+          <p className="mt-3 text-[15px] text-slate-600" style={{ color: 'var(--text-secondary)' }}>Coba gunakan kata kunci yang lebih umum.</p>
+        </div>
+      )}
+    </section>
+    </div >
   );
 }

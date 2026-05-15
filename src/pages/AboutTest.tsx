@@ -79,7 +79,7 @@ export default function AboutTest() {
             <div className="relative">
                <div className="absolute -inset-4 border border-slate-100 rounded-[3.5rem] -rotate-3" />
                <img
-                 src="/images/hero-student.png"
+                 src="/images/hero-student.webp"
                  alt=""
                  className="relative z-10 w-full h-auto rounded-[3rem] grayscale-[0.5] opacity-90"
                />
@@ -152,7 +152,7 @@ export default function AboutTest() {
       <section className="py-40 px-6 overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-24">
           <div className="flex-1">
-             <img src="/images/hero-campus.png" alt="" className="w-full h-auto rounded-[3rem] grayscale opacity-60 dark:opacity-40" />
+             <img src="/images/hero-campus.webp" alt="" className="w-full h-auto rounded-[3rem] grayscale opacity-60 dark:opacity-40" />
           </div>
           <div className="flex-1 space-y-12">
             <div>

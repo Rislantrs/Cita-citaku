@@ -67,6 +67,31 @@ function isAdminLike(role: unknown) {
   return role === 'admin' || role === 'moderator' || role === 'super_admin';
 }
 
+function cleanProjectForFrontend(project: any) {
+  if (!project) return project;
+  const category = safeString(project.category, 'Umum');
+  let image = safeString(project.image);
+  
+  if (!image) {
+    const catLower = category.toLowerCase();
+    let slug = 'cat-tech';
+    if (catLower.includes('business') || catLower.includes('management') || catLower.includes('marketing') || catLower.includes('data')) {
+      slug = 'cat-business';
+    } else if (catLower.includes('art') || catLower.includes('design') || catLower.includes('game') || catLower.includes('animation')) {
+      slug = 'cat-art';
+    }
+    image = `/images/${slug}.webp`;
+  }
+
+  return {
+    ...project,
+    title: project.title || project.judul || 'Tanpa Judul',
+    introduction: project.introduction || project.deskripsi || project.brief || '',
+    category,
+    image,
+  };
+}
+
 export function registerApiRoutes(app: Express) {
   // RIASEC AI Analysis
   app.post('/api/ai/analyze-riasec', async (req, res) => {
@@ -294,7 +319,7 @@ export function registerApiRoutes(app: Express) {
         );
       }
 
-      res.json({ items });
+      res.json({ items: items.map(cleanProjectForFrontend) });
       return;
     }
 
@@ -315,7 +340,7 @@ export function registerApiRoutes(app: Express) {
 
     try {
       const items = await (ProjectModel as any).find(query).sort({ featured: -1, createdAt: -1 }).lean();
-      res.json({ items });
+      res.json({ items: items.map(cleanProjectForFrontend) });
     } catch (err) {
       console.error('[api] CRITICAL: Failed to fetch projects:', err);
       res.status(500).json({ 
@@ -336,7 +361,7 @@ export function registerApiRoutes(app: Express) {
           return;
         }
 
-        res.json({ item });
+        res.json({ item: cleanProjectForFrontend(item) });
         return;
       }
 
@@ -347,7 +372,7 @@ export function registerApiRoutes(app: Express) {
         return;
       }
 
-      res.json({ item });
+      res.json({ item: cleanProjectForFrontend(item) });
     } catch (err) {
       console.error(`[api] Failed to fetch project ${id}:`, err);
       res.status(500).json({ error: 'Gagal mengambil detail proyek.' });
