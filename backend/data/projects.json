@@ -248,5 +248,55 @@
         ]
       }
     ]
+  },
+  {
+    "id": "sql-injection-defense",
+    "title": "Defense: SQL Injection",
+    "introduction": "Simulasi mengamankan query database dari serangan SQL Injection.",
+    "background": "Sebuah website e-commerce baru saja diretas karena form login yang tidak aman.",
+    "skills": ["SQL Security", "Input Validation", "Prepared Statements"],
+    "brief": "Perbaiki kode PHP/Node.js yang rentan.",
+    "category": "Cyber Security",
+    "image": "/images/cat-tech.webp",
+    "featured": true,
+    "briefSections": [{ "number": 1, "title": "Prepared Statements", "content": "Memisahkan query SQL dari data input user.", "imageUrl": "/images/cat-tech.webp" }],
+    "interactiveSteps": [
+      {
+        "id": "step-1",
+        "stepNumber": 1,
+        "title": "Analisis Kode",
+        "description": "Kode menggunakan concatenating string: `SELECT * FROM users WHERE pass = '` + input + `'`",
+        "question": "Kenapa kode ini berbahaya?",
+        "choices": [
+          { "id": "c1", "label": "User bisa memasukkan ' OR 1=1 --", "guidance": "Benar! Itu akan membuat query selalu true.", "nextStepId": "complete" },
+          { "id": "c2", "label": "Kode akan error jika input kosong", "guidance": "Kurang tepat, bahaya utamanya adalah bypass autentikasi." }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ux-redesign-landing",
+    "title": "UX Redesign: Landing Page",
+    "introduction": "Meningkatkan konversi dengan memperbaiki pengalaman pengguna.",
+    "background": "User sering berhenti di halaman depan tanpa melakukan klik apapun (bounce rate tinggi).",
+    "skills": ["User Research", "Wireframing", "A/B Testing"],
+    "brief": "Buat 2 variasi landing page dan tentukan mana yang lebih baik.",
+    "category": "UI/UX Design",
+    "image": "/images/cat-art.webp",
+    "featured": true,
+    "briefSections": [{ "number": 1, "title": "A/B Testing", "content": "Metode membandingkan dua versi desain untuk melihat mana yang performanya lebih baik.", "imageUrl": "/images/cat-art.webp" }],
+    "interactiveSteps": [
+      {
+        "id": "step-1",
+        "stepNumber": 1,
+        "title": "Call to Action",
+        "description": "Tombol 'Beli Sekarang' diletakkan di paling bawah halaman.",
+        "question": "Dimana posisi terbaik untuk tombol utama?",
+        "choices": [
+          { "id": "c1", "label": "Above the fold (Terlihat tanpa scroll)", "guidance": "Tepat! Memudahkan user langsung bertindak.", "nextStepId": "complete" },
+          { "id": "c2", "label": "Di halaman footer saja", "guidance": "Kurang efektif, user harus scroll jauh." }
+        ]
+      }
+    ]
   }
 ]
