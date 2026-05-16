@@ -123,14 +123,38 @@ export default function ProjectExplore() {
 
             careers.forEach((career: any) => {
               const roadmap = career.roadmap || career.phases || [];
+              const category = career.category || career.categoryId || 'Career Roadmap';
+              
+              // Determine fallback image based on category
+              let fallbackImage = '/images/cat-tech.webp';
+              const catLower = category.toLowerCase();
+              if (catLower.includes('business') || catLower.includes('management') || catLower.includes('marketing') || catLower.includes('data')) {
+                fallbackImage = '/images/cat-business.webp';
+              } else if (catLower.includes('art') || catLower.includes('design') || catLower.includes('game') || catLower.includes('animation') || catLower.includes('creative')) {
+                fallbackImage = '/images/cat-art.webp';
+              } else if (catLower.includes('health') || catLower.includes('med') || catLower.includes('dokter')) {
+                fallbackImage = '/images/cat-health.webp';
+              } else if (catLower.includes('service') || catLower.includes('human') || catLower.includes('sosial')) {
+                fallbackImage = '/images/cat-service.webp';
+              } else if (catLower.includes('edu') || catLower.includes('guru') || catLower.includes('ajar')) {
+                fallbackImage = '/images/cat-education.webp';
+              }
+
               roadmap.forEach((phase: any, pIdx: number) => {
                 if (phase.topics) {
                   phase.topics.forEach((topic: any, tIdx: number) => {
                     if (topic.showProject && topic.project) {
+                      const title = topic.project.title || topic.title;
+                      
+                      // Skip if project with same title already exists in the main list
+                      if (items.some(p => p.title.toLowerCase() === title.toLowerCase())) {
+                        return;
+                      }
+
                       const rawSkills = topic.project.skillsLearned || [];
                       items.push({
                         id: `roadmap-${career.slug}-${pIdx}-${tIdx}`,
-                        title: topic.project.title || topic.title,
+                        title: title,
                         introduction: topic.project.background || topic.summary || topic.description,
                         background: topic.project.background || topic.description,
                         skills: Array.isArray(rawSkills) ? rawSkills : (typeof rawSkills === 'string' ? rawSkills.split(',').map(s => s.trim()).filter(Boolean) : []),
@@ -138,8 +162,8 @@ export default function ProjectExplore() {
                         steps: topic.project.specifications || [],
                         briefSections: [],
                         interactiveSteps: topic.project.interactiveSteps || [],
-                        image: topic.project.image || '',
-                        category: career.category || 'Career Roadmap',
+                        image: topic.project.image || fallbackImage,
+                        category: category,
                         isRoadmap: true,
                         contentBlocks: topic.project.contentBlocks || []
                       });
@@ -196,8 +220,25 @@ export default function ProjectExplore() {
             const career = data.item;
             if (career) {
               const roadmap = career.roadmap || career.phases || [];
+              const category = career.category || career.categoryId || 'Career Roadmap';
               const topic = roadmap[pIdx]?.topics?.[tIdx];
+              
               if (topic && topic.project) {
+                // Fallback image logic
+                let fallbackImage = '/images/cat-tech.webp';
+                const catLower = category.toLowerCase();
+                if (catLower.includes('business') || catLower.includes('management') || catLower.includes('marketing') || catLower.includes('data')) {
+                  fallbackImage = '/images/cat-business.webp';
+                } else if (catLower.includes('art') || catLower.includes('design') || catLower.includes('game') || catLower.includes('animation') || catLower.includes('creative')) {
+                  fallbackImage = '/images/cat-art.webp';
+                } else if (catLower.includes('health') || catLower.includes('med') || catLower.includes('dokter')) {
+                  fallbackImage = '/images/cat-health.webp';
+                } else if (catLower.includes('service') || catLower.includes('human') || catLower.includes('sosial')) {
+                  fallbackImage = '/images/cat-service.webp';
+                } else if (catLower.includes('edu') || catLower.includes('guru') || catLower.includes('ajar')) {
+                  fallbackImage = '/images/cat-education.webp';
+                }
+
                 const rawSkills = topic.project.skillsLearned || [];
                 setActiveProject({
                   id,
@@ -209,8 +250,8 @@ export default function ProjectExplore() {
                   steps: topic.project.specifications || [],
                   briefSections: [],
                   interactiveSteps: topic.project.interactiveSteps || [],
-                  image: topic.project.image || '',
-                  category: career.category || 'Career Roadmap',
+                  image: topic.project.image || fallbackImage,
+                  category: category,
                   isRoadmap: true,
                   contentBlocks: topic.project.contentBlocks || []
                 });

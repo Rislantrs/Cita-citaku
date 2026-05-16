@@ -77,8 +77,14 @@ function cleanProjectForFrontend(project: any) {
     let slug = 'cat-tech';
     if (catLower.includes('business') || catLower.includes('management') || catLower.includes('marketing') || catLower.includes('data')) {
       slug = 'cat-business';
-    } else if (catLower.includes('art') || catLower.includes('design') || catLower.includes('game') || catLower.includes('animation')) {
+    } else if (catLower.includes('art') || catLower.includes('design') || catLower.includes('game') || catLower.includes('animation') || catLower.includes('creative')) {
       slug = 'cat-art';
+    } else if (catLower.includes('health') || catLower.includes('med') || catLower.includes('dokter')) {
+      slug = 'cat-health';
+    } else if (catLower.includes('service') || catLower.includes('human') || catLower.includes('sosial')) {
+      slug = 'cat-service';
+    } else if (catLower.includes('edu') || catLower.includes('guru') || catLower.includes('ajar')) {
+      slug = 'cat-education';
     }
     image = `/images/${slug}.webp`;
   }
