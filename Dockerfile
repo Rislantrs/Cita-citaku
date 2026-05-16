@@ -17,6 +17,7 @@ COPY . .
 RUN npm run build
 
 # 7. Cloud Run akan memberikan port via environment variable PORT
+ENV NODE_ENV=production
 ENV PORT=8080
 EXPOSE 8080
 
