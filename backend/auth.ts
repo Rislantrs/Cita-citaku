@@ -102,9 +102,8 @@ export function requireAdmin(req: AuthenticatedRequest, res: Response, next: Nex
   const role = req.user.role;
   const email = req.user.email;
 
-  // EMERGENCY FALLBACK: Bypassing the role check so that development is not blocked!
-  // Any logged-in user can perform admin actions during this session.
-  const isOwner = true; 
+  // EMERGENCY FALLBACK REMOVED: Securing for production public access
+  const isOwner = false; 
 
   if (role !== 'admin' && role !== 'super_admin' && role !== 'moderator' && !isOwner) {
     console.warn(`[auth] Access denied for ${email} (uid: ${req.user.uid}, role: ${role})`);
