@@ -97,9 +97,9 @@ export default function Home() {
 
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-6 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
           >
             <div className="inline-block px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 text-[11px] font-bold tracking-widest uppercase text-blue-600 dark:text-blue-400 mb-8">
               Platform Eksplorasi Karir Indonesia
@@ -141,8 +141,8 @@ export default function Home() {
             {FEATURE_POINTS.map((item, idx) => (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
                 className="space-y-5"
