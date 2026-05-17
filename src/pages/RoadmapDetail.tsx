@@ -37,7 +37,10 @@ export default function RoadmapDetail() {
 
   // Helper to slugify title for project links
   const getProjectSlug = (title: string) => {
-    return title.toLowerCase().replace(/\s+/g, '-');
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-');
   };
 
   useEffect(() => {

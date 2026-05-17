@@ -119,7 +119,9 @@ export default function AdminDashboard() {
         toast.info('Kontribusi ditolak');
       } else {
         // APPROVE / PUBLISH
-        const slug = data?.slug || data?.judul?.toLowerCase()?.replace(/\s+/g, '-') || data?.title?.toLowerCase()?.replace(/\s+/g, '-');
+        const slug = data?.slug || 
+          data?.judul?.toLowerCase()?.replace(/[^a-z0-9\s-]/g, '')?.replace(/\s+/g, '-') || 
+          data?.title?.toLowerCase()?.replace(/[^a-z0-9\s-]/g, '')?.replace(/\s+/g, '-');
         
         // 1. SYNC TO MONGODB (The new main brain)
         try {
