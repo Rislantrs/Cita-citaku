@@ -13,13 +13,25 @@ export default defineConfig(({mode}) => {
         '@': path.resolve(process.cwd(), 'src'),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+            'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+            'vendor-ui': ['lucide-react', 'motion/react-client', 'sonner'],
+          },
+        },
+      },
+      sourcemap: true,
+    },
     server: {
       proxy: {
         '/api': `http://127.0.0.1:${apiPort}`,
         '/uploads': `http://127.0.0.1:${apiPort}`,
       },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+      // Do not modify - file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
     },
   };

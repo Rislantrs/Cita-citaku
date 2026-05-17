@@ -503,6 +503,7 @@ export default function RoadmapDetail() {
         whileTap={{ scale: 0.95 }}
         onClick={handleSpeech}
         className={`fixed bottom-24 sm:bottom-8 right-5 sm:right-8 z-[100] flex h-14 w-14 items-center justify-center rounded-full text-white shadow-2xl transition-all ${isSpeaking ? 'bg-rose-600 shadow-rose-600/40' : 'bg-blue-600 shadow-blue-600/40'}`}
+        aria-label={isSpeaking ? 'Hentikan pembacaan' : 'Bacakan deskripsi karir'}
       >
         {isSpeaking ? <Square size={20} fill="currentColor" /> : <Volume2 size={24} />}
       </motion.button>

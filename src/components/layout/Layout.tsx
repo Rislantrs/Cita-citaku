@@ -169,6 +169,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     ? 'bg-white/10 border border-white/10 text-yellow-400' 
                     : 'bg-white/70 border border-slate-200/70 text-slate-600 hover:text-slate-950'
                 }`}
+                aria-label="Ubah tema terang/gelap"
               >
                 {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </button>

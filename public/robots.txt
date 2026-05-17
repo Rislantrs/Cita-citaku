@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin-rahasia
+Disallow: /api/
+Disallow: /uploads/
+
+Sitemap: https://cita-citaku-308380859892.asia-southeast2.run.app/sitemap.xml

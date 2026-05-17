@@ -87,6 +87,8 @@ export default function Home() {
             width={1920}
             height={1080}
             fetchPriority="high"
+            decoding="async"
+            style={{ aspectRatio: '16/9' }}
             className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-20 grayscale-[0.5] dark:grayscale-0"
             aria-hidden="true"
           />
